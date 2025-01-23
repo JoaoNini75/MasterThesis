@@ -8,47 +8,76 @@
 
 \typeout{NT FILE chapter4.tex}%
 
-\chapter{Adding Support to a New School (work in progress)}
+\chapter{Preliminary Results}
 \label{cha:porting_novathesis}
 
-My advice to customize the \novathesis\ template to another School/University/Department/Degree is to browse the existing supported degrees to find one that is \emph{close enough}, and depart from there!
+Proving the equivalence of two different OCaml programs can be a hard task, depending on the complexity and size of said programs.
+Therefore, we started with two of the most basic examples, as a way to show that this approach makes sense and, most importantly, is possible.
 
-The multitude of layouts supported by the \novathesis\ template is based in a three-tier naming scheme, separated by slashes: University / School / Department-or-Degree.  This three-tier naming scheme is also reflected in a three-tier directory (folder) structure in: \verb!<project_root>a/NOVAthesiFiles/Schools/…!.  For example:
+\section{Proof Examples}
+\label{sec:results_examples}
 
-\begin{verbatim}
-…
-| 
-+—— nova
-|   +—— Images
-|   +—— fct
-|   |   \—— Images
-|   +—— ims
-|   |   \—— Images
-|   …
-|   
-\—— uminho
-    +—— Images
-    +—— ea
-    |   \—— Images
-    +—— ec
-    |   \—— Images
-    …
-\end{verbatim}
+  In this section, we present the functional and imperative implementations of each algorithm. We also compare the specification of each implementation, pointing the similarities and differences. All of the following programs have been verified using Cameleer.
 
-The directory \verb!uminho! contains the customization for all Schools of Universidade do Minho.  This university is an example of the case where the regulations are defined at University level and all the schools apply the same thesis layout and organization.  So, the all the customization is done in the file \verb!uminho/uminho-defaults.ldf!, except the definition of the name and logo of each individual school.
+  \subsection{Factorial}
+  \label{sub:factorial}
 
-As another example, the directory \verb!nova! contains the customization for all Schools from NOVA University Lisbon. This university grants a lot of freedom in the definition of the thesis layouts.  In some cases, they are defined at the School level (e.g., NOVA FCT), while is some other cases they are defined separately for each degree (e.g., NOVA IMS).
+  \begin{lstlisting}[language=caml, caption={Functional factorial implementation},captionpos=b]
+    (*@ function rec fact (n: integer) : integer =
+    if n = 0 then 1 else n * fact (n-1) *)
+    (*@ requires n >= 0 
+      variant n *)
+  \end{lstlisting}
 
 
+  \begin{lstlisting}[language=caml, caption={Imperative factorial implementation},captionpos=b]
+    let fact_iter (n: int) : int =
+      if n <= 1 then 1
+      else
+        begin 
+          let res = ref 1 in
+          for i = 2 to n do
+            (*@ invariant !res = fact (i-1) *)
+            res := !res * i
+          done;
+          !res
+        end
+    (*@ result = fact_iter n
+      requires n >= 0 
+      ensures result = fact n *)
+  \end{lstlisting}
+
+  \subsection{Fibonacci}
+  \label{sub:fibonacci}
+
+  \begin{lstlisting}[language=caml, caption={Functional fibonacci implementation},captionpos=b]
+    (*@ function rec fib (n: integer) : integer =
+	  if n <= 1 then n else fib (n-1) + fib (n-2) *)
+	  (*@ requires n >= 0 
+		  variant n *)
+  \end{lstlisting}
 
 
-\begin{enumerate}
-  \item Try all the already supported schools and check which one is closer to your needs;
-  \begin{enumerate}
-    \item Edit \verb!Config/1_novathesis.tex! and near line 28 uncomment the line with key \verb!\ntsetup{school=<SOMETHING>}!;
-    \item For each school supported (see the comment), replace \verb!<SOMETHING>! with the school name, e.g., make it \verb!\ntsetup{school=ulisboa/fmv}!
-    \item Recompile and check the document.  Particularly, check the cover layout, the front-page (second cover) layout, the front-matter contents, the bibliography style;
-    \item Repeat for the next school, until you find one close enough.
-  \end{enumerate}
-  \item 
-\end{enumerate}
+  \begin{lstlisting}[language=caml, caption={Imperative fibonacci implementation},captionpos=b]
+    let fib_iter (n: int) : int =
+      if n <= 1 then n
+      else
+        begin
+          let prev = ref 0 in 
+          let res = ref 1 in
+          let temp = ref 1 in
+
+          for i = 2 to n do
+            (*@ invariant !prev = fib (i-2)
+              invariant !res = fib (i-1) *)
+            temp := !res;
+            res := !res + !prev;
+            prev := !temp;
+          done;
+
+          !res
+        end
+    (*@ result = fib_iter n
+      requires n >= 0 
+      ensures result = fib n *)
+  \end{lstlisting}

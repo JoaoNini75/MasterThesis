@@ -8,8 +8,8 @@
 
 \typeout{NT FILE chapter2.tex}%
 
-\chapter{NOVAthesis Template \emph{User's Manual}}
-\label{cha:users_manual}
+\chapter{Background}
+\label{cha:background}
 
 \glsresetall
 
@@ -19,13 +19,19 @@
 \end{center}
 
 
-\section{Introduction}
+\section{Formal Software Verification}
 \label{sec:introduction}
 
 This Chapter describes how to use the \gls{novathesis}\ template.  It is assumed that you have a working \index{installation} of \LaTeX, either local (in your own computer) or remote (in \Overleaf), and that you were able to generate a PDF for the default configuration of the template: a PhD thesis for \gls{FCT}.
 
+\subsection{Hoare Logic} 
+\label{sub:hoare_logic}
 
-\section{Quick Start}
+\subsection{Relational Hoare Logic} 
+\label{sub:relational_hoare_logic}
+
+
+\section{OCaml}
 \label{sec:quick_started}
 
 \subsection{With a Local \LaTeX\ Installation} % (fold)
@@ -103,7 +109,7 @@ Follow these steps to get started with a remote \LaTeX\ installation:
 % subsection with_a_remote_cloud_based_service (end)
 
 
-\section{Folder and Files}
+\section{GOSPEL \& Cameleer}
 \label{sec:folders_and_files}
 
 The \gls{novathesis} template is organized into many files and folders. At the main level it includes the following files and folders listed in Table~\ref{tab:folders_and_files}.
@@ -202,7 +208,7 @@ Configurations specific to UMINHO (all schools). \emph{Otherwise ignored.}
 % ===================
 % = Package options =
 % ===================
-\section{Customizing the \novathesistxt\ template}
+\section{Why3}
 \label{sec:package_options}
 
 The \novathesistxt\ template can be customized by editing the files in the \texttt{Config} folder.
@@ -580,8 +586,8 @@ other/esep
 % \end{ctabular}
 
 
-\section{How to Write Using \LaTeX}
-\label{sec:how_to_write_using_latex}
+\section{Program Equivalence}
+\label{sec:program_equivalence}
 
 Please have a look at Chapter~\ref{cha:a_short_latex_tutorial_with_examples}, where you may find many examples of \LaTeX constructs, such as Sectioning, inserting Figures and Tables, writing Equations, Theorems and algorithms, exhibit code listings, etc.
 
