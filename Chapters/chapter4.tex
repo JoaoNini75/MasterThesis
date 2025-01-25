@@ -22,6 +22,10 @@ Therefore, we started with two of the most basic examples, as a way to show that
   \subsection{Factorial}
   \label{sub:factorial}
 
+  Both functional and imperative implementations of the factorial have only one pre condition \emph{n >= 0}.
+  They differ, however, in the post condition, which is \emph{result = fact n} in the case of the imperative implementation and non-existent in the case of the functional implementation.
+  Moreover, the functional implementation has a variant \emph{n}, while the imperative implementation has an invariant, \emph{!res = fact (i-1)}. 
+
   \begin{lstlisting}[language=caml, caption={Functional factorial implementation},captionpos=b]
     (*@ function rec fact (n: integer) : integer =
     if n = 0 then 1 else n * fact (n-1) *)
@@ -47,8 +51,13 @@ Therefore, we started with two of the most basic examples, as a way to show that
       ensures result = fact n *)
   \end{lstlisting}
 
+
   \subsection{Fibonacci}
   \label{sub:fibonacci}
+
+  Both functional and imperative implementations of the factorial have only one pre condition \emph{n >= 0}.
+  They differ, however, in the post condition, which is \emph{result = fib n} in the case of the imperative implementation and non-existent in the case of the functional implementation.
+  Moreover, the functional implementation has a variant \emph{n}, while the imperative implementation has two invariants, \emph{!prev = fib (i-2)} and \emph{!res = fib (i-1)}. 
 
   \begin{lstlisting}[language=caml, caption={Functional fibonacci implementation},captionpos=b]
     (*@ function rec fib (n: integer) : integer =

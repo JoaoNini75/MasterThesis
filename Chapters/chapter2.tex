@@ -13,19 +13,19 @@
 
 \glsresetall
 
-\begin{center}
-  \fbox{\LARGE
-    This manual is outdated and must be revised!}
-\end{center}
-
 
 \section{Formal Software Verification}
-\label{sec:introduction}
+\label{sec:formal_software_verification}
 
-This Chapter describes how to use the \gls{novathesis}\ template.  It is assumed that you have a working \index{installation} of \LaTeX, either local (in your own computer) or remote (in \Overleaf), and that you were able to generate a PDF for the default configuration of the template: a PhD thesis for \gls{FCT}.
+The quest for proving that a program does what we expect it to do is so important in computer science that it became a branch of it called formal software verification. 
+There are several approaches~\cite{Brain2025} that try to solve this issue, each one with different characteristics, advantages and disadvantages. 
+In this section, we will describe the current situation of the theoretical work and tools that constitute the background of this thesis.
+
 
 \subsection{Hoare Logic} 
 \label{sub:hoare_logic}
+
+
 
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
@@ -34,8 +34,6 @@ This Chapter describes how to use the \gls{novathesis}\ template.  It is assumed
 \section{OCaml}
 \label{sec:quick_started}
 
-\subsection{With a Local \LaTeX\ Installation} % (fold)
-\label{sub:with_a_local_latex_installation}
 
 Follow these steps to get started with a local \LaTeX\ installation:
 
@@ -91,10 +89,8 @@ Follow these steps to get started with a local \LaTeX\ installation:
   \item And you're done with a beautifully formatted thesis/dissertation! {\setlength{\twemojiDefaultHeight}{1.5\twemojiDefaultHeight}\emojiSmile}
 \end{enumerate}
 
-% subsection with_a_local_latex_installation (end)
 
-\subsection{With a Remote Cloud-based Service} % (fold)
-\label{sub:with_a_remote_cloud_based_service}
+
 
 Follow these steps to get started with a remote \LaTeX\ installation:
 
@@ -106,7 +102,6 @@ Follow these steps to get started with a remote \LaTeX\ installation:
   \item Follow from Step~\ref{it:project_available} above in Section~\ref{sub:with_a_local_latex_installation} (\nameref{sub:with_a_local_latex_installation}).
 \end{itemize}
 
-% subsection with_a_remote_cloud_based_service (end)
 
 
 \section{GOSPEL \& Cameleer}
@@ -209,20 +204,13 @@ Configurations specific to UMINHO (all schools). \emph{Otherwise ignored.}
 % = Package options =
 % ===================
 \section{Why3}
-\label{sec:package_options}
+\label{sec:why3}
 
 The \novathesistxt\ template can be customized by editing the files in the \texttt{Config} folder.
 
 \newcommand{\classoption}[4]{\textbf{#1=OPT}\newline\emph{\small#2}&\textbf{#3}\newline{\small#4}\\}
 \newcommand{\defaultopt}[1]{\mbox{$\Rightarrow$~\emph{Default: \texttt{#1}}}\newline}
 \newcommand{\defaultit}[1][default]{($\Leftarrow$~\emph{#1})}
-
-
-\subsection{Options in \texttt{1\_novathesis.tex}} % (fold)
-\label{sub:_texttt_1__novathesis_tex}
-
-\subsubsection{Most Relevant Options (\texttt{1\_novathesis.tex})} % (fold)
-\label{ssub:most_relevant_options}
 
 \bgroup
 \begin{xltabular}{\linewidth}{>{\hsize=.4\hsize\raggedright\arraybackslash}X>{\hsize=.6\hsize}X}
@@ -589,13 +577,12 @@ other/esep
 \section{Program Equivalence}
 \label{sec:program_equivalence}
 
-Please have a look at Chapter~\ref{cha:a_short_latex_tutorial_with_examples}, where you may find many examples of \LaTeX constructs, such as Sectioning, inserting Figures and Tables, writing Equations, Theorems and algorithms, exhibit code listings, etc.
+Please have a look at Chapter~\ref{sec:program_equivalence}, where you may find many examples of \LaTeX constructs, such as Sectioning, inserting Figures and Tables, writing Equations, Theorems and algorithms, exhibit code listings, etc.
 
 % section how_to_write_using_latex (end)
 
 
 
-\section{Example glossary, acronyms, and symbols}
 %
 % \todo[inline]{A a note in a line by itself.}
 %

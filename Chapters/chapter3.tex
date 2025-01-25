@@ -42,14 +42,6 @@ Citing something online~\cite{wiki:shuntingyard,flex,bison}.
 % section inserting_tables (end)
 
 
-\section{Importing Images} % (fold)
-\label{sec:importing_images}
-
-% section importing_images (end)
-
-
-\section{Floats, Figures and Captions} % (fold)
-\label{sec:floats_figures_and_captions}
 
 % \subsection{Inserting Figures Wrapped with text} % (fold)
 % \label{ssec:inserting_images_wrapped_with_text}
@@ -98,17 +90,8 @@ Citing something online~\cite{wiki:shuntingyard,flex,bison}.
 \lipsum[1-3]
 
 
-\section{Text Formatting} % (fold)
-\label{sec:text_formatting}
-
-% section text_formatting (end)
 
 
-\section{Generating PDFs from \LaTeX} % (fold)
-\label{sec:generating_pdfs_from_latex}
-
-\subsection{Generating PDFs with pdflatex} % (fold)
-\label{ssec:generating_pdfs_with_pdflatex}
 
 You may create PDF files either by using \verb!latex! to generate a DVI file, and then use one of the many DVI-2-PDF converters, such as \verb!dvipdfm!.
 
@@ -126,26 +109,25 @@ You will notice that there is a new PDF file in the working directory called \ve
 Please note that, to be sure all table of contents, cross-references and bibliographic citations are up-to-date, you must run \verb!latex! once, then \verb!bibtex!, and then \verb!latex! twice.
 % section generating_pdfs_with_pdflatex (end)
 
-\subsection{Dealing with Images} % (fold)
-\label{sub:dealing_with_images}
+
 
 You may process the same source files with both \verb!latex! or \verb!pdflatex!. But, if your text include images, you must be careful. \verb!latex! and \verb!pdflatex! accept images in different (exclusive) formats.  For \verb!latex! you may use EPS ou PS figures. For \verb!pdflatex! you may use JPG, PNG or PDF figures.  I strongly recommend you to use PDF figures in vectorial format (do not use bitmap images unless you have no other choice).
 % subsection dealing_with_images (end)
 
 
-\subsection{Dealing with Citations} % (fold)
+
 
 Para fazer citações, deverá usar-se a chave da referência no ficheiro BibTeX. Se for uma única referência~\cite{Artho04}, usar um ``\verb!~!'' para ligar o \verb!\cite{...}! à palavra que o precede (\ldots\verb!referência~\cite{Artho04}!).  Caso queira fazer múltiplas citações~\cite{Shavit95,Silberschatz06,Moss85}, deverá agrupá-las dentro de um úinico \verb!\cite{...}!.
 
 Note que o ficheiro de bibliografia pode ter tantas entradas quantas quiser. Apenas aquelas cuja chave seja referenciada no texto é que serão incluidas na listagem de bibliografia.
 
 
-\subsection{Footnotes} % (fold)
+
 
 Footnotes\footnote{This is a simple footnote.} will be numbered and shown in the bottom of the page.
 
 
-\subsection{Tables} % (fold)
+
 
 The Table~\ref{tab:hla:results} illustrates some important concepts associated with table construction:
 \begin{asparaenum}[i)]
@@ -184,7 +166,7 @@ Total                            & 12      & 33        & 10        & 5A, 6B, 10C
   \end{xltabular}
 \egroup
 
-\subsection{Figures} % (fold)
+
 
 The images inserted in the document must be of good quality, preferably in vector format (vector PDF) and not in \emph{bitmap} (PNG, JPG, etc.). \emph{bitmap} images (Figure~\ref{fig:Figures_Tree_silhouettes-bitmap}) do not scale well and have negative effects on the quality of your document. On the other hand, \emph{vector} images {Figure~\ref{fig:Figures_Tree_silhouettes-vectorial}} scale as much as necessary without degrading the quality of the image.
 
@@ -225,7 +207,6 @@ To combine several figures into a single one… You can then reference the set a
   \label{fig:complete-figure}
 \end{figure}
 
-\section{Equations}
 
 LaTeX is a powerful tool for writing in a mathematical style. It allows you to insert formulas into the text, such as this: $ax^2 + bx + c = 0$. It also allows formulas to be highlighted on a separate line and centered on the page.
 \[ x = \frac{-b \pm \sqrt{b^2-4ac}}{2a} \]
@@ -242,8 +223,7 @@ which can latter be referenced as equation~\ref{eq:1}
 \ntifpkgloaded{minted}{\ntmintedloadedtrue}{\ntmintedloadedfalse}
 
 \ifntlistingsloaded
-\section{Test for listings} % (fold)
-\label{sec:test_for_listings}
+
 
 Testing the package “listings“…
 
@@ -254,8 +234,6 @@ if(a==b)
 \fi
 
 \ifntmintedloaded
-\section{Test for minted} % (fold)
-\label{sec:test_for_minted}
 
 Testing the package “minted“…
 
@@ -269,8 +247,6 @@ Testing the package “minted“…
 \end{listing}
 \fi
 
-\section{Test for algorithms}
-\label{sec:test_for_algorithms}
 
 Uncomment the algorithms source below and add the following to file “\verb!5_packages.tex!”
 \begin{verbatim}
