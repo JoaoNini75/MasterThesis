@@ -26,12 +26,34 @@ Therefore, we started with two of the most basic examples, as a way to show that
   They differ, however, in the post condition, which is \emph{result = fact n} in the case of the imperative implementation and non-existent in the case of the functional implementation.
   Moreover, the functional implementation has a variant \emph{n}, while the imperative implementation has an invariant, \emph{!res = fact (i-1)}. 
 
-  \begin{lstlisting}[language=caml, caption={Functional factorial implementation},captionpos=b]
+  \newcommand{\provername}[1]{\cellcolor{yellow!25}
+  \begin{sideways}\textbf{#1}~~\end{sideways}}
+  \newcommand{\explanation}[1]{\cellcolor{yellow!13}lemma \texttt{#1}}
+  \newcommand{\transformation}[1]{\cellcolor{yellow!13}transformation \texttt{#1}}
+  \newcommand{\subgoal}[2]{\cellcolor{yellow!13}subgoal #2}
+  \newcommand{\valid}[1]{\cellcolor{green!13}#1}
+  \newcommand{\unknown}[1]{\cellcolor{red!20}#1}
+  \newcommand{\invalid}[1]{\cellcolor{red!50}#1}
+  \newcommand{\timeout}[1]{\cellcolor{red!20}(#1)}
+  \newcommand{\outofmemory}[1]{\cellcolor{red!20}(#1)}
+  \newcommand{\noresult}{\multicolumn{1}{>{\columncolor[gray]{0.8}}c|}{~}}
+  %\newcommand{\failure}{\cellcolor{red!20}failure}
+  \newcommand{\highfailure}{\cellcolor{red!50}FAILURE}
+
+  \begin{tabular}{|l|l|l|c|c|}
+    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} & \provername{Z3 4.13.0} \\ 
+    \hline
+    \explanation{VC for fact} & & \noresult& \valid{0.03} \\ 
+    \hline
+    \explanation{VC for fact\_iter} & & \valid{0.04} & \noresult\\ 
+    \hline \end{tabular}    
+
+  \begin{ocamlenv}
     (*@ function rec fact (n: integer) : integer =
     if n = 0 then 1 else n * fact (n-1) *)
     (*@ requires n >= 0 
       variant n *)
-  \end{lstlisting}
+  \end{ocamlenv}
 
 
   \begin{lstlisting}[language=caml, caption={Imperative factorial implementation},captionpos=b]

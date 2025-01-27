@@ -1,199 +1,92 @@
 % Encoding: UTF-8
 
-@inproceedings{Brain2025,
-   abstract = {Over the past few years there has been significant progress in the various fields of software verification resulting in many useful tools and successful deployments, both academic and commercial. However much of the work describing these tools and ideas is written by and for the research community. The scale, diversity and focus of the literature can act as a barrier, separating industrial users and the wider academic community from the tools that could make their work more efficient, more certain and more productive. This tutorial gives a simple classification of verification techniques in terms of a pyramid and uses it to describe the six main schools of verification technologies. We have found this approach valuable for building collaborations with industry as it allows us to explain the intrinsic strengths and weaknesses of techniques and pick the right tool for any given industrial application. The model also highlights some of the cultural differences and unspoken assumptions of different areas of verification and illuminates future directions.},
-   author = {Martin Brain and Elizabeth Polgreen},
-   doi = {10.1007/978-3-031-71177-0_24},
-   isbn = {9783031711763},
-   issn = {16113349},
-   booktitle = {Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)},
-   pages = {393-419},
-   publisher = {Springer Science and Business Media Deutschland GmbH},
-   title = {A Pyramid Of (Formal) Software Verification},
-   volume = {14934 LNCS},
-   year = {2025},
+@inproceedings{DBLP:conf/fm/BrainP24,
+  author       = {Martin Brain and
+                  Elizabeth Polgreen},
+  editor       = {Andr{\'{e}} Platzer and
+                  Kristin Yvonne Rozier and
+                  Matteo Pradella and
+                  Matteo Rossi},
+  title        = {A Pyramid Of (Formal) Software Verification},
+  booktitle    = {Formal Methods - 26th International Symposium, {FM} 2024, Milan, Italy,
+                  September 9-13, 2024, Proceedings, Part {II}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14934},
+  pages        = {393--419},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-71177-0\_24},
+  doi          = {10.1007/978-3-031-71177-0\_24},
+  timestamp    = {Mon, 09 Dec 2024 22:46:03 +0100},
+  biburl       = {https://dblp.org/rec/conf/fm/BrainP24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
+
 @article{Barthe2020,
    author = {Gilles Barthe},
    title = {An introduction to relational
 program veriﬁcation},
    year = {2020},
 }
-@misc{Barthe2011,
-   abstract = {Relational program logics are formalisms for specifying and verifying properties about two programs or two runs of the same program. These properties range from correctness of compiler optimizations or equivalence between two implementations of an abstract data type, to properties like non-interference or determinism. Yet the current technology for relational verification remains underdeveloped. We provide a general notion of product program that supports a direct reduction of re-lational verification to standard verification. We illustrate the benefits of our method with selected examples, including non-interference, standard loop optimizations, and a state-of-the-art optimization for incremental computation. All examples have been verified using the Why tool.},
-   author = {Gilles Barthe and Juan Manuel Crespo and César Kunz},
-   title = {Relational verification using product programs},
-   year = {2011},
-}
-@inproceedings{Pereira2021,
-   abstract = {We present Cameleer, an automated deductive verification tool for OCaml. We leverage on the recently proposed GOSPEL (Generic OCaml SPEcification Language) to attach rigorous, yet readable, behavioral specification to OCaml code. The formally-specified program is fed to our toolchain, which translates it into an equivalent one in WhyML, the programming and specification language of the Why3 verification framework. We report on successful case studies conducted in Cameleer.},
-   author = {Mário Pereira and António Ravara},
-   doi = {10.1007/978-3-030-81688-9_31},
-   isbn = {9783030816872},
-   issn = {16113349},
-   booktitle = {Lecture Notes in Computer Science (including subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics)},
-   keywords = {Deductive software verification,GOSPEL,OCaml,Why3},
-   pages = {677-689},
-   publisher = {Springer Science and Business Media Deutschland GmbH},
-   title = {Cameleer: A Deductive Verification Tool for OCaml},
-   volume = {12760 LNCS},
-   year = {2021},
-}
-@misc{Pereira2020,
-   author = {Mário Pereira},
-   doi = {10.54499/UIDB/04516/2020},
-   month = {1},
-   title = {Practical Deductive Verification of
-OCaml Programs},
-   url = {https://sciproj.ptcris.pt/157572UID},
-   year = {2020},
+
+@inproceedings{DBLP:conf/fm/BartheCK11,
+  author       = {Gilles Barthe and
+                  Juan Manuel Crespo and
+                  C{\'{e}}sar Kunz},
+  editor       = {Michael J. Butler and
+                  Wolfram Schulte},
+  title        = {Relational Verification Using Product Programs},
+  booktitle    = {{FM} 2011: Formal Methods - 17th International Symposium on Formal
+                  Methods, Limerick, Ireland, June 20-24, 2011. Proceedings},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {6664},
+  pages        = {200--214},
+  publisher    = {Springer},
+  year         = {2011},
+  url          = {https://doi.org/10.1007/978-3-642-21437-0\_17},
+  doi          = {10.1007/978-3-642-21437-0\_17},
+  timestamp    = {Tue, 14 May 2019 10:00:46 +0200},
+  biburl       = {https://dblp.org/rec/conf/fm/BartheCK11.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
-
-
-@InProceedings{ Artho04,
-	author       = "Cyrille Artho and Klaus Havelund and Armin Biere",
-	title        = "Using Block-Local Atomicity to Detect Stale-Value Concurrency Errors",
-	booktitle    = "ATVA",
-	year         = "2004",
-	pages        = "150--164",
-	crossref     = "DBLP:conf/atva/2004",
-	bibsource    = "DBLP, http://dblp.uni-trier.de",
-	ee           = "http://springerlink.metapress.com/openurl.asp?genre=article{\&}issn=0302-9743{\&}volume=3299{\&}spage=150",
+@inproceedings{DBLP:conf/cav/PereiraR20,
+  author       = {M{\'{a}}rio Pereira and
+                  Ant{\'{o}}nio Ravara},
+  editor       = {Alexandra Silva and
+                  K. Rustan M. Leino},
+  title        = {Cameleer: {A} Deductive Verification Tool for OCaml},
+  booktitle    = {Computer Aided Verification - 33rd International Conference, {CAV}
+                  2021, Virtual Event, July 20-23, 2021, Proceedings, Part {II}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {12760},
+  pages        = {677--689},
+  publisher    = {Springer},
+  year         = {2021},
+  url          = {https://doi.org/10.1007/978-3-030-81688-9\_31},
+  doi          = {10.1007/978-3-030-81688-9\_31},
+  timestamp    = {Sat, 09 Apr 2022 12:33:43 +0200},
+  biburl       = {https://dblp.org/rec/conf/cav/PereiraR20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
 
-@online{ Parkins2017,
-	author       = "Parkins, David",
-	booktitle    = "Economist (United Kingdom)",
-	issn         = "00130613",
-	mendeley     = "I4.0/BigData",
-	number       = "9035",
-	title        = "{Regulating the internet giants: The world's most valuable resource is no longer oil, but data}",
-	url          = "https://www.economist.com/leaders/2017/05/06/the-worlds-most-valuable-resource-is-no-longer-oil-but-data?fbclid=IwAR1EaO3g6OJoDuhrHBNyqQJAqR2NyhvcZ07uexTWa3Hujq0azNMVHKhQido",
-	urldate      = "2020-01-21",
-	volume       = "413",
-	year         = "2017",
-}
-
-@Misc{ Artho03,
-	author       = "C. Artho and K. Havelund and A. Biere",
-	title        = "High-Level Data Races",
-	text         = "C. Artho, K. Havelund, and A. Biere. High-Level Data Races. In VVEIS'03, The First International Workshop on Verification and Validation of Enterprise Information Systems, April 2003. Angers, France.",
-	year         = "2003",
-	url          = "citeseer.ist.psu.edu/artho03highlevel.html",
-}
-
-@Article{ Beckman08,
-	title        = "Verifying Correct Usage of Atomic Blocks and Typestate",
-	author       = "Nels E. Beckman and Kevin Bierhoff and Jonathan Aldrich",
-	publisher    = "ACM",
-	address      = "New York, NY, USA",
-	journal      = "SIGPLAN Not.",
-	pages        = "227--244",
-	volume       = "43",
-	number       = "10",
-	year         = "2008",
-	issn         = "0362-1340",
-	doi          = "http://doi.acm.org/10.1145/1449955.1449783",
-}
-
-@InProceedings{ Flanagan04,
-	author       = "Cormac Flanagan and Stephen N Freund",
-	title        = "Atomizer: a dynamic atomicity checker for multithreaded programs",
-	booktitle    = "POPL '04: Proceedings of the 31st ACM SIGPLAN-SIGACT symposium on Principles of programming languages",
-	year         = "2004",
-	isbn         = "1-58113-729-X",
-	pages        = "256--267",
-	location     = "Venice, Italy",
-	doi          = "http://doi.acm.org/10.1145/964001.964023",
-	publisher    = "ACM",
-	address      = "New York, NY, USA",
-}
-
-@Misc{ IBM-Rep,
-	title        = "{IBM's Concurrency Testing Repository}",
-}
-
-@InProceedings{ Praun03,
-	author       = "Christoph {von Praun} and Thomas R. Gross",
-	title        = "Static Detection of Atomicity Violations in Object-Oriented Programs",
-	booktitle    = "Journal of Object Technology",
-	year         = "2003",
-	pages        = "2004",
-}
-
-@InProceedings{ Shavit95,
-	author       = "Nir Shavit and Dan Touitou",
-	title        = "Software transactional memory",
-	booktitle    = "PODC '95: Proceedings of the fourteenth annual ACM symposium on Principles of distributed computing",
-	year         = "1995",
-	isbn         = "0-89791-710-3",
-	pages        = "204--213",
-	location     = "Ottowa, Ontario, Canada",
-	doi          = "http://doi.acm.org/10.1145/224964.224987",
-	publisher    = "ACM",
-	address      = "New York, NY, USA",
-}
-
-@Book{ Silberschatz06,
-	author       = "Abraham Silberschatz and Henry F. Korth and S. Sudarshan",
-	title        = "Database System Concepts",
-	publisher    = "McGraw-Hill",
-	year         = "2006",
-	edition      = "Fifth",
-	isbn         = "007-124476-X",
-}
-
-@Book{ Moss85,
-	author       = "J. Eliot and B. Moss",
-	title        = "Nested transactions: an approach to reliable distributed computing",
-	year         = "1985",
-	isbn         = "0-262-13200-1",
-	publisher    = "Massachusetts Institute of Technology",
-	address      = "Cambridge, MA, USA",
-}
-
-@Proceedings{ DBLP:conf/atva/2004,
-	editor       = "Farn Wang",
-	title        = "Automated Technology for Verification and Analysis: Second International Conference, ATVA 2004, Taipei, Taiwan, ROC, October 31-November 3, 2004. Proceedings",
-	booktitle    = "ATVA",
-	publisher    = "Springer",
-	series       = "Lecture Notes in Computer Science",
-	volume       = "3299",
-	year         = "2004",
-	isbn         = "3-540-23610-4",
-	bibsource    = "DBLP, http://dblp.uni-trier.de",
-}
-
-@InProceedings{ecoop12-dias,
-	author       = "Dias, Ricardo J. and Distefano, Dino and Seco, J. C. and Lourenço, João M.",
-	booktitle    = "Proceedings of the 26th European conference on Object-oriented programming ({ECOOP}'12)",
-	title        = "Verification of Snapshot Isolation in Transactional Memory Java Programs",
-	year         = "2012",
-	month        = jun,
-	publisher    = "Springer-Verlag",
-}
-
-@online{wiki:shuntingyard,
-    author = "Wikipedia contributors",
-    title = "Shunting-yard algorithm --- Wikipedia{,} The Free Encyclopedia",
-    year = "2017",
-    month = "3",
-    url = "https://en.wikipedia.org/w/index.php?title=Shunting-yard_algorithm&oldid=817901155",
-    urldate = {2018-03-01},
-    keywords  = "Dijkstra,prefix"
-}
-
-@online{bison,
-    url = {https://www.gnu.org/software/bison/},
-    urldate = {2020-07-26},
-    keywords = {parser,generator},
-    title = {Gnu Bison},
-}
-
-@online{flex,
-    url = {https://github.com/westes/flex},
-    urldate = {2020-07-26},
-    keywords = {lexical,analyser},
-    title = {Fast Lexical Analyser},
+@inproceedings{DBLP:conf/fm/Pereira24,
+  author       = {M{\'{a}}rio Pereira},
+  editor       = {Andr{\'{e}} Platzer and
+                  Kristin Yvonne Rozier and
+                  Matteo Pradella and
+                  Matteo Rossi},
+  title        = {Practical Deductive Verification of OCaml Programs},
+  booktitle    = {Formal Methods - 26th International Symposium, {FM} 2024, Milan, Italy,
+                  September 9-13, 2024, Proceedings, Part {II}},
+  series       = {Lecture Notes in Computer Science},
+  volume       = {14934},
+  pages        = {518--542},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-031-71177-0\_29},
+  doi          = {10.1007/978-3-031-71177-0\_29},
+  timestamp    = {Mon, 09 Dec 2024 22:46:03 +0100},
+  biburl       = {https://dblp.org/rec/conf/fm/Pereira24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
 }
