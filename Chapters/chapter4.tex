@@ -26,6 +26,7 @@ Therefore, we started with two of the most basic examples, as a way to show that
   They differ, however, in the post condition, which is \emph{result = fact n} in the case of the imperative implementation and non-existent in the case of the functional implementation.
   Moreover, the functional implementation has a variant \emph{n}, while the imperative implementation has an invariant, \emph{!res = fact (i-1)}. 
 
+  \bigskip
   \newcommand{\provername}[1]{\cellcolor{yellow!25}
   \begin{sideways}\textbf{#1}~~\end{sideways}}
   \newcommand{\explanation}[1]{\cellcolor{yellow!13}lemma \texttt{#1}}
@@ -39,21 +40,13 @@ Therefore, we started with two of the most basic examples, as a way to show that
   \newcommand{\noresult}{\multicolumn{1}{>{\columncolor[gray]{0.8}}c|}{~}}
   %\newcommand{\failure}{\cellcolor{red!20}failure}
   \newcommand{\highfailure}{\cellcolor{red!50}FAILURE}
-
-  \begin{tabular}{|l|l|l|c|c|}
-    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} & \provername{Z3 4.13.0} \\ 
-    \hline
-    \explanation{VC for fact} & & \noresult& \valid{0.03} \\ 
-    \hline
-    \explanation{VC for fact\_iter} & & \valid{0.04} & \noresult\\ 
-    \hline \end{tabular}    
-
-  \begin{ocamlenv}
+      
+  \begin{gospel}
     (*@ function rec fact (n: integer) : integer =
     if n = 0 then 1 else n * fact (n-1) *)
     (*@ requires n >= 0 
       variant n *)
-  \end{ocamlenv}
+  \end{gospel}
 
 
   \begin{lstlisting}[language=caml, caption={Imperative factorial implementation},captionpos=b]
@@ -72,6 +65,32 @@ Therefore, we started with two of the most basic examples, as a way to show that
       requires n >= 0 
       ensures result = fact n *)
   \end{lstlisting}
+
+  Write about the table below!!!
+
+  \begin{table}[!h]
+  \begin{center}
+  \begin{tabular}{|l|l|l|l|c|}
+    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{Z3 4.13.0} \\ 
+    \hline
+    \explanation{VC for fact}  & \explanation{variant decrease} & \valid{0.03} \\ 
+    \cline{2-3}
+     & \explanation{precondition} & \valid{0.05} \\ 
+    \hline
+    \explanation{VC for fact\_iter}  & \explanation{postcondition} & \valid{0.04} \\ 
+    \cline{2-3}
+     & \explanation{loop invariant init} & \valid{0.05} \\ 
+    \cline{2-3}
+     & \explanation{loop invariant preservation} & \valid{0.04} \\ 
+    \cline{2-3}
+     & \explanation{postcondition} & \valid{0.01} \\ 
+    \cline{2-3}
+     & \explanation{VC for fact\_iter} & \valid{0.03} \\ 
+    \hline 
+  \end{tabular}
+  \caption{Factorial implementations verification results.}
+  \end{center}
+  \end{table}
 
 
   \subsection{Fibonacci}
@@ -112,3 +131,37 @@ Therefore, we started with two of the most basic examples, as a way to show that
       requires n >= 0 
       ensures result = fib n *)
   \end{lstlisting}
+
+  Write about the table below!!!
+
+  \begin{table}[!h]
+    \begin{center}
+    \begin{tabular}{|l|l|l|l|c|}
+      \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{Z3 4.13.0} \\ 
+      \hline
+      \explanation{VC for fib}  & \explanation{variant decrease} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{precondition} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{variant decrease} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{precondition} & \valid{0.04} \\ 
+      \hline
+      \explanation{VC for fib\_iter}  & \explanation{postcondition} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{loop invariant init} & \valid{0.02} \\ 
+      \cline{2-3}
+       & \explanation{loop invariant init} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{loop invariant preservation} & \valid{0.02} \\ 
+      \cline{2-3}
+       & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+      \cline{2-3}
+       & \explanation{postcondition} & \valid{0.01} \\ 
+      \cline{2-3}
+       & \explanation{VC for fib\_iter} & \valid{0.03} \\ 
+      \hline 
+    \end{tabular}
+    \caption{Fibonacci implementations verification results.}
+    \end{center}
+    \end{table}
