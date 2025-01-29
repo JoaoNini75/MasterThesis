@@ -66,7 +66,8 @@ Therefore, we started with two of the most basic examples, as a way to show that
       ensures result = fact n *)
   \end{lstlisting}
 
-  Write about the table below!!!
+  Regarding the proof of both the implementations above, Z3 (through Cameleer) was able to discard all of the verification conditions (VCs) automatically.
+  Furthermore, this SMT solver took a quarter of a second to complete the whole proof, verifying the functional implementation in 0.08 seconds and the imperative implementation in 0.17 seconds.
 
   \begin{table}[!h]
   \begin{center}
@@ -132,7 +133,8 @@ Therefore, we started with two of the most basic examples, as a way to show that
       ensures result = fib n *)
   \end{lstlisting}
 
-  Write about the table below!!!
+  Using Cameleer and Z3 as we did with the factorial, we were able to prove the correctness of both implementations without any human intervention, taking a total of 0.3 seconds.
+  Besides that, the SMT solver spent 0.13 seconds verifying the functional implementation and 0.17 seconds verifying the imperative implementation.
 
   \begin{table}[!h]
     \begin{center}
