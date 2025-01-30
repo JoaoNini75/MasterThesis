@@ -48,8 +48,7 @@ Therefore, we started with two of the most basic examples, as a way to show that
       variant n *)
   \end{gospel}
 
-
-  \begin{lstlisting}[language=caml, caption={Imperative factorial implementation},captionpos=b]
+  \begin{ocamlsmall}
     let fact_iter (n: int) : int =
       if n <= 1 then 1
       else
@@ -64,7 +63,7 @@ Therefore, we started with two of the most basic examples, as a way to show that
     (*@ result = fact_iter n
       requires n >= 0 
       ensures result = fact n *)
-  \end{lstlisting}
+  \end{ocamlsmall}
 
   Regarding the proof of both the implementations above, Z3 (through Cameleer) was able to discard all of the verification conditions (VCs) automatically.
   Furthermore, this SMT solver took a quarter of a second to complete the whole proof, verifying the functional implementation in 0.08 seconds and the imperative implementation in 0.17 seconds.
