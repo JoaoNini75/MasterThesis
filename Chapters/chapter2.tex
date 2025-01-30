@@ -25,10 +25,30 @@ In this section, we will describe the current situation of the theoretical work 
 \subsection{Hoare Logic} 
 \label{sub:hoare_logic}
 
+Hoare logic is a way of reasoning about the correctness of a program, following well defined axioms and rules.
+The main feature of the Hoare logic is the Hoare triple. 
+The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}) and the post-condition (\emph{Q}):
+---INTRODUZIR {P} S {Q} centrado--
+This means that if a program \emph{S} satisfies a given pre-condition \emph{P}, the state of the program after the execution finishes satisfies the post-condition \emph{Q}.
+To simplify a lot, you can look at the triple as a simple logical consequence \emph{P → Q}.
+In the same way as in the logical consequence, if \emph{P} is false, we can not say anything certain about the value of \emph{Q} (after the execution terminates, in the case of the triple).
+
+Let us now look at an example of the usage of the Hoare triple. Consider the following program:
+%---INTRODUZIR centrado \emph{S} ≜ if grade >= 10 then reward := 10 else reward := 0 
+Hoare logic can be used to prove this triple:
+%---INTRODUZIR centrado {grade >= 0 ∧ grade <= 20} \emph{S} {(grade >= 10 ∧ reward = 10) ∨ (grade < 10 ∧ reward = 0)}
+This triple describes a situation where if the value of \emph{grade} is "valid" (considering grades from 0 to 20), we can say that the value of \emph{reward} will be either 0 or 10, depending if the value of \emph{grade} was smaller or equal to/bigger than 10, respectively.
+
+It is also important to mention the difference between \emph{partial correctness} and \emph{total correctness}.
+If \emph{total correctness} is what you are looking for, you need to guarantee that the execution of the program finishes.
+Otherwise, you can count only on \emph{partial correctness}.
+
+--- INTRODUZIR REFERENCIA PARA AS NOTAS DO PROF/An Axiomatic Basis for Computer Programming ---
 
 
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
+
 
 
 \section{OCaml}
@@ -67,8 +87,23 @@ and even the web version of Facebook Messenger!
 In this subsection, we will look at a simple Ocaml code example that determines the greatest common divisor of two given numbers, \emph{a} and \emph{b}.
 The first implementation represents the use of the functional paradigm while the second demonstrates how to use imperative constructs in this language.
 
+\begin{ocamlsmall}
+  let rec gcd (a: int) (b:int) : int =
+      if b = 0 then a
+      else gcd b (mod a b) 
+\end{ocamlsmall}
 
-
+\begin{ocamlsmall}
+  let gcd_iter (a0: int) (b0: int) : int =
+      let b = ref b0 in
+      let a = ref a0 in
+      while !b <> 0 do
+          let tmp = !a in
+          a := !b;
+          b := tmp mod !b
+      done;
+      !a
+\end{ocamlsmall}
 
 \iffalse
 Follow these steps to get started with a local \LaTeX\ installation:
