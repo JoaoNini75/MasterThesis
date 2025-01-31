@@ -85,6 +85,7 @@
 % }
 
 \usepackage{xspace}
+\usepackage{subcaption}
 
 \newcommand{\whyml}{\gls{WhyML}\xspace}
 \newcommand{\whythree}{\gls{Why3}\xspace}
@@ -99,3 +100,7 @@
 \usepackage{colortbl}
 \usepackage{rotating}
 \usepackage{gospel}
+\DeclareCaptionFormat{listing}{\hfill#3}
+\captionsetup[lstlisting]{format=listing,singlelinecheck=false, margin=0pt,
+  font={sf,it},labelsep=space,labelfont=bf,belowskip=-1pt}
+  

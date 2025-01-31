@@ -105,6 +105,8 @@ The first implementation represents the use of the functional paradigm while the
       !a
 \end{ocamlsmall}
 
+TODO: FALAR DO CODIGO ACIMA
+
 \iffalse
 Follow these steps to get started with a local \LaTeX\ installation:
 
@@ -175,8 +177,57 @@ Follow these steps to get started with a remote \LaTeX\ installation:
 \fi
 
 
-\section{GOSPEL \& Cameleer}
-\label{sec:folders_and_files}
+\section{GOSPEL}
+\label{sec:gospel}
+
+GOSPEL (Generic Ocaml SPEcification Language) INTRODUZIR REF DO PAPER DE GOSPEL is a tool-agnostic specification language for OCaml that allows one to verify the correctness of a program (there are other purposes but this is the most interesting for this work).
+GOSPEL is based in Separation Logic but significantly improves the experience of the people that write and/or read the specifications, by making them much more concise.
+%Se acessibilty and conciseness aspects, which are considered by its authors "two downsides that, we believe, limit its wide adoption" INSERIR CITACAO!.
+Let us reconsider the code presented in the subsection above, but this time also show the GOSPEL specification for that program:
+
+\begin{gospel}
+  (*@ function rec gcd (a: int) (b:int) : int =
+      if b = 0 then a
+      else gcd b (mod a b) *)
+  (*@ requires a >= 0
+      requires b >= 0
+      variant b *)
+\end{gospel}
+
+\begin{gospel}
+  let gcd_iter (a0: int) (b0: int) : int =
+    let b = ref b0 in
+    let a = ref a0 in
+    while !b <> 0 do
+        (*@ invariant 0 <= !b
+            invariant 0 <= !a
+            invariant gcd a0 b0 = gcd !a !b
+            variant !b *)
+        let tmp = !a in
+        a := !b;
+        b := tmp mod !b
+    done;
+    !a
+  (*@ result = gcd_iter a0 b0
+      requires a0 >= 0
+      requires b0 >= 0
+      ensures result = gcd a0 b0*)
+\end{gospel}
+
+Although this a simple program, we can already notice what a typical GOSPEL specification looks like.
+If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be 0 as well) at the beginning of the specification, representing the pre-conditions.
+%DUVIDA DO VARIANT: After that, since these implementations use recursion most of the time, there will be one or more \emp{variant} clauses, indicating what variables vary each the function is called.
+In this particular example, we have the pre-conditions stating that \emph{a} and \emph{b} need to be non negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
+FALAR DO VARIANT
+
+
+
+
+
+\section{Cameleer}
+\label{sec:cameleer}
+
+
 
 
 
@@ -282,6 +333,7 @@ Configurations specific to UMINHO (all schools). \emph{Otherwise ignored.}
 \section{Why3}
 \label{sec:why3}
 
+\iffalse
 The \novathesistxt\ template can be customized by editing the files in the \texttt{Config} folder.
 
 \newcommand{\classoption}[4]{\textbf{#1=OPT}\newline\emph{\small#2}&\textbf{#3}\newline{\small#4}\\}
@@ -648,11 +700,12 @@ other/esep
 \end{xltabular}
 \egroup
 % \end{ctabular}
-
+\fi
 
 \section{Program Equivalence}
 \label{sec:program_equivalence}
 
+\iffalse
 Please have a look at Chapter~\ref{sec:program_equivalence}, where you may find many examples of \LaTeX constructs, such as Sectioning, inserting Figures and Tables, writing Equations, Theorems and algorithms, exhibit code listings, etc.
 
 % section how_to_write_using_latex (end)
@@ -665,7 +718,7 @@ Please have a look at Chapter~\ref{sec:program_equivalence}, where you may find 
 This is the first occurrence of an abbreviation: \gls{abbrev}. And now the second occurrence of the same abbreviation: \gls{abbrev}. And a new acronym with capital letter: \Gls{xpt} and reused \gls{xpt}.  Let's also use a few other acronyms such as \gls{aaa}, \gls{aab}, \gls{aba}, \gls{bbb} and \gls{xpt}.
 In geometry, the area enclosed by a circle of radius \gls{r} is $\pi r^2$. Here the Greek letter \gls{pi} is equal to the ratio of the circumference of any circle to its diameter.
 Lets add ``\gls{computer}'' to the glossary! Be carefull with mathematical symbols in acronyms, please see the definition of \gls{mu}.
-
+\fi
 % Reference to Potassium \gls{chem:potassio} and Sodium \gls{chem:sodio} as well.
 
 %
