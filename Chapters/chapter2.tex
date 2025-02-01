@@ -58,7 +58,7 @@ Otherwise, you can count only on \emph{partial correctness}.
 \label{sub:overview}
 
 OCaml is a general purpose programming language that was released in 1996 at National Institute for Research in Digital Science and Technology (Inria).
-It is usually seen as an extension of Caml (dialect of the Meta Language) that includes object-oriented features, making OCaml a very versatile language.
+It is usually seen as an extension of Caml (a dialect of the Meta Language) that includes object-oriented features, making OCaml a very versatile language.
 Besides supporting the functional, imperative and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code. 
 Regarding its type system, OCaml is strongly and statically typed, featuring type inference as well.
 
@@ -176,6 +176,14 @@ Follow these steps to get started with a remote \LaTeX\ installation:
 \end{itemize}
 \fi
 
+\section{Why3}
+\label{sec:why3}
+
+Why3 is a platform whose objective is the verification of programs in a deductive way, presenting it self as a INTRODUZIR CITACAO \emph{"a front-end to third-party theorem provers"}.
+These several theorem provers can be put to work together and vary greatly in nature, ranging from SMT solvers (for example, Z3 or cvc5) to TPTP provers and even interactive proof assistants (such as Coq or Isabelle).
+Under the hood, Why3 is an OCaml library, implemented in the form of an API.
+It features a CLI INTRODUZIR GLOSSARIO, a GUI INTRODUZIR GLOSSARIO and a benchmark tool to compare the performance of the different provers available.
+
 
 \section{GOSPEL}
 \label{sec:gospel}
@@ -221,11 +229,49 @@ In this particular example, we have the pre-conditions stating that \emph{a} and
 FALAR DO VARIANT
 
 
-
-
-
 \section{Cameleer}
 \label{sec:cameleer}
+
+Cameleer is a tool that aids automated deductive verification of OCaml programs.
+It relies on GOSPEL for the specification of the code and on Why3 to effectively verify the program.
+The limitations of the powerful Why3 tool and the reason for the creation of Cameleer start here: Why3 does not accept code that is not written in its intermediary language: WhyML.
+Now imagine wanting to verify your codebase with years and years of contributions, with maybe more than a million lines of code.
+Why3 would force you to translate OCaml into WhyML, \emph{all by hand}. 
+And only after that you would write the specification.
+Two obvious things come to mind: no one wants to do that job and if someone had to do it, they would very quickly start wondering if there is a tool that could help them, or even better, do that repetitive work instead of them.
+So, how is Cameleer able to save those poor programmers?
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics{cameleer_pipeline}
+  \caption{Architecture and verification pipeline, taken from INTRODUZIR REFERENCIA.}
+  \label{fig:cameleer_pipeline}
+\end{figure}
+
+The Cameleer pipeline is constituted by 4 different steps, the last one being different depending on whether Why3 detects errors in the translated code or not.
+The first step is to parse and change the abstract syntax tree of the input OCaml program (that contains GOSPEL annotations), using \emph{ppxlib}, a library that is part of the GOSPEL ecosystem INSERIR FOOTNOTE GITHUB DE GOSPEL.
+In the second step, the GOSPEL annotations are processed by a special parser/type-checker that converts the specification into nodes that become part of the previous OCaml AST.
+The third step consists in Cameleer itself translating the complete AST into a description in WhyML that is equivalent; Why3 then takes that as input.
+In step four, if the Why3 type-and-effect system is not able to validate the input generated in the previous step, the problems are shown in the context of the input OCaml code, the one that is submitted by the user. 
+Alternatively, if no errors are found, a series of verification conditions are the output of the respective VCGEN.
+Those VCs should then be unraveled by the solvers featured in Cameleer or, if they are not able to do all the work automatically, this tool also allows human intervention to discharge more complex statements.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -330,8 +376,7 @@ Configurations specific to UMINHO (all schools). \emph{Otherwise ignored.}
 % ===================
 \fi
 
-\section{Why3}
-\label{sec:why3}
+
 
 \iffalse
 The \novathesistxt\ template can be customized by editing the files in the \texttt{Config} folder.
