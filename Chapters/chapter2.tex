@@ -49,6 +49,12 @@ Otherwise, you can count only on \emph{partial correctness}.
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
 
+Relational Hoare Logic is a way of reasoning about some property of two different programs or two different executions of the same program.
+Some examples of these properties are observational equivalence, non-interference and continuity.
+Two programs that are observationally equivalent are indistinguishable in relation to the results they produce, even if they are written in different ways.
+Non-interference considers two pieces of code written in very different languages (not necessarily) and presents the common points of their executions.
+Continuity is a property that establishes a connection between two different runs of the same program.
+
 
 
 \section{OCaml}
