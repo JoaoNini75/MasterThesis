@@ -30,13 +30,13 @@ The main feature of the Hoare logic is the Hoare triple.
 The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}) and the post-condition (\emph{Q}):
 ---INTRODUZIR {P} S {Q} centrado--
 This means that if a program \emph{S} satisfies a given pre-condition \emph{P}, the state of the program after the execution finishes satisfies the post-condition \emph{Q}.
-To simplify a lot, you can look at the triple as a simple logical consequence \emph{P → Q}.
+To simplify a lot, you can look at the triple as a simple logical consequence \emph{P} $\rightarrow$ \emph{Q}.
 In the same way as in the logical consequence, if \emph{P} is false, we can not say anything certain about the value of \emph{Q} (after the execution terminates, in the case of the triple).
 
 Let us now look at an example of the usage of the Hoare triple. Consider the following program:
-%---INTRODUZIR centrado \emph{S} ≜ if grade >= 10 then reward := 10 else reward := 0 
+---INTRODUZIR centrado \emph{S} $\triangleq$ if grade >= 10 then reward := 10 else reward := 0 
 Hoare logic can be used to prove this triple:
-%---INTRODUZIR centrado {grade >= 0 ∧ grade <= 20} \emph{S} {(grade >= 10 ∧ reward = 10) ∨ (grade < 10 ∧ reward = 0)}
+---INTRODUZIR centrado {grade >= 0 $\land$ grade $\leq$ 20} \emph{S} {(grade $\geq$ 10 $\land$ reward = 10) $\lor$ (grade < 10 \gosp{/\} reward = 0)}
 This triple describes a situation where if the value of \emph{grade} is "valid" (considering grades from 0 to 20), we can say that the value of \emph{reward} will be either 0 or 10, depending if the value of \emph{grade} was smaller or equal to/bigger than 10, respectively.
 
 It is also important to mention the difference between \emph{partial correctness} and \emph{total correctness}.
@@ -49,11 +49,36 @@ Otherwise, you can count only on \emph{partial correctness}.
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
 
-Relational Hoare Logic is a way of reasoning about some property of two different programs or two different executions of the same program.
-Some examples of these properties are observational equivalence, non-interference and continuity.
-Two programs that are observationally equivalent are indistinguishable in relation to the results they produce, even if they are written in different ways.
-Non-interference considers two pieces of code written in very different languages (not necessarily) and presents the common points of their executions.
-Continuity is a property that establishes a connection between two different runs of the same program.
+\subsubsection{Evolution from Classical*INTRODUZIR FOOTNOTE Hoare Logic}
+\label{sub:relational_hoare_logic_motivation}
+Relational Hoare Logic (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
+Some of these properties are observational equivalence and 2-properties, being non-interference and continuity two examples.
+While classical HL reasons about the satisfaction of the post-condition if the pre-condition is satisfied, RHL analyzes the relation between two programs in terms of their corresponding evolution from a given pre-condition to a post-condition.
+In other words, if programs \emph{C1} and \emph{C2} both respect the pre-condition (let us name it $\Phi$), they will end (if their executions terminate) both respecting the post-condition (let us name it $\Psi$) or none of them will.
+This means that one of the programs satisfying $\Psi$ and the other not satisfying is not valid in RHL.
+This idea is known as the Hoare quadruple:
+--- INTRODUZIR CENTRADO \{$\Phi$\} \emph{C1} \emph{\textasciitilde} \emph{C2} \{$\Psi$\}
+
+So, why was RHL created when we already had classical HL? 
+The main reason lies in the fact that the classical version does not have a direct or easy way of specifying the relation between two programs. 
+This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven/"easier-to-prove" versions.
+However, this work is definitely not the only one that relies on the connection between two different versions of the same of code.
+The most common example is probably compiler optimizations, but another one is when a given program has different algorithms that perform the same task and they get chosen depending on some characteristics that make one implementation more performant than the other(s).
+
+
+\subsubsection{Examples}
+\label{sub:relational_hoare_logic_examples}
+
+Next there are some requirements not specified above when presenting the Hoare quadruple.
+These are important details that have to be accounted for and will be described using example programs to make the explanation more tangible.
+
+The first example corresponds to two different programs, let us call them \emph{P1} and \emph{P2}, and they both contain only two assignment statements applied to the same group of variables (\emph{a,b,c}): 
+
+
+
+\subsubsection{Formal Proof Rules}
+\label{sub:relational_hoare_logic_formal_proof_rules}
+
 
 
 
