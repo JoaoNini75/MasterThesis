@@ -54,10 +54,10 @@ Otherwise, you can count only on \emph{partial correctness}.
 Relational Hoare Logic (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
 Some of these properties are observational equivalence and 2-properties, being non-interference and continuity two examples.
 While classical HL reasons about the satisfaction of the post-condition if the pre-condition is satisfied, RHL analyzes the relation between two programs in terms of their corresponding evolution from a given pre-condition to a post-condition.
-In other words, if programs \emph{C1} and \emph{C2} both respect the pre-condition (let us name it $\Phi$), they will end (if their executions terminate) both respecting the post-condition (let us name it $\Psi$) or none of them will.
+In other words, if programs \emph{P1} and \emph{P2} both respect the pre-condition (let us name it $\Phi$), they will end (if their executions terminate) both respecting the post-condition (let us name it $\Psi$) or none of them will.
 This means that one of the programs satisfying $\Psi$ and the other not satisfying is not valid in RHL.
 This idea is known as the Hoare quadruple:
---- INTRODUZIR CENTRADO \{$\Phi$\} \emph{C1} \emph{\textasciitilde} \emph{C2} \{$\Psi$\}
+--- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\}
 
 So, why was RHL created when we already had classical HL? 
 The main reason lies in the fact that the classical version does not have a direct or easy way of specifying the relation between two programs. 
@@ -71,9 +71,49 @@ The most common example is probably compiler optimizations, but another one is w
 
 Next there are some requirements not specified above when presenting the Hoare quadruple.
 These are important details that have to be accounted for and will be described using example programs to make the explanation more tangible.
+Consider the notation \emph{Pi.j} that will be used in this subsubsection, where \emph{i} represents a given program index and \emph{j} the identifier of a variable in program \emph{i}.
 
-The first example corresponds to two different programs, let us call them \emph{P1} and \emph{P2}, and they both contain only two assignment statements applied to the same group of variables (\emph{a,b,c}): 
+The first example corresponds to two different programs, let us call them \emph{P1} and \emph{P2}, and they both contain only two assignment statements applied to the same group of variables (\emph{a, b, c}): 
+INTRODUZIR CENTRADO:
+P1 P2
+b := a + 1; c := a + 2;
+c := b + 1; b := c - 1;
 
+We can see that \emph{b} and \emph{c} do not change the final state of any of the programs, so, to write a Hoare quadruple that creates an equivalence between \emph{P1} and \emph{P2}, we need the pre-condition to assert that \emph{P1.a = P2.a}:
+--- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} where $\Phi$ $\triangleq$ P1.a = P2.a
+                                                                                           and $\Psi$ $\triangleq$ P1.a = P2.a $\land$ P1.b = P2.b $\land$ P1.c = P2.c
+
+This Hoare quadruple should be read as: \emph{If an execution of P1 and P2 guarantee the equality of their x-components, they both diverge from the post-condition or they both finish in states where their x-components, y-components and z-components have the same valuesFOOTNOTE.}
+FOOTNOTE: The values of the components of any of the programs can differ between themselves (\emph{P1.x} has no relation to \emph{P1.y}, for example).
+
+We now introduce the concept of separability.
+If two programs \emph{P1} and \emph{P2} utilize disjoint sets of variables, we say that they are \emph{separable}.
+Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
+Below is another example to show the impact on conciseness that this creates.
+Consider two programs, \emph{P1}, whose variables are \{{a, b, i, j}\} and \emph{P2} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:
+INTRODUZIR CENTRADO:
+P1  P2
+a := 1; a' := 1;
+while a < b do  i' := j' * j'; 
+i := j * j; while a' < b' do
+a := a * i; a' := a' * i'; 
+od  od
+
+What these programs calculate are not the focus here but notice a subtle yet relevant difference: \emph{i' := j' * j';} is out of the loop in \emph{P2}.
+This is a common compiler optimization called \emph{invariant hoisting}.
+\emph{Why would you waste time performing a task several times if you can do it only once and get the same output?}
+In this example, the Hoare quadruple would be:
+--- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} where $\Phi$ $\triangleq$ (b = b') $\land$ (j = j')
+                                                                                           and $\Psi$ $\triangleq$ (a = a') $\land$ (b = b') $\land$ (i = i') $\land$ (j = j')
+
+Since the previous values in \emph{a} and \emph{i} (respectively \emph{a'} and \emph{i'}) are discarded by the assignments made to these variables, they will have no effect on the final state, so they do not appear in the pre-condition.
+On the other hand, to make sure that the components of \emph{P1} and \emph{P2} hold the same values after the executions terminate, we must assert that the n-components and y-components are equal in the initial state of the programs. 
+
+Furthermore, there is a special case of the usage of the Hoare quadruple that does not challenge any concept described before.
+Usually, in the context of the Hoare quadruple, we consider that the programs \emph{P1} and \emph{P2} are different, but what would happen if they are exactly the same?
+Well, since they are equal letter for letter, it is natural that they will always output the same results given the same inputs.
+
+Finally, 
 
 
 \subsubsection{Formal Proof Rules}
