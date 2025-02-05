@@ -274,7 +274,15 @@ The first implementation represents the use of the functional paradigm while the
       !a
 \end{ocamlsmall}
 
-TODO: FALAR DO CODIGO ACIMA
+Next there are some notes about the syntax and semantics in the context of the examples above. 
+Since OCaml supports the functional and imperative paradigms, it distinguises between immutable variables (actually no presence in the programs above) and memory references, therefore the different syntax for the binding of each one: 
+--- INTRODUZIR CENTRADO let x = 3 (variable)
+--- INTRODUZIR CENTRADO let y = ref 4 (reference)
+
+The \emph{rec} keyword tells the compiler/interpreter that it is fine if the function calls itself, reducing the risk of the programmer using recursion by accident.
+OCaml is also sharp enough to understand these programs correctly even if we did not specify the types of the function or its arguments.
+Finally, the \emph{let} keyword can be used to define a function or create a binding, something rather uncommon for someone with an imperative background.
+
 
 \iffalse
 Follow these steps to get started with a local \LaTeX\ installation:
@@ -392,10 +400,12 @@ Let us reconsider the code presented in the subsection above, but this time also
 \end{gospel}
 
 Although this a simple program, we can already notice what a typical GOSPEL specification looks like.
-If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be 0 as well) at the beginning of the specification, representing the pre-conditions.
-%DUVIDA DO VARIANT: After that, since these implementations use recursion most of the time, there will be one or more \emp{variant} clauses, indicating what variables vary each the function is called.
-In this particular example, we have the pre-conditions stating that \emph{a} and \emph{b} need to be non negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
-FALAR DO VARIANT
+If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be none as well) at the beginning of the specification, representing the pre-conditions.
+After that, since these implementations use recursion most of the time, there will be one or more \emph{variant} clauses, indicating what variables vary each the function is called.
+This serves as a guarantee that the recursion does not go forever.
+In this implementation, \emph{variant b} is enough but we could eventually reason about how \emph{a} varies over the execution of the program. 
+Regarding the pre-conditions, this particular example states that \emph{a} and \emph{b} need to be non negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
+Finally, we have a single post-condition \emph{ensures result = gcd a0 b0} that guarantees that for any input, the two different implementations will output the same result. 
 
 
 \section{Cameleer}
