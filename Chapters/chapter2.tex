@@ -120,7 +120,7 @@ The way one should look at the transformation of Hoare triples into Hoare quadru
 \subsubsection{Axioms and Inference Rules}
 \label{sub:relational_hoare_logic_formal_proof_rules}
 
-Consider, for the rules in this subsubsection, that the two given programs \emph{P1} and \emph{P2} are separable.
+Consider, for the rules in this subsubsection, that the two given programs \emph{C1} and \emph{C2} are separable.
 To derive valid Hoare quadruples, there are axioms and inference rules that reason about the relation between two programs.
 We can divide these rules in at least three sets that increment the former set with some additional rules, meaning there is the simplest set, the base set and the extended set.
 The simplest set has limitations that we will discuss after presenting them, but is the best starting point:
@@ -130,7 +130,7 @@ The simplest set has limitations that we will discuss after presenting them, but
   \begin{mathpar}
   \inferrule*[right=skip]
   { }
-  {\vdash \{ \Phi \} \ \text{skip} \sim \text{skip} \ \{ \Phi \}}
+  {\vdash \{ \Phi \} \ \textbf{skip} \sim \textbf{skip} \ \{ \Phi \}}
   
   \inferrule*[right=assignment]
   { }
@@ -146,8 +146,8 @@ The simplest set has limitations that we will discuss after presenting them, but
     $\vdash \{ \Phi \land B_1 \} \ C_1 \sim C_2 \ \{ \Psi \}$ \\%
     $\vdash \{ \Phi \land \neg B_1 \} \ C'_1 \sim C'_2 \ \{ \Psi \}$%
   }}
-  {\vdash \{ \Phi \} \ \text{if } B_1 \text{ then } C_1 \text{ else } C'_1 \ \text{fi} 
-  \sim \text{if } B_2 \text{ then } C_2 \text{ else } C'_2 \ \text{fi} \ \{ \Psi \}}
+  {\vdash \{ \Phi \} \ \textbf{if } B_1 \textbf{ then } C_1 \textbf{ else } C'_1 \ \textbf{fi} 
+  \sim \textbf{if } B_2 \textbf{ then } C_2 \textbf{ else } C'_2 \ \textbf{fi} \ \{ \Psi \}}
 
   \inferrule*[right=while]
   {\vdash \{ \Phi \land B_1 \} \ C_1 \sim C_2 \ \{ \Phi \} \\\vDash \Phi \rightarrow (B_1 = B_2)}
@@ -162,6 +162,57 @@ The simplest set has limitations that we will discuss after presenting them, but
   \caption{Simplest set of rules of RHL.}
 \end{figure}
   
+This set of rules has some considerable limitations however: both programs \emph{C1} and \emph{C2} must be structurally equivalent and execute in lockstep.
+This creates a situation where we can not derive a simple Hoare quadruple like \{$\Phi$\} \emph{C};skip \emph{\textasciitilde} \emph{C} \{$\Psi$\}.
+To allow this and other important derivations, we present next other 4 rules that enable the separate reasoning of \emph{C1} and \emph{C2}.
+Together with the rules of the simplest set, these rules constitute the base set:
+
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+
+  \inferrule*[right=assignment-L]
+    {\vdash \{ \Phi[x \mapsto E] \} \; \textbf{skip} \sim C \; \{ \Psi \}}
+    {\vdash \{ \Phi \} \; x := E \sim C \; \{ \Psi \}}
+
+  \inferrule*[right=assignment-R]
+    {\vdash \{ \Phi[x \mapsto E] \} \; C \sim \textbf{skip} \; \{ \Psi \}}
+    {\vdash \{ \Phi \} \; C \sim x := E \; \{ \Psi \}}
+
+  \inferrule*[right=conditional-L]
+    {\vdash \{ \Phi \land B \} \; C_1 \sim C \; \{ \Psi \} \\ 
+    \vdash \{ \Phi \land \neg B \} \; C_2 \sim C \; \{ \Psi \}}
+    {\vdash \{ \Phi \} \; \textbf{if} \; B \; \textbf{then} \; C_1 \; \textbf{else} \; C_2 \; \textbf{fi} \sim C \; \{ \Psi \}}
+
+  \inferrule*[right=conditional-R]
+    {\vdash \{ \Phi \land B \} \; C \sim C_1 \; \{ \Psi \} \\ 
+    \vdash \{ \Phi \land \neg B \} \; C \sim C_2 \; \{ \Psi \}}
+    {\vdash \{ \Phi \} \; C \sim \textbf{if} \; B \; \textbf{then} \; C_1 \; \textbf{else} \; C_2 \; \textbf{fi} \; \{ \Psi \}}
+    
+  \end{mathpar}
+  \caption{Base set of rules of RHL.}
+\end{figure}
+
+Finally, the extended set contains one more rule than the base set: self-composition.
+We will not dive deep here on the need of this rule, instead we do it in a dedicated subsection later in 3.2. INTRODUZIR LIGACAO
+
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+
+  \inferrule*[right=self-composition]
+    {\vdash \{ \Phi \} \; C_1 ; C_2 \; \{ \Psi \}}
+    {\vdash \{ \Phi \} \; C_1 \sim C_2 \; \{ \Psi \}}
+    
+  \end{mathpar}
+  \caption{Extended set of rules of RHL.}
+\end{figure}
+
+Note that the premise of this rule is not a Hoare quadruple, but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequenciation of \emph{C1} and \emph{C2} in a single program.
+This triple can also be presented as the following quadruple:
+--- INTRODUZIR CENTRADO \{ $\Phi$ $\land$ $\Phi$' \} \emph{C1;C2} \emph{\textasciitilde} \emph{C1';C2'} \{ $\Psi$ $\land$ $\Psi$' \}
+
+If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule in the figure above.
 
 
 \section{OCaml}
