@@ -6,8 +6,21 @@
 %% Abstract in English([^%]*)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\typeout{NT FILE abstract-en.tex}%
+\typeout{NT FILE abstract-en.tex}
 
+Ensuring that a program functions as intended is a complex issue that has been approached many times and in various ways throughout history.
+Human-assisted software verification is the most complete and reliable method, despite its inherent additional effort.
+
+The objective of this work is to ease proofs of complex programs by taking advantage of a relation to an equivalent program, that is easier to prove.
+If it is possible to establish that two different programs are equivalent, it is also very likely that reusing the simplest proof will lead to a faster and easier specification of the more sophisticated program.
+Relational Hoare Logic paved the way to the development of several techniques to reason about the similarities of two different programs.
+In this work, we will base our approach on the concept of \emph{product programs} to reduce relational verification into standard verification.
+
+Furthermore, there will be a description of the relevant background in order to effectively comprehend the approach we chose, as well as a presentation of the other possible methods to achieve what we propose.
+Finally, we will demonstrate a few good initial results obtained by coding and specifying two different implementations of the same algorithm using different paradigms.
+
+
+\iffalse
 Regardless of the language in which the dissertation is written, usually there are at least two abstracts: one abstract in the same language as the main text, and another abstract in some other language.
 
 The abstracts' order varies with the school.  If your school has specific regulations concerning the abstracts' order, the \gls{novathesis} (\LaTeX) template will respect them.  Otherwise, the default rule in the \gls{novathesis} template is to have in first place the abstract in \emph{the same language as main text}, and then the abstract in \emph{the other language}. For example, if the dissertation is written in Portuguese, the abstracts' order will be first Portuguese and then English, followed by the main text in Portuguese. If the dissertation is written in English, the abstracts' order will be first English and then Portuguese, followed by the main text in English.
@@ -32,6 +45,7 @@ Concerning its contents, the abstracts should not exceed one page and may answer
   \item What is the proposed approach/solution/contribution?
   \item What results (implications/consequences) from the solution?
 \end{enumerate}
+\fi
 
 % Palavras-chave do resumo em Inglês
 % \begin{keywords}
