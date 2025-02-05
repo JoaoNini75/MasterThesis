@@ -25,86 +25,100 @@ In this section, we will describe the current situation of the theoretical work 
 \subsection{Hoare Logic} 
 \label{sub:hoare_logic}
 
-Hoare logic is a way of reasoning about the correctness of a program, following well defined axioms and rules.
+Hoare logic~\cite{hoare69} is a way of reasoning about the correctness of a program, following well defined axioms and rules.
 The main feature of the Hoare logic is the Hoare triple. 
 The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}) and the post-condition (\emph{Q}):
----INTRODUZIR {P} S {Q} centrado--
+\[ \{P\} \ \textbf{S} \ \{Q\} \]
+
 This means that if a program \emph{S} satisfies a given pre-condition \emph{P}, the state of the program after the execution finishes satisfies the post-condition \emph{Q}.
 To simplify a lot, you can look at the triple as a simple logical consequence \emph{P} $\rightarrow$ \emph{Q}.
 In the same way as in the logical consequence, if \emph{P} is false, we can not say anything certain about the value of \emph{Q} (after the execution terminates, in the case of the triple).
 
 Let us now look at an example of the usage of the Hoare triple. Consider the following program:
----INTRODUZIR centrado \emph{S} $\triangleq$ if grade >= 10 then reward := 10 else reward := 0 
-Hoare logic can be used to prove this triple:
----INTRODUZIR centrado {grade >= 0 $\land$ grade $\leq$ 20} \emph{S} {(grade $\geq$ 10 $\land$ reward = 10) $\lor$ (grade < 10 \gosp{/\} reward = 0)}
-This triple describes a situation where if the value of \emph{grade} is "valid" (considering grades from 0 to 20), we can say that the value of \emph{reward} will be either 0 or 10, depending if the value of \emph{grade} was smaller or equal to/bigger than 10, respectively.
+\[ 
+\emph{S} \triangleq \textbf{if } \text{grade} \geq 10 \textbf{ then } \text{reward} := 10 \textbf{ else } \text{reward} := 0 
+\]
 
+Hoare logic can be used to prove this triple:
+\[
+\{ \text{grade} \geq 0 \land \text{grade} \leq 20 \} \, \textbf{S} \, \{ (\text{grade} \geq 10 \land \text{reward} = 10) \lor (\text{grade} < 10 \land \text{reward} = 0) \}
+\]
+
+This triple describes a situation where if the value of \emph{grade} is "valid" (considering grades from 0 to 20), we can say that the value of \emph{reward} will be either 0 or 10, depending if the value of \emph{grade} was less than 10 / greater or equal to 10, respectively.
 It is also important to mention the difference between \emph{partial correctness} and \emph{total correctness}.
 If \emph{total correctness} is what you are looking for, you need to guarantee that the execution of the program finishes.
-Otherwise, you can count only on \emph{partial correctness}.
-
---- INTRODUZIR REFERENCIA para a referencia das notas do prof: An Axiomatic Basis for Computer Programming ---
+Otherwise, you can only gurantee \emph{partial correctness}.
 
 
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
 
-\subsubsection{Evolution from Classical*INTRODUZIR FOOTNOTE Hoare Logic}
+\subsubsection{Evolution from Classical\protect\footnote{\ When we say Classical Hoare Logic, we mean the original Hoare logic developed by Tony Hoare.} Hoare Logic}
 \label{sub:relational_hoare_logic_motivation}
-Relational Hoare Logic (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
-Some of these properties are observational equivalence and 2-properties, being non-interference and continuity two examples.
+
+Relational Hoare Logic~\cite{naumann2022thirtysevenyearsrelationalhoare, DBLP:conf/popl/Benton04} (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
+Some of these properties are observational equivalence and 2-properties, being non-interference and continuity two examples of that concept.
 While classical HL reasons about the satisfaction of the post-condition if the pre-condition is satisfied, RHL analyzes the relation between two programs in terms of their corresponding evolution from a given pre-condition to a post-condition.
 In other words, if programs \emph{P1} and \emph{P2} both respect the pre-condition (let us name it $\Phi$), they will end (if their executions terminate) both respecting the post-condition (let us name it $\Psi$) or none of them will.
-This means that one of the programs satisfying $\Psi$ and the other not satisfying is not valid in RHL.
+This means that one of the programs satisfying $\Psi$ and the other not satisfying it is not valid in RHL.
 This idea is known as the Hoare quadruple:
---- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\}
+\[ \{\Phi\} \, \emph{P1} \, \sim \, \emph{P2} \, \{\Psi\} \]
 
 So, why was RHL created when we already had classical HL? 
 The main reason lies in the fact that the classical version does not have a direct or easy way of specifying the relation between two programs. 
-This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven/"easier-to-prove" versions.
-However, this work is definitely not the only one that relies on the connection between two different versions of the same of code.
-The most common example is probably compiler optimizations, but another one is when a given program has different algorithms that perform the same task and they get chosen depending on some characteristics that make one implementation more performant than the other(s).
+This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven or versions that are easier to prove.
+However, this work is definitely not the only one that relies on the connection between two different implementations of the same of code.
+The most common examples are probably compiler optimizations.
+Nonetheless, there is another example: when a given program has different algorithms that perform the same task and they get chosen depending on some characteristics that make one implementation more performant than some other(s).
 
 
 \subsubsection{Detailing RHL with examples}
 \label{sub:relational_hoare_logic_examples}
 
-Next there are some requirements not specified above when presenting the Hoare quadruple.
+Next, there are some requirements not specified above when presenting the Hoare quadruple.
 These are important details that have to be accounted for and will be described using example programs to make the explanation more tangible.
-Consider the notation \emph{Pi.j} that will be used in this subsubsection, where \emph{i} represents a given program index and \emph{j} the identifier of a variable in program \emph{i}.
+Consider the notation \emph{Pi.j} that will be used in this subsubsection, where \emph{i} represents a given program index, \emph{Pi} refers to a given program and \emph{Pi.j} the identifier of a variable \emph{j} in program \emph{Pi}.
 
 The first example corresponds to two different programs, let us call them \emph{P1} and \emph{P2}, and they both contain only two assignment statements applied to the same group of variables (\emph{a, b, c}): 
-INTRODUZIR CENTRADO:
-P1 P2
-b := a + 1; c := a + 2;
-c := b + 1; b := c - 1;
+\begin{tabbing}
+  \hspace{2cm}\= \emph{P1} \hspace{2cm} \= \emph{P2} \\ 
+  \> \emph{b := a + 1;} \> \emph{c := a + 2;} \\
+  \> \emph{c := b + 1;} \> \emph{b := c - 1;}
+\end{tabbing}
 
 We can see that \emph{b} and \emph{c} do not change the final state of any of the programs, so, to write a Hoare quadruple that creates an equivalence between \emph{P1} and \emph{P2}, we need the pre-condition to assert that \emph{P1.a = P2.a}:
---- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} where $\Phi$ $\triangleq$ P1.a = P2.a
-                                                                                           and $\Psi$ $\triangleq$ P1.a = P2.a $\land$ P1.b = P2.b $\land$ P1.c = P2.c
+\[ \{ \Phi \} \, \emph{P1} \, \sim \, \emph{P2} \, \{ \Psi \} \]
+\vspace{-20pt}
+\[ where \ \ \Phi \triangleq \text{P1.a} = \text{P2.a} \]
+\vspace{-25pt}
+\[ and \ \ \Psi \triangleq \text{P1.a} = \text{P2.a} \land \text{P1.b} = \text{P2.b} \land \text{P1.c} = \text{P2.c} \]
 
-This Hoare quadruple should be read as: \emph{If an execution of P1 and P2 guarantee the equality of their x-components, they both diverge from the post-condition or they both finish in states where their x-components, y-components and z-components have the same valuesFOOTNOTE.}
-FOOTNOTE: The values of the components of any of the programs can differ between themselves (\emph{P1.x} has no relation to \emph{P1.y}, for example).
+This Hoare quadruple should be read as: \emph{If an execution of P1 and P2 guarantee the equality of their x-components, they both diverge from the post-condition or they both finish in states where their x-components, y-components and z-components have the same values
+\protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{P1.x} has no relation to \emph{P1.y}, for example).}.}
 
 We now introduce the concept of separability.
 If two programs \emph{P1} and \emph{P2} utilize disjoint sets of variables, we say that they are \emph{separable}.
 Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
 Below is another example to show the impact on conciseness that this creates.
 Consider two programs, \emph{P1}, whose variables are \{{a, b, i, j}\} and \emph{P2} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:
-INTRODUZIR CENTRADO:
-P1  P2
-a := 1; a' := 1;
-while a < b do  i' := j' * j'; 
-i := j * j; while a' < b' do
-a := a * i; a' := a' * i'; 
-od  od
+\begin{tabbing}
+  \hspace{3cm}\= \emph{P1} \hspace{3cm} \= \emph{P2} \\ 
+  \> \emph{a := 1;} \> \emph{a' := 1;} \\
+  \> \emph{while a < b do} \> \emph{i' := j' * j';} \\
+  \> \emph{\ \ \ \ i := j * j;} \> \emph{while a' < b' do} \\
+  \> \emph{\ \ \ \ a := a * i;} \> \emph{\ \ \ \ a' := a' * i';} \\
+  \> \emph{od} \> \emph{od} 
+\end{tabbing}
 
-What these programs calculate are not the focus here but notice a subtle yet relevant difference: \emph{i' := j' * j';} is out of the loop in \emph{P2}.
+What these programs calculate is not the focus here but notice a subtle, yet relevant difference: \emph{i' := j' * j';} is out of the loop in \emph{P2}.
 This is a common compiler optimization called \emph{invariant hoisting}.
 \emph{Why would you waste time performing a task several times if you can do it only once and get the same output?}
 In this example, the Hoare quadruple would be:
---- INTRODUZIR CENTRADO \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} where $\Phi$ $\triangleq$ (b = b') $\land$ (j = j')
-                                                                                           and $\Psi$ $\triangleq$ (a = a') $\land$ (b = b') $\land$ (i = i') $\land$ (j = j')
+\[ \{ \Phi \} \, \emph{P1} \, \emph{\textasciitilde} \, \emph{P2} \, \{ \Psi \} \]
+\vspace{-20pt} 
+\[ \text{where} \ \ \Phi \triangleq (b = b') \land (j = j') \]
+\vspace{-25pt} 
+\[ \text{and} \ \ \Psi \triangleq (a = a') \land (b = b') \land (i = i') \land (j = j') \]
 
 Since the previous values in \emph{a} and \emph{i} (respectively \emph{a'} and \emph{i'}) are discarded by the assignments made to these variables, they will have no effect on the final state, so they do not appear in the pre-condition.
 On the other hand, to make sure that the components of \emph{P1} and \emph{P2} hold the same values after the executions terminate, we must assert that the n-components and y-components are equal in the initial state of the programs. 
@@ -163,7 +177,7 @@ The simplest set has limitations that we will discuss after presenting them, but
 \end{figure}
   
 This set of rules has some considerable limitations however: both programs \emph{C1} and \emph{C2} must be structurally equivalent and execute in lockstep.
-This creates a situation where we can not derive a simple Hoare quadruple like \{$\Phi$\} \emph{C};skip \emph{\textasciitilde} \emph{C} \{$\Psi$\}.
+This creates a situation where we can not derive a simple Hoare quadruple like \{$\Phi$\} \emph{C}; \textbf{skip} \emph{\textasciitilde} \emph{C} \{$\Psi$\}.
 To allow this and other important derivations, we present next other 4 rules that enable the separate reasoning of \emph{C1} and \emph{C2}.
 Together with the rules of the simplest set, these rules constitute the base set:
 
@@ -194,7 +208,7 @@ Together with the rules of the simplest set, these rules constitute the base set
 \end{figure}
 
 Finally, the extended set contains one more rule than the base set: self-composition.
-We will not dive deep here on the need of this rule, instead we do it in a dedicated subsection later in 3.2. INTRODUZIR LIGACAO
+We will not dive deep here on the need of this rule, instead we do it in \hyperref[sec:self_composition]{3.2}.
 
 \begin{figure}[h]
   \centering
@@ -210,14 +224,11 @@ We will not dive deep here on the need of this rule, instead we do it in a dedic
 
 Note that the premise of this rule is not a Hoare quadruple, but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequenciation of \emph{C1} and \emph{C2} in a single program.
 This triple can also be presented as the following quadruple:
---- INTRODUZIR CENTRADO \{ $\Phi$ $\land$ $\Phi$' \} \emph{C1;C2} \emph{\textasciitilde} \emph{C1';C2'} \{ $\Psi$ $\land$ $\Psi$' \}
+\vspace{-4pt} 
+\[ \{\Phi \land \Phi'\} \, \emph{C1 ; C2} \, \sim \, \emph{C1' ; C2'} \, \{ \Psi \land \Psi' \} \]
+\vspace{-18pt} 
 
 If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule in the figure above.
-
-INTRODUZIR REFERENCIAS:
-Simple Relational Correctness Proofs for Static Analyses and Program Transformations
-Thirty-seven years of relational Hoare logic: remarks on its principles and history
-Hoare Logic and Variations: Probabilistic, Relational, Probabilistic+Relational
 
 
 \section{OCaml}
