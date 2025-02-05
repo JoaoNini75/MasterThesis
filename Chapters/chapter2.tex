@@ -66,7 +66,7 @@ However, this work is definitely not the only one that relies on the connection 
 The most common example is probably compiler optimizations, but another one is when a given program has different algorithms that perform the same task and they get chosen depending on some characteristics that make one implementation more performant than the other(s).
 
 
-\subsubsection{Examples}
+\subsubsection{Detailing RHL with examples}
 \label{sub:relational_hoare_logic_examples}
 
 Next there are some requirements not specified above when presenting the Hoare quadruple.
@@ -113,13 +113,55 @@ Furthermore, there is a special case of the usage of the Hoare quadruple that do
 Usually, in the context of the Hoare quadruple, we consider that the programs \emph{P1} and \emph{P2} are different, but what would happen if they are exactly the same?
 Well, since they are equal letter for letter, it is natural that they will always output the same results given the same inputs.
 
-Finally, 
+Finally, consider again two equal programs \emph{P1} and \emph{P2}.
+The way one should look at the transformation of Hoare triples into Hoare quadruples is that if \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} is true, then \{$\phi$\} \emph{P1} \{$\psi$\} will be true as well.
 
 
-\subsubsection{Formal Proof Rules}
+\subsubsection{Axioms and Inference Rules}
 \label{sub:relational_hoare_logic_formal_proof_rules}
 
+Consider, for the rules in this subsubsection, that the two given programs \emph{P1} and \emph{P2} are separable.
+To derive valid Hoare quadruples, there are axioms and inference rules that reason about the relation between two programs.
+We can divide these rules in at least three sets that increment the former set with some additional rules, meaning there is the simplest set, the base set and the extended set.
+The simplest set has limitations that we will discuss after presenting them, but is the best starting point:
 
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+  \inferrule*[right=skip]
+  { }
+  {\vdash \{ \Phi \} \ \text{skip} \sim \text{skip} \ \{ \Phi \}}
+  
+  \inferrule*[right=assignment]
+  { }
+  {\vdash \{ \Psi[x_1 \mapsto E_1][x_2 \mapsto E_2] \}  \ x_1 := E_1 \sim x_2 := E_2 \ \{ \Psi \}}
+  
+  \inferrule*[right=sequencing]
+  {\vdash \{ \Phi \} \ C_1 \sim C_2 \ \{ \Theta \} \\\vdash \{ \Theta \} \ C'_1 \sim C'_2 \ \{ \Psi \}}
+  {\vdash \{ \Phi \} \ C_1; C'_1 \sim C_2; C'_2 \ \{ \Psi \}}
+  
+  \inferrule*[right=conditional]
+  {\shortstack{%
+    $\vDash \Phi \rightarrow (B_1 = B_2)$ \\[0.5ex]%
+    $\vdash \{ \Phi \land B_1 \} \ C_1 \sim C_2 \ \{ \Psi \}$ \\%
+    $\vdash \{ \Phi \land \neg B_1 \} \ C'_1 \sim C'_2 \ \{ \Psi \}$%
+  }}
+  {\vdash \{ \Phi \} \ \text{if } B_1 \text{ then } C_1 \text{ else } C'_1 \ \text{fi} 
+  \sim \text{if } B_2 \text{ then } C_2 \text{ else } C'_2 \ \text{fi} \ \{ \Psi \}}
+
+  \inferrule*[right=while]
+  {\vdash \{ \Phi \land B_1 \} \ C_1 \sim C_2 \ \{ \Phi \} \\\vDash \Phi \rightarrow (B_1 = B_2)}
+  {\vdash \{ \Phi \} \ \textbf{while } B_1 \ \textbf{do } C_1 \ \textbf{od} \sim 
+  \textbf{while } B_2 \ \textbf{do } C_2 \ \textbf{od} \ \{ \Phi \}}
+  
+  \inferrule*[right=weakening]
+  {\vDash \Phi' \rightarrow \Phi \\\vdash \{ \Phi \} \ C_1 \sim C_2 \ \{ \Psi \} \\\vDash \Psi \rightarrow \Psi'}
+  {\vdash \{ \Phi' \} \ C_1 \sim C_2 \ \{ \Psi' \}}
+
+  \end{mathpar}
+  \caption{Simplest set of rules of RHL.}
+\end{figure}
+  
 
 
 \section{OCaml}
@@ -128,7 +170,7 @@ Finally,
 \subsection{History \& Characteristics} 
 \label{sub:overview}
 
-OCaml is a general purpose programming language that was released in 1996 at National Institute for Research in Digital Science and Technology (Inria).
+OCaml is a general purpose programming language that was released in 1996 at the National Institute for Research in Digital Science and Technology (Inria).
 It is usually seen as an extension of Caml (a dialect of the Meta Language) that includes object-oriented features, making OCaml a very versatile language.
 Besides supporting the functional, imperative and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code. 
 Regarding its type system, OCaml is strongly and statically typed, featuring type inference as well.
