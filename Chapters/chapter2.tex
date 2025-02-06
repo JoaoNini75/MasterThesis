@@ -237,29 +237,32 @@ If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by rena
 \subsection{History \& Characteristics} 
 \label{sub:overview}
 
-OCaml is a general purpose programming language that was released in 1996 at the National Institute for Research in Digital Science and Technology (Inria).
+OCaml~\cite{ocaml} is a general purpose programming language that was released in 1996 at the National Institute for Research in Digital Science and Technology (Inria).
 It is usually seen as an extension of Caml (a dialect of the Meta Language) that includes object-oriented features, making OCaml a very versatile language.
-Besides supporting the functional, imperative and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code. 
-Regarding its type system, OCaml is strongly and statically typed, featuring type inference as well.
+Besides supporting the functional, imperative and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code.
+Regarding its type system, OCaml comes with a strong and static type system that also features type inference.
 
 Although the imperative programming paradigm is still more popular than its functional counterpart, the latter has been conquering space inside the universe of programming languages whose focus is on the imperative/object-oriented approach; for example, Java and Kotlin.
-%Java received its first functional features in version 1.8, released in 2014 and they have been expanding since.
-%Kotlin, on the other hand, was already designed with the functional style in mind,
+Java received its first functional features in version 1.8~\cite{java}, released in 2014 and they have been expanding since.
+Kotlin, firstly released in 2016, was already designed with the functional style in mind~\cite{kotlin}.
 
-INSERIR REFERENCIAS!
 
 \subsection{Relevance} 
 \label{sub:relevance}
 
-The relevance of OCaml and functional programming languages in general is an important question that I've asked myself several times in the past, and not only because the first contact with this paradigm was challenging.
-Although I do not question the relevance of these languages anymore because of the evidence that I will show next, I still think that it is not an unexpected concern among computer science students.
-I say this because the majority of jobs and companies in this field require people for front-end development (with Javascript), back-end development (mostly with imperative languages) or, more recently, AI-related work (mostly with Python or other science-oriented languages).
+The relevance of OCaml and functional programming languages in general is an important question that I have asked myself several times in the past, and not only because the first contact with this paradigm was challenging.
+Although I do not question the relevance of these languages anymore because of the evidence that I will show next, I still think that it is not an unexpected concern amongst computer science students.
+I am mentioning this because the majority of jobs and businesses in the field require people for front-end development (with Javascript), back-end development (mostly with imperative languages) or, more recently, AI-related work (mostly with Python or other science-oriented languages).
 There is, although, strong evidence that OCaml is far from being an "academia only" programming language.
-OCaml is used in tech giants such as Meta and Microsoft, in Bloomberg L.P. (that even created an OCaml to Javascript compiler backend) in tools like Docker and in many other companies and businesses.
-But wait, there is more! Here are a few impressive examples of what this programming language has been used to build: INSERT LIST HERE
-Alt-Ergo, a popular SMT solver that has presence in Cameleer;
-Coq, a formal proof management system;
-and even the web version of Facebook Messenger!
+OCaml is used in tech giants such as Meta and Microsoft, in Bloomberg L.P. (that even created an OCaml to Javascript compiler backend), in popular tools like Docker and in many other companies~\cite{ocaml_companies}.
+But there is more.
+
+Here are a few impressive examples of what this programming language has been used to build: 
+\begin{enumerate}
+  \item Alt-Ergo~\cite{altergo}, a popular SMT solver that has presence in Cameleer;
+  \item Coq~\cite{coq}, a formal proof management system;
+  \item and even the web version of Facebook Messenger!
+\end{enumerate}
 
 \subsection{Code Examples} 
 \label{sub:examples_ocaml}
@@ -286,9 +289,10 @@ The first implementation represents the use of the functional paradigm while the
 \end{ocamlsmall}
 
 Next there are some notes about the syntax and semantics in the context of the examples above. 
-Since OCaml supports the functional and imperative paradigms, it distinguises between immutable variables (actually no presence in the programs above) and memory references, therefore the different syntax for the binding of each one: 
---- INTRODUZIR CENTRADO let x = 3 (variable)
---- INTRODUZIR CENTRADO let y = ref 4 (reference)
+Since OCaml supports the functional and imperative paradigms, it distinguises between immutable variables (actually not present in the programs above) and memory references, therefore the different syntax for the binding of each one: 
+\[ \emph{let x = 3 (variable)} \]
+\vspace{-25pt}
+\[ \emph{let y = ref 4 (reference)} \]
 
 The \emph{rec} keyword tells the compiler/interpreter that it is fine if the function calls itself, reducing the risk of the programmer using recursion by accident.
 OCaml is also sharp enough to understand these programs correctly even if we did not specify the types of the function or its arguments.
@@ -298,19 +302,18 @@ Finally, the \emph{let} keyword can be used to define a function or create a bin
 \section{Why3}
 \label{sec:why3}
 
-Why3 is a platform whose objective is the verification of programs in a deductive way, presenting it self as a INTRODUZIR CITACAO \emph{"a front-end to third-party theorem provers"}.
+Why3 is a platform whose objective is the verification of programs in a deductive way, presenting it self as a \emph{"a front-end to third-party theorem provers"}~\cite{why3}.
 These several theorem provers can be put to work together and vary greatly in nature, ranging from SMT solvers (for example, Z3 or cvc5) to TPTP provers and even interactive proof assistants (such as Coq or Isabelle).
 Under the hood, Why3 is an OCaml library, implemented in the form of an API.
-It features a CLI INTRODUZIR GLOSSARIO, a GUI INTRODUZIR GLOSSARIO and a benchmark tool to compare the performance of the different provers available.
+It features a CLI, a GUI and a benchmark tool to compare the performance of the different provers available.
 
 
 \section{GOSPEL}
 \label{sec:gospel}
 
-GOSPEL (Generic Ocaml SPEcification Language) INTRODUZIR REF DO PAPER DE GOSPEL is a tool-agnostic specification language for OCaml that allows one to verify the correctness of a program (there are other purposes but this is the most interesting for this work).
-GOSPEL is based in Separation Logic but significantly improves the experience of the people that write and/or read the specifications, by making them much more concise.
-%Se acessibilty and conciseness aspects, which are considered by its authors "two downsides that, we believe, limit its wide adoption" INSERIR CITACAO!.
-Let us reconsider the code presented in the subsection above, but this time also show the GOSPEL specification for that program:
+GOSPEL~\cite{DBLP:conf/fm/ChargueraudFLP19} (Generic Ocaml SPEcification Language) is a tool-agnostic specification language for OCaml that allows one to verify the correctness of a program (there are other purposes but this is the most interesting for this work).
+GOSPEL is based in Separation Logic and significantly improves the experience of the people that write or read the specifications, by making them much more concise.
+Let us reconsider the code presented in \hyperref[sub:examples_ocaml]{2.2.3}, but this time also show the GOSPEL specification for that program:
 
 \begin{gospel}
   (*@ function rec gcd (a: int) (b:int) : int =
@@ -341,7 +344,7 @@ Let us reconsider the code presented in the subsection above, but this time also
       ensures result = gcd a0 b0*)
 \end{gospel}
 
-Although this a simple program, we can already notice what a typical GOSPEL specification looks like.
+Although this is a simple program, we can already notice what a typical GOSPEL specification looks like.
 If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be none as well) at the beginning of the specification, representing the pre-conditions.
 After that, since these implementations use recursion most of the time, there will be one or more \emph{variant} clauses, indicating what variables vary each the function is called.
 This serves as a guarantee that the recursion does not go forever.
@@ -364,13 +367,13 @@ So, how is Cameleer able to save those poor programmers?
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics{cameleer_pipeline}
-  \caption{Architecture and verification pipeline, taken from INTRODUZIR REFERENCIA.}
+  \includegraphics[max width=\textwidth]{cameleer_pipeline}
+  \caption{Architecture and verification pipeline, taken from ~\cite{DBLP:conf/cav/PereiraR20}.}
   \label{fig:cameleer_pipeline}
 \end{figure}
 
 The Cameleer pipeline is constituted by 4 different steps, the last one being different depending on whether Why3 detects errors in the translated code or not.
-The first step is to parse and change the abstract syntax tree of the input OCaml program (that contains GOSPEL annotations), using \emph{ppxlib}, a library that is part of the GOSPEL ecosystem INSERIR FOOTNOTE GITHUB DE GOSPEL.
+The first step is to parse and change the abstract syntax tree of the input OCaml program (that contains GOSPEL annotations), using \emph{ppxlib}, a library that is part of the GOSPEL ecosystem\protect\footnote{\ https://github.com/ocaml-gospel/gospel}.
 In the second step, the GOSPEL annotations are processed by a special parser/type-checker that converts the specification into nodes that become part of the previous OCaml AST.
 The third step consists in Cameleer itself translating the complete AST into a description in WhyML that is equivalent; Why3 then takes that as input.
 In step four, if the Why3 type-and-effect system is not able to validate the input generated in the previous step, the problems are shown in the context of the input OCaml code, the one that is submitted by the user. 
