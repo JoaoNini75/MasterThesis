@@ -61,8 +61,6 @@ Product Programs~\cite{DBLP:conf/fm/BartheCK11} appear to be the best path to fo
 \subsection{From relational verification to standard verification} 
 \label{subsec:product_programs_relverif_to_stdverif}
 
-(pag 3-8)
-
 Consider two generic programs \emph{P1} and \emph{P2} and their product program \emph{P}.
 The approach of product programs to reduce relational reasoning into standard reasoning goes through the capacity of constructing \emph{P}, that simulates the execution of both \emph{P1} and \emph{P2}.
 Next, we will describe the grammar rules to show how we will proceed and then explain how product programs are effectively constructed.
@@ -124,13 +122,61 @@ The necessary rule is:
 \subsubsection{Construction of Product Programs} 
 \label{subsubsec:product_programs_construction}
 
+Firstly in this section, we define the rules that will be used to deal with structurally equivalent programs. 
+After that, we that set with structural transformations to allow the treatment of programs with different structures.
+
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+
+  \inferrule*[]
+    { }
+    {c_1 \times c_2 \; \rightarrow \; c_1 ; c_2}
+
+  \inferrule*[]
+    {c_1 \times c_2 \; \rightarrow \; c \\ 
+     c'_1 \times c'_2 \; \rightarrow \; c'}
+    {(c_1 ; c'_1) \times (c_2 ; c'_2) \; \rightarrow \; c ; c'}
+
+  \inferrule*[]
+    {c_1 \times c_2 \; \rightarrow \; c}
+    {(\textbf{while} \; b_1 \; \textbf{do} \; c_1) \times (\textbf{while} \; b_2 \; \textbf{do} \; c_2) \; \rightarrow \;
+    \textbf{assert}(b_1 \Leftrightarrow b_2); \; \textbf{while} \; b_1 \; \textbf{do} \; (c ; \textbf{assert}(b_1 \Leftrightarrow b_2))}
+
+  \inferrule*[]
+    {c_1 \times c_2 \; \rightarrow \; c \\ 
+    c'_1 \times c'_2 \; \rightarrow \; c'}
+    {(\textbf{if} \; b_1 \; \textbf{then} \; c_1 \; \textbf{else} \; c'_1) \times (\textbf{if} \; b_2 \; \textbf{then} \; c_2 \; \textbf{else} \; c'_2) \; \rightarrow \;
+    \textbf{assert}(b_1 \Leftrightarrow b_2); \; \textbf{if} \; b_1 \; \textbf{then} \; c \; \textbf{else} \; c'}
+
+  \inferrule*[]
+    {c_1 \times c \; \rightarrow \; c'_1 \\ 
+    c_2 \times c \; \rightarrow \; c'_2}
+    {(\textbf{if} \; b \; \textbf{then} \; c_1 \; \textbf{else} \; c_2) \times c \; \rightarrow \;
+    \textbf{if} \; b \; \textbf{then} \; c'_1 \; \textbf{else} \; c'_2}  
+    
+  \end{mathpar}
+  \caption{Product construction rules.}
+\end{figure}
+
+The figure above describes a set of rules to derive a product construction judgment of the type \emph{c$_1$ $\times$ c$_2$ $\rightarrow$ c.}
+To make sure that \emph{c} simulates with precision the behaviour of \emph{c$_1$ and c$_2$}, the construction of products introduces \textbf{assert} statements.
+During the phase of the verification of the program, these validation constraints are viewed as local assertions and discharged.
+Let us consider the rule that synchronizes two loops, for example: \textbf{assert}(b$_1$ $\Leftrightarrow$ b$_2$) is necessary to guarantee that the number of iterations of each loop is the same.
+This achieves what we aimed for, that is, the product program can be verified with standard logic.
+\bigskip
+
+\textbf{Proposition 1 -}  \emph{For all statements $c_1$ and $c_2$ and pre-conditions $\phi$ and post-conditions $\psi$, if $c_1$ $\times$ $c_2$ $\rightarrow$ c and $\vDash$ {$\phi$} c {$\psi$} then $\vDash$ {$\phi$} $c_1$ \textasciitilde $c_2$ {$\psi$}.}
+
+\bigskip
+In other words, if \emph{c} is the resulting product program of \emph{c1} and \emph{c2}, then we can reason about the validity of the relational judgment between \emph{c1} and \emph{c2} through the validity of the standard judgment of \emph{c}.
 
 
 
 \subsection{Examples} 
 \label{subsec:product_programs_examples}
 
-(pag 9-15)
+%(pag 9-15)
 
 
 \section{Program Equivalence}
