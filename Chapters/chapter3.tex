@@ -157,6 +157,7 @@ After that, we that set with structural transformations to allow the treatment o
     
   \end{mathpar}
   \caption{Product construction rules.}
+  \label{fig:product_construction_equal_struct}
 \end{figure}
 
 The figure above describes a set of rules to derive a product construction judgment of the type \emph{c$_1$ $\times$ c$_2$ $\rightarrow$ c.}
@@ -166,10 +167,100 @@ Let us consider the rule that synchronizes two loops, for example: \textbf{asser
 This achieves what we aimed for, that is, the product program can be verified with standard logic.
 \bigskip
 
-\textbf{Proposition 1 -}  \emph{For all statements $c_1$ and $c_2$ and pre-conditions $\phi$ and post-conditions $\psi$, if $c_1$ $\times$ $c_2$ $\rightarrow$ c and $\vDash$ {$\phi$} c {$\psi$} then $\vDash$ {$\phi$} $c_1$ \textasciitilde $c_2$ {$\psi$}.}
+\textbf{Proposition 1 -}  \emph{For all statements $c_1$ and $c_2$, pre-condition $\phi$ and post-condition $\psi$, if $c_1$ $\times$ $c_2$ $\rightarrow$ c and $\vDash$ {$\phi$} c {$\psi$} then $\vDash$ {$\phi$} $c_1$ \textasciitilde $c_2$ {$\psi$}.}
 
 \bigskip
 In other words, if \emph{c} is the resulting product program of \emph{c1} and \emph{c2}, then we can reason about the validity of the relational judgment between \emph{c1} and \emph{c2} through the validity of the standard judgment of \emph{c}.
+
+As we mentioned before, the rules present in the previous figure are limited to structurally equivalent programs.
+For example, if we consider two programs each with a loop and their guards are not equivalent, the product would have to be sequentially composed.
+The structural translations proposed extend the construction of the already defined products in the form of a refinement relation, with a judgment of the form \emph{c} $\succcurlyeq$ \emph{c'}. 
+This means that every execution of \emph{c} is an execution of \emph{c'} except when the latter's execution does not terminate:
+\bigskip
+
+\textbf{Definition 3 -}  \emph{A command c' is a refinement of c, if, for all states $\sigma$, $\sigma$':}    
+\begin{itemize}
+  \item{\emph{1. if $\langle$c', $\sigma$$\rangle$ $\Downarrow$ $\sigma$' then $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$'}}
+  \vspace{-10pt}
+  \item{\emph{2. if $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' then either the execution of c' with initial state $\sigma$ gets stuck, or $\langle$c', $\sigma$$\rangle$ $\Downarrow$ $\sigma$'.}}
+\end{itemize}
+
+\bigskip
+In the figure below is described the set of rules that define judgments of the form $\vdash$ \emph{c} $\succcurlyeq$ \emph{c'}.
+
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+
+  \inferrule*[]
+    { }
+    {\vdash \textbf{if} \; b \; \textbf{then} \; c_1 \; \textbf{else} \; c_2 \; \succcurlyeq \; \textbf{assert}(b); \; c_1}
+    
+  \inferrule*[]
+    { }
+    {\vdash \textbf{if} \; b \; \textbf{then} \; c_1 \; \textbf{else} \; c_2 \; \succcurlyeq \; \textbf{assert}(\neg b); \; c_2}
+
+  \inferrule*[]
+    { }
+    {\vdash \textbf{while} \; b \; \textbf{do} \; c \; \succcurlyeq \; \textbf{assert}(b); \; c; \; \textbf{while} \; b \; \textbf{do} \; c}
+
+  \inferrule*[]
+    { }
+    {\vdash \textbf{while} \; b \; \textbf{do} \; c \; \succcurlyeq \; \textbf{while} \; b \; \land \; b' \; \textbf{do} \; c}  
+
+  \inferrule*[]
+    { }
+    {\vdash \textbf{while} \; b \; \textbf{do} \; c \; \succcurlyeq \; \textbf{assert}(b); \; c; \; \textbf{assert}(\neg b)}
+
+  \inferrule*[]
+    {\vdash c \; \succcurlyeq \; c'}
+    {\vdash \textbf{while} \; b \; \textbf{do} \; c \; \succcurlyeq \; \vdash \textbf{while} \; b \; \textbf{do} \; c'}
+
+  \inferrule*[]
+    {\vdash c_1 \; \succcurlyeq \; c'_1 \\ \vdash c_2 \; \succcurlyeq \; c'_2}
+    {\vdash \textbf{if} \; b \; \textbf{then} \; c_1 \; \textbf{else} \; c_2 \; \succcurlyeq \; \textbf{if} \; b \; \textbf{then} \; c'_1 \; \textbf{else} \; c'_2}
+
+  \inferrule*[]
+    {\vdash c \; \succcurlyeq \; c' \\ \vdash c' \; \succcurlyeq \; c''}
+    {\vdash c \; \succcurlyeq \; c''}
+
+  \inferrule*[]
+    { }
+    {\vdash c \; \succcurlyeq \; c}
+
+  \inferrule*[]
+    {\vdash c_1 \; \succcurlyeq \; c'_1 \\ \vdash c_2 \; \succcurlyeq \; c'_2}
+    {\vdash c_1 ; c_2 \; \succcurlyeq \; c'_1 ; c'_2}
+    
+  \end{mathpar}
+  \caption{Syntactic reduction rules.}
+  \label{fig:product_construction_reduction}
+\end{figure}
+
+One can see that the rules above point that the executions of \emph{c} and \emph{c'} match for every initial state that makes the introduced \textbf{assert} statements valid.
+It is possible to prove that the judgment \emph{c} $\succcurlyeq$ \emph{c'} maintains a refinement relation by showing that, for every assertion $\phi$, if c' is $\phi$-nonstuck, then for all $\sigma$ $\in$ $\llbracket$$\phi$$\rrbracket$ such that $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' we have $\langle$c', $\sigma$$\rangle$ $\Downarrow$ $\sigma$'.
+We add one more rule that makes a preliminary refinement transformation over the product components:
+
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+
+  \inferrule*[]
+    {\vdash c_1 \; \succcurlyeq \; c'_1 \\
+     \vdash c_2 \; \succcurlyeq \; c'_2 \\
+     c'_1 \times c'_2 \; \rightarrow \; c}
+    {c_1 \times c_2 \; \rightarrow \; c}
+    
+  \end{mathpar}
+\end{figure}
+
+This does not invalidate \textbf{Proposition 1}. 
+Finally, we formally reduce the problem of proving the validity of a relational judgment into the construction of the product program followed by the standard verification of that same product program.
+\bigskip
+
+\textbf{Proposition 2 -}  \emph{For all statements $c_1$ and $c_2$, pre-condition $\phi$ and post-condition $\psi$, if $c_1$ $\times$ $c_2$ $\rightarrow$ c and $\vdash$ {$\phi$} c {$\psi$} then $\vDash$ {$\phi$} $c_1$ \textasciitilde $c_2$ {$\psi$}.}
+
+\bigskip
 
 
 
