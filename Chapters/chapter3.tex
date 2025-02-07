@@ -75,6 +75,7 @@ The commands in our programming model will stick to these grammar rules:
                     \ \text{c; c} \ | \ \textbf{if} \ \text{b} \ \textbf{then} \ \text{c1} \ \textbf{else} \ \text{c2} \ | \ \textbf{while} \ \text{b} \ \textbf{do} \ \text{c} \]
 
 In this context, \emph{x} is a integer variable, \emph{a} is an array variable, \emph{e} is an integer expression and \emph{b} is a boolean expression.
+Execution states are represented as \emph{S = (V$_i$ $\rightharpoonup$ $\mathbb{Z}$) X (V$_a$ $\rightharpoonup$ ($\mathbb{Z}$ $\rightharpoonup$ $\mathbb{Z}$)).}
 The semantics of the commands are standard, deterministic and are based on the relation $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$ $\langle$c', $\sigma$'$\rangle$.
 Notice that $\langle$\textbf{skip}, $\sigma$$\rangle$ marks the end of the programs, \textbf{assert}(b) blocks the execution of the program if \emph{b} is false and we let $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' mean $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$* $\langle$\textbf{skip}, $\sigma$'$\rangle$.
 
@@ -90,10 +91,34 @@ Consider $\mu$$_1$ $\uplus$ $\mu$$_2$ represent the union of finite maps:
 \]
 
 and overload this notation for the union of separable states ($\mu$,$\nu$) $\uplus$ ($\mu$',$\nu$'), whose definition is ($\mu$ $\uplus$ $\mu$', $\nu$ $\uplus$ $\nu$').
-Taking into account that we assume that the states are separable, another way of looking at assertions is by viewing them as relations on states: ($\sigma$$_1$, $\sigma$$_2$) $\in$ \OpnBrktBar $\phi$ \ClsBrktBar iff $\sigma$$_1$ $\uplus$ $\sigma$$_2$ $\in$ \OpnBrktBar $\phi$ \ClsBrktBar.
+Taking into account that we assume that the states are separable, another way of looking at assertions is by viewing them as relations on states: ($\sigma$$_1$, $\sigma$$_2$) $\in$ $\llbracket$$\phi$$\rrbracket$ iff $\sigma$$_1$ $\uplus$ $\sigma$$_2$ $\in$ $\llbracket$$\phi$$\rrbracket$.
 Therefore, the definition below illustrates the formal statement of valid relational specifications.
+\bigskip
 
-\textbf{Definition 1 -}  
+\textbf{Definition 1 -}  \emph{Two commands $c_1$ and $c_2$ satisfy the pre-condition $\phi$ and the post-condition $\psi$ described by a valid Hoare quadruple if,
+                                for all states $\sigma$$_1$, $\sigma$$_2$, $\sigma$$_1$', $\sigma$$_2$' such that $\sigma_1$ $\uplus$ $\sigma_2$ $\in$ $\llbracket$$\phi$$\rrbracket$
+                                and $\langle$$c_1$, $\sigma$$_1$$\rangle$ $\Downarrow$ $\sigma$$_1$' and $\langle$$c_2$, $\sigma$$_2$$\rangle$ $\Downarrow$ $\sigma$$_2$', we have $\sigma_1$' $\uplus$ $\sigma_2$' $\in$ $\llbracket$$\psi$$\rrbracket$.}
+
+\bigskip
+Since our objective is to reduce the validity of Hoare quadruples to validity of Hoare triples, we must say that we establish our notion of valid Hoare triple as stronger than usual.
+It requires that the command allows the program to finish its execution, i.e., the command is \emph{non-stuck}.
+\bigskip
+
+\textbf{Definition 2 -}  \emph{A Hoare triple {$\phi$} c {$\psi$} is valid ($\vDash$ \{$\phi$\} c \{$\psi$\}) if c is $\phi$-nonstuck and for all $\sigma$, $\sigma$' $\in$ S, $\sigma$ $\in$ $\llbracket$$\phi$$\rrbracket$ and $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' imply $\sigma$' $\in$ $\llbracket$$\psi$$\rrbracket$.}
+
+\bigskip
+This notion of validity requires, however, that we extend Hoare logic for it to be able to treat \textbf{assert} statements.
+The necessary rule is:
+\begin{figure}[h]
+  \centering
+  \begin{mathpar}
+  
+  \inferrule*[]
+  { }
+  {\vdash \ \{ \textit{b} \land \Phi \} \ \textbf{assert}\text{(b)} \ \{ \Phi \}}
+
+  \end{mathpar}
+\end{figure}
 
 
 \subsubsection{Construction of Product Programs} 
@@ -106,4 +131,10 @@ Therefore, the definition below illustrates the formal statement of valid relati
 \label{subsec:product_programs_examples}
 
 (pag 9-15)
+
+
+\section{Program Equivalence}
+\label{sec:program_equivalence}
+
+
 
