@@ -274,14 +274,59 @@ Although product programs can be applied to several relational properties, such 
 Loop alignment is an optimization that consists in improving cache effectiveness by increasing the proximity of the memory locations acessed in each iteration of the loop.
 \bigskip
 
-TODOOOOOOOOOOOOOOOOOOOOOOOOOOO
-\begin{ocamlsmall}
-  i:= 1;
-  while (i $\leq$ N) do
-    b[i]:= a[i];
-    d[i]:= b[i-1];
-    i++
-\end{ocamlsmall}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Source program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        @i := 1@; 
+        while (@i (*$\textcolor{red}{\leq}$*) N@) do
+          @b[i] := a[i]@;
+          @d[i] := b[i-1]@;
+          @i++@
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Optimized program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        .j := 1.;
+        .(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0].;
+        while (.j (*$\textcolor{blue}{\leq}$*) N-1.) do
+          .(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j].;
+          .(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j].;
+          .j++.;
+        .(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N].
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.9\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Product program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        {a = (*$\overline{a}$*) (*$\land$*) b[0] = (*$\overline{b}$*)[0]}
+          @i := 1@; 
+          .j := 1.;
+          assert(@i (*$\textcolor{red}{\leq}$*) N@);
+          @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
+          (*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0];
+          assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) .j (*$\textcolor{blue}{\leq}$*) N-1.);
+          while (@i (*$\textcolor{red}{\leq}$*) N@) do
+            @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
+            .(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j].; .(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j].; .j++.;
+            assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) .j (*$\textcolor{blue}{\leq}$*) N-1.);
+          .(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N].
+        {d[1,N] = (*$\overline{d}$*)[1,N]}
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \caption{Loop alignment.}
+  \label{fig:loop_alignment}
+\end{figure}
 
 \bigskip
 Consider \emph{N} $\geq$ 1.
@@ -298,7 +343,60 @@ This specification guarantees that, if the input arrays \emph{a} and \emph{b} ar
 \subsubsection{Induction variable strength reduction} 
 \label{subsubsec:product_programs_strength_reduction}
 
+Product programs allow the verification of optimizations that \emph{maintain} the control flow of programs, but simply modify the basic blocks.
+Some rather common examples of this are constant propagation and common subexpression elimination.
+\bigskip
 
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Source program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        @i := 0@; 
+        while (@i < N@) do
+          @j := i * B + C@;
+          @x += j@;
+          @i++@
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Optimized program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        .i(*\textasciiacute*) := 0.;
+        .j(*\textasciiacute*) := C.;
+        while (.i(*\textasciiacute*) < N.) do
+          .x(*\textasciiacute*) += j(*\textasciiacute*).;
+          .j(*\textasciiacute*) += B.;
+          .i(*\textasciiacute*)++.
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.9\textwidth}
+    \begin{minipage}[t]{\linewidth}
+      \textbf{Product program}
+      \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
+        @i := 0@; .i(*\textasciiacute*) := 0.; .j(*\textasciiacute*) := C.;
+        while (@i < N@ (*$\land$*) .i(*\textasciiacute*) < N.) do
+          @j := i * B + C@; @x += j@; @i++@
+          .x(*\textasciiacute*) += j(*\textasciiacute*).; .j(*\textasciiacute*) += B.; .i(*\textasciiacute*)++.
+      \end{lstlisting}
+    \end{minipage}
+  \end{subfigure}
+  \caption{Induction variable strength reduction.}
+  \label{fig:induction_var_strength_red}
+\end{figure}
+
+\bigskip
+The figure above demonstrates the effects that applying strength reduction has in a small program.
+In the example, \emph{j} is a derived induction variable defined as a linear function on the induction variable \emph{i}.
+The optimization in question substitutes the statement \emph{j := i * B + C} by the equivalent and more performant statement \emph{j' += B} (multiplication is more costly than addition to a computer), makes the assignment \emph{x' += j'} come first inside the loop and adds an initial assignment \emph{j' = C} before the start of the loop.
+To verify the correctness of the optimization, we need to guarantee that \emph{x = x'} is an invariant of the product program.
+And to do that, we need the linear condition \emph{j := i * B + C} to be part of the loop invariant.
 
 
 \section{Program Equivalence}

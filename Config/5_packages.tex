@@ -85,11 +85,13 @@
 % }
 
 \usepackage{xspace}
+\usepackage{caption}
 \usepackage{subcaption}
 \usepackage{hyperref}
 \usepackage[export]{adjustbox}
 \usepackage{pgfgantt}
 \usepackage{amssymb}
+\usepackage{parcolumns}
 %\usepackage{logix}
 
 \newcommand{\whyml}{\gls{WhyML}\xspace}
@@ -113,3 +115,13 @@
   font={sf,it},labelsep=space,labelfont=bf,belowskip=-1pt}
   
 \usepackage{mathpartir}
+
+\lstdefinestyle{while_lang}{
+  language=C,
+  emptylines=1,
+  breaklines=true,
+  basicstyle=\ttfamily\color{black}\small,
+  moredelim=**[is][\color{red}]{@}{@},
+  moredelim=**[is][\color{blue}]{.}{.},
+  keepspaces=true
+}
