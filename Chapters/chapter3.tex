@@ -263,11 +263,42 @@ Finally, we formally reduce the problem of proving the validity of a relational 
 \bigskip
 
 
-
 \subsection{Examples} 
 \label{subsec:product_programs_examples}
 
-%(pag 9-15)
+Although product programs can be applied to several relational properties, such as non-interference and continuity, we will focus our examples on the correctness of program optimizations.
+
+\subsubsection{Loop alignment} 
+\label{subsubsec:product_programs_loop_alignment}
+
+Loop alignment is an optimization that consists in improving cache effectiveness by increasing the proximity of the memory locations acessed in each iteration of the loop.
+\bigskip
+
+TODOOOOOOOOOOOOOOOOOOOOOOOOOOO
+\begin{ocamlsmall}
+  i:= 1;
+  while (i $\leq$ N) do
+    b[i]:= a[i];
+    d[i]:= b[i-1];
+    i++
+\end{ocamlsmall}
+
+\bigskip
+Consider \emph{N} $\geq$ 1.
+In the source program above, note that, in each iteration, the array \emph{b} is accessed twice; firstly in the write to index \emph{i} and secondly in the read of position \emph{i-1}.
+What loop alignment does is transform the acess of different indexes of \emph{b} into only one index, in this case, \emph{i}.
+The corresponding product program starts by ensuring that the number of iterations of the loop is the same for the source and optimized programs, through the assignment statement \emph{$\overline{d}$[1] := $\overline{b}$[0]}.
+To be verified, the program product needs a pre-condition, a post-condition and a loop invariant.
+The pre-condition is \emph{a = $\overline{a}$ $\land$ b[0] := $\overline{b}$[0]}.
+The post-condition is \emph{d[1, N] = $\overline{d}$[1, N]}, meaning that, for the indexes in the interval [1, \emph{N}], the values of the arrays \emph{d} and \emph{$\overline{d}$} are the same.
+A suitable loop invariant is \emph{d[1, i) = $\overline{d}$[1, i)  $\land$  b[j] = a[j]  $\land$  $\overline{b}$[i] = b[i]  $\land$  i = j + 1}.
+This specification guarantees that, if the input arrays \emph{a} and \emph{b} are equal, the values present in the array \emph{d} are the same when the execution of both product components terminates.
+
+
+\subsubsection{Induction variable strength reduction} 
+\label{subsubsec:product_programs_strength_reduction}
+
+
 
 
 \section{Program Equivalence}
