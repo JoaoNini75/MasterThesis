@@ -36,7 +36,18 @@ One of the main features of self-composition is its expressiveness and that ther
 \section{Cross-products} 
 \label{sec:cross_products}
 
-Cross-products~\cite{DBLP:conf/fm/ZaksP08}
+Cross-products~\cite{DBLP:conf/fm/ZaksP08} aim to prove program equivalence, with a strong focus on verifying compiler optimizations.
+Instead of proving that both programs are equivalent, the analysis is done by combining the two input programs into one: the cross-product.
+With them, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
+Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint for this work.
+
+One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, was made to validate program equivalence in general while balacing precision and efficiency.
+The approach was to divide the analysis in two phases, a faster one first and a more precise after that.
+The first phase utilizes a fast, yet imprecise value numbering algorithm whose results are used to determine if it is necessary to apply the second phase. 
+This final part is based on assertion checking, a static program verification method which, under the hood, computes the weakest-precondition~\cite{DBLP:books/ph/Dijkstra76} using CVC3~\cite{cvc3}. 
+
+The results presented on the cited work reveal that CoVaC was able to verify a very considerable set of optimizations of LLVM~\cite{llvm}, a complex modern compiler.
+Yet, the tool does not support verification of interprocedural optimizations or information flow policies, for example, but these are issues that the authors showed interest in addressing.
 
 
 \section{Product Programs} 
@@ -132,7 +143,7 @@ The necessary rule is:
 Firstly in this section, we define the rules that will be used to deal with structurally equivalent programs. 
 After that, we that set with structural transformations to allow the treatment of programs with different structures.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \begin{mathpar}
 
@@ -249,7 +260,7 @@ It is possible to prove that the judgment \emph{c} $\succcurlyeq$ \emph{c'} main
 We add one more rule that makes a preliminary refinement transformation over the product components:
 
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
   \begin{mathpar}
 
