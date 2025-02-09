@@ -248,6 +248,7 @@ One can see that the rules above point that the executions of \emph{c} and \emph
 It is possible to prove that the judgment \emph{c} $\succcurlyeq$ \emph{c'} maintains a refinement relation by showing that, for every assertion $\phi$, if c' is $\phi$-nonstuck, then for all $\sigma$ $\in$ $\llbracket$$\phi$$\rrbracket$ such that $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' we have $\langle$c', $\sigma$$\rangle$ $\Downarrow$ $\sigma$'.
 We add one more rule that makes a preliminary refinement transformation over the product components:
 
+
 \begin{figure}[h]
   \centering
   \begin{mathpar}
@@ -261,6 +262,7 @@ We add one more rule that makes a preliminary refinement transformation over the
   \end{mathpar}
 \end{figure}
 
+TODOOOOOO ADJUST THIS! this has to come after the figure above!
 This does not invalidate \textbf{Proposition 1}. 
 Finally, we formally reduce the problem of proving the validity of a relational judgment into the construction of the product program followed by the standard verification of that same product program.
 \bigskip
@@ -320,7 +322,7 @@ Loop alignment is an optimization that consists in improving cache effectiveness
           .j := 1.;
           assert(@i (*$\textcolor{red}{\leq}$*) N@);
           @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
-          (*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0];
+          .(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0].;
           assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) .j (*$\textcolor{blue}{\leq}$*) N-1.);
           while (@i (*$\textcolor{red}{\leq}$*) N@) do
             @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
