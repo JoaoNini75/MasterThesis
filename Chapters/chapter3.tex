@@ -388,12 +388,12 @@ Some rather common examples of this are constant propagation and common subexpre
     \begin{minipage}[t]{\linewidth}
       \textbf{Optimized program}
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
-        .i(*\textasciiacute*) := 0.;
-        .j(*\textasciiacute*) := C.;
-        while (.i(*\textasciiacute*) < N.) do
-          .x(*\textasciiacute*) += j(*\textasciiacute*).;
-          .j(*\textasciiacute*) += B.;
-          .i(*\textasciiacute*)++.
+        .i(*\textcolor{blue}{\textasciiacute}*) := 0.;
+        .j(*\textcolor{blue}{\textasciiacute}*) := C.;
+        while (.i(*\textcolor{blue}{\textasciiacute}*) < N.) do
+          .x(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*).;
+          .j(*\textcolor{blue}{\textasciiacute}*) += B.;
+          .i(*\textcolor{blue}{\textasciiacute}*)++.
       \end{lstlisting}
     \end{minipage}
   \end{subfigure}
@@ -402,10 +402,10 @@ Some rather common examples of this are constant propagation and common subexpre
     \begin{minipage}[t]{\linewidth}
       \textbf{Product program}
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
-        @i := 0@; .i(*\textasciiacute*) := 0.; .j(*\textasciiacute*) := C.;
-        while (@i < N@ (*$\land$*) .i(*\textasciiacute*) < N.) do
+        @i := 0@; .i(*\textcolor{blue}{\textasciiacute}*) := 0.; .j(*\textcolor{blue}{\textasciiacute}*) := C.;
+        while (@i < N@ (*$\land$*) .i(*\textcolor{blue}{\textasciiacute}*) < N.) do
           @j := i * B + C@; @x += j@; @i++@
-          .x(*\textasciiacute*) += j(*\textasciiacute*).; .j(*\textasciiacute*) += B.; .i(*\textasciiacute*)++.
+          .x(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*).; .j(*\textcolor{blue}{\textasciiacute}*) += B.; .i(*\textcolor{blue}{\textasciiacute}*)++.
       \end{lstlisting}
     \end{minipage}
   \end{subfigure}

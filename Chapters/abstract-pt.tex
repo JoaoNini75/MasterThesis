@@ -8,38 +8,27 @@
 
 \typeout{NT FILE abstract-pt.tex}%
 
-Independentemente da língua em que a dissertação está escrita, geralmente esta contém pelo menos dois resumos: um resumo na mesma língua do texto principal e outro resumo numa outra língua.
+Garantir que um programa se comporta como esperado é um assunto complexo que tem sido alvo de muitas e diferentes tentativas ao longo da história.
+A verificação de software assistida por humanos é o método mais confiável e completo, apesar do seu inerente esforço adicional.
 
-%A ordem dos resumos varia de acordo com a escola. Se a sua escola tiver regulamentos específicos sobre a ordem dos resumos, o template (\LaTeX) \gls{novathesis} irá respeitá-los. Caso contrário, a regra padrão no template \gls{novathesis} é ter em primeiro lugar o resumo \emph{no mesmo idioma do texto principal} e depois o resumo \emph{no outro idioma}. Por exemplo, se a dissertação for escrita em português, a ordem dos resumos será primeiro o português e depois o inglês, seguido do texto principal em português. Se a dissertação for escrita em inglês, a ordem dos resumos será primeiro em inglês e depois em português, seguida do texto principal em inglês.
-%
-%No entanto, esse pedido pode ser personalizado adicionando um dos seguintes ao arquivo \verb+5_packages.tex+.
+O objetivo deste trabalho é facilitar as provas de programas complexos a partir da relação entre este e um equivalente que seja mais simples de provar.
+Se for possível estabelecer que dois programas diferentes são equivalentes, então é altamente provável que reutilizar a especificação do mais simples levará a uma prova mais fácil e rápida do programa mais sofisticado.
+A lógica de Hoare relacional abriu caminho para o desenvolvimento de várias técnicas para raciocinar sobre as similaridades de dois programas diferentes.
+Neste trabalho, vamos basear a nossa abordagem no conceito de \emph{product programs} para reduzir a verificação relacional a verificação "tradicional".
 
-\begin{verbatim}
-    \abstractorder(<MAIN_LANG>):={<LANG_1>,...,<LANG_N>}
-\end{verbatim}
-
-Por exemplo, para um documento escrito em Alemão com resumos em Alemão, Inglês e Italiano (por esta ordem), pode usar-se:
-\begin{verbatim}
-    \ntsetup{abstractorder={de={de,en,it}}}
-\end{verbatim}
-
-Relativamente ao seu conteúdo, os resumos não devem ultrapassar uma página e frequentemente tentam responder às seguintes questões (é imprescindível a adaptação às práticas habituais da sua área científica):
-
-
-% E agora vamos fazer um teste com uma quebra de linha no hífen a ver se a \LaTeX\ duplica o hífen na linha seguinte se usarmos \verb+"-+… em vez de \verb+-+.
-%
-% zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz comentar"-lhe zzz zzzz zzz zzzz
-%
-% Sim!  Funciona! :)
+Além disso, haverá uma descrição do conhecimento prévio necessário para compreender efetivamente a nossa abordagem, tal como a apresentação de outros possíveis métodos para alcançar aquilo a que nos propomos.
+Finalmente, demonstraremos alguns resultados iniciais positivos obtidos pela escrita do código e especificação de duas implementações diferentes do mesmo algoritmo, utilizando paradigmas diferentes.
 
 % Palavras-chave do resumo em Português
 % \begin{keywords}
 % Palavra-chave 1, Palavra-chave 2, Palavra-chave 3, Palavra-chave 4
 % \end{keywords}
 \keywords{
-  Primeira palavra-chave \and
-  Outra palavra-chave \and
-  Mais uma palavra-chave \and
-  A última palavra-chave
+  Verificação dedutiva \and
+  Equivalência de programas \and
+  OCaml \and
+  Cameleer \and
+  Lógica de Hoare relacional \and
+  Product programs
 }
 % to add an extra black line
