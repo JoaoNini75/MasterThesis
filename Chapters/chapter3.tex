@@ -41,7 +41,7 @@ Instead of proving that both programs are equivalent, the analysis is done by co
 With them, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
 Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint for this work.
 
-One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, was made to validate program equivalence in general while balancing precision and efficiency.
+One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, is that it was made to validate program equivalence in general while balancing precision and efficiency.
 The approach was to divide the analysis in two phases, a faster one first and a more precise after that.
 The first phase utilizes a fast, yet imprecise value numbering algorithm whose results are used to determine if it is necessary to apply the second phase. 
 This final part is based on assertion checking, a static program verification method which, under the hood, computes the weakest-precondition~\cite{DBLP:books/ph/Dijkstra76} using CVC3~\cite{cvc3}. 
@@ -72,7 +72,7 @@ Despite being sound and considerably complete, this construction is impractical~
 One of them is that the existing automatic safety analysis tools available are not powerful enough to verify most of realistic problems and, when they can, there is a lack of performance.
 The other reason is that, for the authors of the last cited work, the safety analysis developed for naturally 1-safety problems is not expected to advance significantly in the foreseeable future.
 
-There is another relevant method discussed in this \hyperref[sec:cross_products]{section}, the cross-products.
+There is another relevant method previously discussed in this \hyperref[sec:cross_products]{section}, the cross-products.
 These suffer from the constraint of structural equivalence, making impossible to reason about properties or program optimizations that are based on different control flows.
 
 Product Programs~\cite{DBLP:conf/fm/BartheCK11} appear to be the best path to follow, since they represent a general notion that combines the flexibility of self-composition in executing asynchronous steps and the efficiency of cross-products when it comes to treat synchronous steps. 
