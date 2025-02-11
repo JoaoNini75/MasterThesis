@@ -84,6 +84,7 @@ The first example corresponds to two different programs, let us call them \emph{
   \hspace{2cm}\= \emph{P1} \hspace{2cm} \= \emph{P2} \\ 
   \> \emph{b := a + 1;} \> \emph{c := a + 2;} \\
   \> \emph{c := b + 1;} \> \emph{b := c - 1;}
+  \label{tabbing:simple_equivalent_program}
 \end{tabbing}
 
 We can see that \emph{b} and \emph{c} do not change the final state of any of the programs, so, to write a Hoare quadruple that creates an equivalence between \emph{P1} and \emph{P2}, we need the pre-condition to assert that \emph{P1.a = P2.a}:
