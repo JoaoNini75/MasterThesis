@@ -47,7 +47,7 @@ Hoare logic can be used to prove this triple:
 This triple describes a situation where if the value of \emph{grade} is "valid" (considering grades from 0 to 20), we can say that the value of \emph{reward} will be either 0 or 10, depending if the value of \emph{grade} was less than 10 / greater or equal to 10, respectively.
 It is also important to mention the difference between \emph{partial correctness} and \emph{total correctness}.
 If \emph{total correctness} is what you are looking for, you need to guarantee that the execution of the program finishes.
-Otherwise, you can only gurantee \emph{partial correctness}.
+Otherwise, you can only guarantee \emph{partial correctness}.
 
 
 \subsection{Relational Hoare Logic} 
@@ -222,7 +222,7 @@ We will not dive deep here on the need of this rule, instead we do it in this \h
   \caption{Extended set of rules of RHL.}
 \end{figure}
 
-Note that the premise of this rule is not a Hoare quadruple, but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequenciation of \emph{C1} and \emph{C2} in a single program.
+Note that the premise of this rule is not a Hoare quadruple but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequence of \emph{C1} and \emph{C2} within a single program.
 This triple can also be presented as the following quadruple:
 \vspace{-4pt} 
 \[ \{\Phi \land \Phi'\} \, \emph{C1 ; C2} \, \sim \, \emph{C1' ; C2'} \, \{ \Psi \land \Psi' \} \]
@@ -289,7 +289,7 @@ The first implementation represents the use of the functional paradigm while the
 \end{ocamlsmall}
 
 Next there are some notes about the syntax and semantics in the context of the examples above. 
-Since OCaml supports the functional and imperative paradigms, it distinguises between immutable variables (actually not present in the programs above) and memory references, therefore the different syntax for the binding of each one: 
+Since OCaml supports the functional and imperative paradigms, it distinguishes between immutable variables (actually not present in the programs above) and memory references, therefore the different syntax for the binding of each one: 
 \[ \emph{let x = 3 (variable)} \]
 \vspace{-25pt}
 \[ \emph{let y = ref 4 (reference)} \]
