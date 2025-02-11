@@ -75,7 +75,7 @@ Nonetheless, there is another example: when a given program has different algori
 \subsubsection{Detailing RHL with examples}
 \label{sub:relational_hoare_logic_examples}
 
-Next, there are some requirements not specified above when presenting the Hoare quadruple.
+Next, there are some requirements not specified previously when presenting the Hoare quadruple.
 These are important details that have to be accounted for and will be described using example programs to make the explanation more tangible.
 Consider the notation \emph{Pi.j} that will be used in this subsubsection, where \emph{i} represents a given program index, \emph{Pi} refers to a given program and \emph{Pi.j} the identifier of a variable \emph{j} in program \emph{Pi}.
 
@@ -221,6 +221,7 @@ We will not dive deep here on the need of this rule, instead we do it in this \h
     
   \end{mathpar}
   \caption{Extended set of rules of RHL.}
+  \label{fig:extended_rules_rhl}
 \end{figure}
 
 Note that the premise of this rule is not a Hoare quadruple but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequence of \emph{C1} and \emph{C2} within a single program.
@@ -229,7 +230,7 @@ This triple can also be presented as the following quadruple:
 \[ \{\Phi \land \Phi'\} \, \emph{C1 ; C2} \, \sim \, \emph{C1' ; C2'} \, \{ \Psi \land \Psi' \} \]
 \vspace{-18pt} 
 
-If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule in the figure above.
+If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule in the \hyperref[fig:extended_rules_rhl]{figure}.
 
 
 \section{OCaml}
@@ -289,8 +290,8 @@ The first implementation represents the use of the functional paradigm while the
       !a
 \end{ocamlsmall}
 
-Next there are some notes about the syntax and semantics in the context of the examples above. 
-Since OCaml supports the functional and imperative paradigms, it distinguishes between immutable variables (actually not present in the programs above) and memory references, therefore the different syntax for the binding of each one: 
+Next there are some notes about the syntax and semantics in the context of these examples. 
+Since OCaml supports the functional and imperative paradigms, it distinguishes between immutable variables (actually not present in the programs shown) and memory references, therefore the different syntax for the binding of each one: 
 \[ \emph{let x = 3 (variable)} \]
 \vspace{-25pt}
 \[ \emph{let y = ref 4 (reference)} \]

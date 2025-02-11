@@ -76,7 +76,7 @@ Moreover, the functional implementation has a variant \emph{n}, while the impera
 \end{ocamlenv}
 \end{minipage}
 
-Regarding the proof of both the implementations above, Z3 was able to discard all of the verification conditions (VCs) automatically.
+Regarding the proof of both the implementations of the factorial, Z3 was able to discard all of the verification conditions (VCs) automatically.
 Furthermore, this SMT solver took a quarter of a second to complete the whole proof, verifying the functional implementation in 0.08 seconds and the imperative implementation in 0.17 seconds.
 
 \begin{table}[!h]
@@ -289,6 +289,8 @@ There was no need for human intervention in verifying the product program, as th
   \end{center}
 \end{table}  
 
+
+\FloatBarrier
 \subsection{Program with a while loop}
 \label{sub:results_while}
 

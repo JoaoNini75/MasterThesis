@@ -128,14 +128,14 @@ It requires that the command allows the program to finish its execution, i.e., t
 This notion of validity requires, however, that we extend Hoare logic for it to be able to treat \textbf{assert} statements.
 The necessary rule is:
 \begin{figure}[h]
-  \centering
-  \begin{mathpar}
-  
-  \inferrule*[]
-  { }
-  {\vdash \ \{ \textit{b} \land \Phi \} \ \textbf{assert}\text{(b)} \ \{ \Phi \}}
-
-  \end{mathpar}
+  \begin{center}
+    \begin{minipage}{\linewidth}
+      \centering
+      \begin{mathpar}
+        \inferrule*[] { } {\vdash \ \{ \textit{b} \land \Phi \} \ \textbf{assert}\text{(b)} \ \{ \Phi \}}
+      \end{mathpar}
+    \end{minipage}
+  \end{center}
 \end{figure}
 
 
@@ -145,7 +145,7 @@ The necessary rule is:
 Firstly in this section, we define the rules that will be used to deal with structurally equivalent programs. 
 After that, we that set with structural transformations to allow the treatment of programs with different structures.
 
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
   \begin{mathpar}
 
@@ -180,7 +180,7 @@ After that, we that set with structural transformations to allow the treatment o
   \label{fig:product_construction_equal_struct}
 \end{figure}
 
-The figure above describes a set of rules to derive a product construction judgment of the type \emph{c$_1$ $\times$ c$_2$ $\rightarrow$ c.}
+The \hyperref[fig:product_construction_equal_struct]{figure} describes a set of rules to derive a product construction judgment of the type \emph{c$_1$ $\times$ c$_2$ $\rightarrow$ c.}
 To make sure that \emph{c} simulates with precision the behavior of \emph{c$_1$ and c$_2$}, the construction of products introduces \textbf{assert} statements.
 During the phase of the verification of the program, these validation constraints are viewed as local assertions and discharged.
 Let us consider the rule that synchronizes two loops, for example: \textbf{assert}(b$_1$ $\Leftrightarrow$ b$_2$) is necessary to guarantee that the number of iterations of each loop is the same.
@@ -192,7 +192,7 @@ This achieves what we aimed for, that is, the product program can be verified wi
 \bigskip
 In other words, if \emph{c} is the resulting product program of \emph{c1} and \emph{c2}, then we can reason about the validity of the relational judgment between \emph{c1} and \emph{c2} through the validity of the standard judgment of \emph{c}.
 
-As we mentioned before, the rules present in the previous figure are limited to structurally equivalent programs.
+As we mentioned before, the rules present in the previous \hyperref[fig:product_construction_equal_struct]{figure} are limited to structurally equivalent programs.
 For example, if we consider two programs each with a loop and their guards are not equivalent, the product would have to be sequentially composed.
 The structural translations proposed extend the construction of the already defined products in the form of a refinement relation, with a judgment of the form \emph{c} $\succcurlyeq$ \emph{c'}. 
 This means that every execution of \emph{c} is an execution of \emph{c'} except when the latter's execution does not terminate:
@@ -206,7 +206,7 @@ This means that every execution of \emph{c} is an execution of \emph{c'} except 
 \end{itemize}
 
 \bigskip
-In the figure below is described the set of rules that define judgments of the form $\vdash$ \emph{c} $\succcurlyeq$ \emph{c'}.
+In the \hyperref[fig:product_construction_reduction]{figure} is described the set of rules that define judgments of the form $\vdash$ \emph{c} $\succcurlyeq$ \emph{c'}.
 
 \begin{figure}[h]
   \centering
@@ -257,25 +257,25 @@ In the figure below is described the set of rules that define judgments of the f
   \label{fig:product_construction_reduction}
 \end{figure}
 
-One can see that the rules above point that the executions of \emph{c} and \emph{c'} match for every initial state that makes the introduced \textbf{assert} statements valid.
+One can see that the \hyperref[fig:product_construction_reduction]{rules} point that the executions of \emph{c} and \emph{c'} match for every initial state that makes the introduced \textbf{assert} statements valid.
 It is possible to prove that the judgment \emph{c} $\succcurlyeq$ \emph{c'} maintains a refinement relation by showing that, for every assertion $\phi$, if c' is $\phi$-nonstuck, then for all $\sigma$ $\in$ $\llbracket$$\phi$$\rrbracket$ such that $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' we have $\langle$c', $\sigma$$\rangle$ $\Downarrow$ $\sigma$'.
 We add one more rule that makes a preliminary refinement transformation over the product components:
 
-
 \begin{figure}[H]
+  \begin{center}
+  \begin{minipage}{\linewidth}
   \centering
-  \begin{mathpar}
-
-  \inferrule*[]
-    {\vdash c_1 \; \succcurlyeq \; c'_1 \\
-     \vdash c_2 \; \succcurlyeq \; c'_2 \\
-     c'_1 \times c'_2 \; \rightarrow \; c}
-    {c_1 \times c_2 \; \rightarrow \; c}
-    
-  \end{mathpar}
+    \begin{mathpar}
+      \inferrule*[]
+        {\vdash c_1 \; \succcurlyeq \; c'_1 \\
+        \vdash c_2 \; \succcurlyeq \; c'_2 \\
+        c'_1 \times c'_2 \; \rightarrow \; c}
+        {c_1 \times c_2 \; \rightarrow \; c}
+    \end{mathpar}
+  \end{minipage}
+  \end{center}
 \end{figure}
 
-%TODOOOOOO ADJUST THIS! this has to come after the figure above!
 This does not invalidate \textbf{Proposition 1}. 
 Finally, we formally reduce the problem of proving the validity of a relational judgment into the construction of the product program followed by the standard verification of that same product program.
 \bigskip
@@ -294,8 +294,6 @@ Although product programs can be applied to several relational properties, such 
 \label{subsubsec:product_programs_loop_alignment}
 
 Loop alignment is an optimization that consists in improving cache effectiveness by increasing the proximity of the memory locations accessed in each iteration of the loop.
-\bigskip
-
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.45\textwidth}
@@ -350,9 +348,8 @@ Loop alignment is an optimization that consists in improving cache effectiveness
   \label{fig:loop_alignment}
 \end{figure}
 
-\bigskip
 Consider \emph{N} $\geq$ 1.
-In the source program above, note that, in each iteration, the array \emph{b} is accessed twice; firstly in the write to index \emph{i} and secondly in the read of position \emph{i-1}.
+In the source \hyperref[fig:loop_alignment]{program}, note that, in each iteration, the array \emph{b} is accessed twice; firstly in the write to index \emph{i} and secondly in the read of position \emph{i-1}.
 What loop alignment does is transform the access of different indexes of \emph{b} into only one index, in this case, \emph{i}.
 The corresponding product program starts by ensuring that the number of iterations of the loop is the same for the source and optimized programs, through the assignment statement \emph{$\overline{d}$[1] := $\overline{b}$[0]}.
 To be verified, the program product needs a pre-condition, a post-condition and a loop invariant.
@@ -361,13 +358,12 @@ The post-condition is \emph{d[1, N] = $\overline{d}$[1, N]}, meaning that, for t
 A suitable loop invariant is \emph{d[1, i) = $\overline{d}$[1, i)  $\land$  b[j] = a[j]  $\land$  $\overline{b}$[i] = b[i]  $\land$  i = j + 1}.
 This specification guarantees that, if the input arrays \emph{a} and \emph{b} are equal, the values present in the array \emph{d} are the same when the execution of both product components terminates.
 
-
+\FloatBarrier
 \subsubsection{Induction variable strength reduction} 
 \label{subsubsec:product_programs_strength_reduction}
 
 Product programs allow the verification of optimizations that \emph{maintain} the control flow of programs, but simply modify the basic blocks.
 Some rather common examples of this are constant propagation and common subexpression elimination.
-\bigskip
 
 \begin{figure}
   \centering
@@ -413,21 +409,20 @@ Some rather common examples of this are constant propagation and common subexpre
   \label{fig:induction_var_strength_red}
 \end{figure}
 
-\bigskip
-The figure above demonstrates the effects that applying strength reduction has in a small program.
+The \hyperref[fig:induction_var_strength_red]{figure} demonstrates the effects that applying strength reduction has in a small program.
 In the example, \emph{j} is a derived induction variable defined as a linear function on the induction variable \emph{i}.
 The optimization in question substitutes the statement \emph{j := i * B + C} by the equivalent and more performant statement \emph{j' += B} (multiplication is more costly than addition to a computer), makes the assignment \emph{x' += j'} come first inside the loop and adds an initial assignment \emph{j' = C} before the start of the loop.
 To verify the correctness of the optimization, we need to guarantee that \emph{x = x'} is an invariant of the product program.
 And to do that, we need the linear condition \emph{j := i * B + C} to be part of the loop invariant.
 
-
+\FloatBarrier
 \section{Program Equivalence}
 \label{sec:program_equivalence}
 
 Program equivalence stands out as a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
 "Traditional" program correctness by itself is usually harder to prove than program equivalence, especially when it comes to real world programs, making the latter a topic whose research can reach success easier.
 
-This work ~\cite{DBLP:journals/fmsd/KlebanovRU18} brings to light an interesting approach called regression verification, which combines regression testing with formal verification.
+This work~\cite{DBLP:journals/fmsd/KlebanovRU18} brings to light an interesting approach called regression verification, which combines regression testing with formal verification.
 It is based on invariant inference techniques to automatically prove that two imperative pointer programs are equivalent, in the context of one being an updated version of the other.
 By updated version we mean that the program has now more features, has been refactored or went through performance optimizations.
 
