@@ -1,0 +1,19 @@
+(* Fermat's little theorem for n = 3 *)
+
+use int.Int
+use int.Power
+
+let lemma power_3 (x:int)
+   ensures { power x 3 = x*x*x }
+  = assert { power x 3 = power x (1+1+1) }
+
+let rec ghost little_fermat_3 (x : int) : int
+  requires { x >= 0 }
+  variant { x }
+  ensures { power x 3 - x = 3 * result }
+= 0
+
+let lemma lem_little_fermat_3 (x : int)
+  requires { x >= 0 }
+  ensures { exists y. power x 3 - x = 3 * y }
+= ()

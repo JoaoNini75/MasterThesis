@@ -1,0 +1,19 @@
+use int.Int
+
+val ref b : bool
+val ref x1 : int
+val ref x2 : int
+
+let main ()
+  requires { b }
+  ensures { x1 = x2 }
+  =
+  (* b <- true; *)
+  if b then (
+    x1 <- 10; 
+    x2 <- 10;
+  ) else (
+    x1 <- 20;
+    x2 <- 10;
+  )
+  

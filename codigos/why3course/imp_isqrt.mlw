@@ -1,0 +1,37 @@
+(*  Integer square root *)
+
+(* n = 4 *)
+(* count = 0, sum = 1 *)
+(* count = 1, sum = 3 *)
+(* count = 2, sum = 8 *)
+
+(* count = 3, sum = 15 *)
+(* count = 4, sum = 24 *)
+
+use int.Int
+
+function sqr (n:int) : int = n * n
+
+val ref n : int
+val ref count : int
+val ref sum : int
+
+let isqrt ()
+  requires { n >= 0 }
+  ensures  { count >= 0 }
+  ensures  { sqr count <= n < sqr (count + 1) }
+  diverges (** we are not yet attempting to prove termination *)
+  =
+  count <- 0; sum <- 1;
+  while sum <= n do
+    invariant { count >= 0 }
+    invariant { 0 <= sqr count <= n }
+    invariant { sum = sqr (count + 1) }
+    count <- count + 1;
+    sum <- sum + 2 * count + 1
+  done
+
+let test ()
+  diverges
+  =
+  n <- 42; isqrt(); count

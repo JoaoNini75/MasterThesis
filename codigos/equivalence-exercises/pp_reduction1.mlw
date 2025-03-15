@@ -1,0 +1,27 @@
+module M
+
+  use int.Int
+
+  let main (b c n: int) : (x: int, x': int)
+    ensures { x = x' }
+  = let ref i = 0 in
+    let ref i' = 0 in
+    let ref j = 0 in
+    let ref j' = c in
+    let ref x = 0 in
+    let ref x' = 0 in
+    while i < n && i' < n do
+      variant   { n - i }
+      invariant { j' = i' * b + c }
+      invariant { i = i' }
+      invariant { x = x' }
+      j <- i * b + c;
+      x <- x + j;
+      i <- i + 1;
+      x' <- x' + j';
+      j' <- j' + b;
+      i' <- i' + 1
+    done;
+    x, x'
+
+end

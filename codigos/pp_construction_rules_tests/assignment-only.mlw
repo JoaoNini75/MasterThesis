@@ -1,0 +1,16 @@
+use int.Int
+
+val ref x1 : int
+val ref x2 : int
+val ref y1 : int
+val ref y2 : int
+
+let main ()
+  requires { y1 = y2 }
+  ensures { x1 = x2 }
+  ensures { y1 = y2 }
+  =
+  x1 <- y1 * 2; 
+  y2 <- y2 * 2 + 1;
+  y1 <- x1 + 1;
+  x2 <- y2 - 1;

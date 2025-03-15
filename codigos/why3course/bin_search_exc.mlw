@@ -1,0 +1,43 @@
+(* Binary search, with exceptions *)
+
+use int.Int
+use int.ComputerDivision
+use array.Array
+
+predicate sorted (a: array int) =
+  forall i j:int. 0 <= i <= j < length a -> a[i] <= a[j]
+
+exception Break int
+exception Not_found
+
+val a : array int
+
+let binary_search (v: int)
+  requires { sorted a }
+  ensures { 0 <= result < a.length /\ a[result] = v }
+  raises { Not_found -> forall i:int. 0 <= i < a.length -> a[i] <> v }
+=
+  try
+    let ref l = 0 in
+    let ref u = a.length - 1 in
+    while l <= u do
+      invariant { l >= 0 }
+      invariant { u < a.length }
+      invariant { forall j:int. 0 <= j < l -> a[j] < v }
+      invariant { forall j:int. u < j < a.length -> a[j] > v }   
+      variant { u - l }
+      let m = div (u + l) 2 in
+      if a[m] < v then l <- m+1
+      else if a[m] > v then u <- m-1
+      else raise (Break m)
+    done;
+    raise Not_found
+  with Break i -> i
+  end
+
+
+(*
+Local Variables:
+compile-command: "why3 ide bin_search_exc.mlw"
+End:
+*)

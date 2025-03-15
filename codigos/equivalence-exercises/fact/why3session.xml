@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"https://www.why3.org/why3session.dtd">
+<why3session shape_version="6">
+<prover id="0" name="Z3" version="4.13.0" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="ocaml" proved="true">
+<path name=".."/><path name="fact.ml"/>
+<theory name="Fact" proved="true">
+ <goal name="fact&#39;vc" expl="VC for fact" proved="true">
+ <transf name="split_vc" proved="true" >
+  <goal name="fact&#39;vc.0" expl="variant decrease" proved="true">
+  <proof prover="0"><result status="valid" time="0.025787" steps="8329"/></proof>
+  </goal>
+  <goal name="fact&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.047975" steps="92514"/></proof>
+  </goal>
+ </transf>
+ </goal>
+ <goal name="fact_iter&#39;vc" expl="VC for fact_iter" proved="true">
+ <transf name="split_vc" proved="true" >
+  <goal name="fact_iter&#39;vc.0" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.043755" steps="96047"/></proof>
+  </goal>
+  <goal name="fact_iter&#39;vc.1" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.052718" steps="94902"/></proof>
+  </goal>
+  <goal name="fact_iter&#39;vc.2" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.044090" steps="103323"/></proof>
+  </goal>
+  <goal name="fact_iter&#39;vc.3" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.011294" steps="8394"/></proof>
+  </goal>
+  <goal name="fact_iter&#39;vc.4" expl="VC for fact_iter" proved="true">
+  <proof prover="0"><result status="valid" time="0.028990" steps="93231"/></proof>
+  </goal>
+ </transf>
+ </goal>
+</theory>
+</file>
+</why3session>

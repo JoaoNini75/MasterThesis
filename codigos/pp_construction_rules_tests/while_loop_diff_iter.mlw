@@ -1,0 +1,16 @@
+use int.Int
+
+val ref curr1 : bool
+val ref curr2 : bool
+
+let main ()
+  requires { curr2 % 2 = 0 }
+  ensures { curr1 = curr2 }
+  =
+  assert {(curr1 < 10) = (curr2 < 10)};
+
+  while curr1 < 10 do
+    curr1 <- curr1 + 1;
+    curr2 <- curr2 + 2;
+    assert {(curr1 < 10) = (curr2 < 10)};
+  done

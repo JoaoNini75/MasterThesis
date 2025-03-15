@@ -1,0 +1,29 @@
+(* Linear Search in an Array *)
+
+use int.Int
+use array.Array
+
+let linear_search (a: array int) (v:int)
+  ensures { -1 <= result < a.length }
+  ensures { result >= 0 -> a[result] = v }
+  ensures { result = -1 -> forall k:int. 0 <= k < a.length -> a[k] <> v }
+= let ref i = 0 in
+  let ref res = -1 in
+  while i < a.length do
+    invariant { 0 <= i <= a.length }
+    invariant { -1 <= res < a.length }
+    invariant { res >= 0 -> a[res] = v }
+    invariant { res = -1 -> forall k:int. 0 <= k < i -> a[k] <> v }
+    variant { a.length - i + 1 }
+    let t = a[i] in
+    if t = v then res <- i;
+    i <- i + 1
+  done;
+  res
+
+
+(*
+Local Variables:
+compile-command: "why3 ide lin_search.mlw"
+End:
+*)

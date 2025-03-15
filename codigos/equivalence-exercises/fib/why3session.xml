@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"https://www.why3.org/why3session.dtd">
+<why3session shape_version="6">
+<prover id="0" name="Z3" version="4.13.0" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="ocaml" proved="true">
+<path name=".."/><path name="fib.ml"/>
+<theory name="Fib" proved="true">
+ <goal name="fib&#39;vc" expl="VC for fib" proved="true">
+ <transf name="split_vc" proved="true" >
+  <goal name="fib&#39;vc.0" expl="variant decrease" proved="true">
+  <proof prover="0"><result status="valid" time="0.028059" steps="8329"/></proof>
+  </goal>
+  <goal name="fib&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.032880" steps="92513"/></proof>
+  </goal>
+  <goal name="fib&#39;vc.2" expl="variant decrease" proved="true">
+  <proof prover="0"><result status="valid" time="0.033932" steps="8329"/></proof>
+  </goal>
+  <goal name="fib&#39;vc.3" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.036445" steps="92513"/></proof>
+  </goal>
+ </transf>
+ </goal>
+ <goal name="fib_iter&#39;vc" expl="VC for fib_iter" proved="true">
+ <transf name="split_vc" proved="true" >
+  <goal name="fib_iter&#39;vc.0" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.034113" steps="94343"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.1" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.022160" steps="94417"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.2" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.033716" steps="94578"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.3" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.020451" steps="31988"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.4" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.030324" steps="111744"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.5" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.008403" steps="8431"/></proof>
+  </goal>
+  <goal name="fib_iter&#39;vc.6" expl="VC for fib_iter" proved="true">
+  <proof prover="0"><result status="valid" time="0.026173" steps="93324"/></proof>
+  </goal>
+ </transf>
+ </goal>
+</theory>
+</file>
+</why3session>

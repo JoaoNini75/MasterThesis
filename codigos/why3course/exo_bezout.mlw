@@ -1,0 +1,27 @@
+(* GCD, Bezout coefficients *)
+
+use int.Int
+use int.ComputerDivision
+
+let gcd (x:int) (y:int)
+  requires { ? }
+  ensures  { exists a,b. result = a*x+b*y }
+= let ref x = x in let ref y = y in
+  label Init in
+  let ghost ref a = ? in let ghost ref b = ? in
+  let ghost ref c = ? in let ghost ref d = ? in
+  while y > 0 do
+    invariant { ?  }
+    variant { ? }
+    let r = mod x y in let ghost q = div x y in
+    x <- y; y <- r;
+    a <- ?; b <- ?;
+    c <- ?; d <- ?;
+  done;
+  x
+
+(*
+Local Variables:
+compile-command: "why3 ide exo_bezout.mlw"
+End:
+*)

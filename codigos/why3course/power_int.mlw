@@ -1,0 +1,56 @@
+(* Fast exponentiation *)
+
+use int.Int
+use int.ComputerDivision
+use int.Power
+
+val ref x : int
+val ref n : int
+val ref r : int
+val ref p : int
+val ref e : int
+
+(** a few helper lemmas *)
+lemma power_mult :
+  forall x y n:int.
+    n >= 0 -> power (x*y) n = power x n * power y n
+
+lemma power_even:
+  forall x:int, n:int. n >= 0 /\ mod n 2 = 0 ->
+     power x n = (power (x * x) (div n 2))
+
+lemma power_odd:
+  forall x:int, n:int. n >= 0 /\ mod n 2 = 1 ->
+    power x n = x * (power (x * x) (div n 2))
+
+(* power 2 3; x = 2, n = 3 *)
+(* r = 1, p = 2, e = 3 *)
+(* r = 2, p = 4, e = 1 *)
+(* r = 8, p = 16, e = 0 *)
+
+(* power -3 2; x = -3, n = 2 *)
+(* r = 1, p = -3, e = 2 *)
+(* r = 1, p = 9, e = 1 *)
+(* r = 9, p = 81, e = 0 *)
+
+(** the power function *)
+let power_x_n ()
+  requires { n >= 0 }
+  ensures { r = power x n }
+  ensures { e = 0 }
+  diverges
+  =
+   r <- 1; p <- x; e <- n;
+   while e > 0 do
+     invariant { power x n = r * power p e }
+     invariant { 0 <= e <= n }
+     if mod e 2 = 1 then r <- r * p
+     else assert { mod e 2 = 0 };
+     p <- p * p;
+     e <- div e 2
+   done
+
+
+let test () diverges =
+   x <- 2; n <- 11; power_x_n(); r
+  (* run test using "why3 execute power_int.mlw Top.test" *)

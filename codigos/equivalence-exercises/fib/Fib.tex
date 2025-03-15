@@ -1,0 +1,25 @@
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{Z3 4.13.0} \\ 
+\hline
+\explanation{VC for fib}  & \explanation{variant decrease} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{precondition} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{variant decrease} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{precondition} & \valid{0.04} \\ 
+\hline
+\explanation{VC for fib\_iter}  & \explanation{postcondition} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.01} \\ 
+\cline{2-3}
+ & \explanation{VC for fib\_iter} & \valid{0.03} \\ 
+\hline \end{tabular}

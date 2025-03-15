@@ -1,0 +1,41 @@
+(* 2 Euclidean division *)
+
+(* x = 13, y = 4     q = 3, r = 1 *)
+(* q = 0, r = 13 *)
+(* q = 1, r = 9 *)
+
+(* x = 6, y = -2     q = -3, r = 0 *)
+(* q = 0, r = 6 *)
+(* q = 1, r = 8 *)
+
+use int.Int
+
+val ref x : int
+val ref y : int
+val ref q : int
+val ref r : int
+
+let euclidean_div ()
+  requires { x >= 0  }
+  ensures  { 0 <= r < y }
+  ensures  { x = q * y + r }
+  diverges (** we are not yet attempting to prove termination *)
+  =
+   q <- 0; r <- x;
+   while r >= y do
+     invariant { x = q * y + r }
+     invariant { r >= 0 }
+     r <- r - y; q <- q + 1
+   done
+
+let test ()
+  diverges (** we are not yet attempting to prove termination *)
+  =
+  x <- 42; y <- 17; euclidean_div(); (q,r)
+
+
+(*
+Local Variables:
+compile-command: "why3 ide imp_euclidean_div.mlw"
+End:
+*)

@@ -1,0 +1,21 @@
+use int.Int
+
+val ref c1 : bool
+val ref c2 : bool
+val ref x1 : int
+val ref x2 : int
+
+let main ()
+  requires { c1 <> c2 }
+  ensures { x1 = x2 }
+  =
+  assert { c1 = not c2 };
+
+  if c1 then (
+    x1 <- 1; 
+    x2 <- 1;
+  ) else (
+    x1 <- 0; 
+    x2 <- 0;
+  )
+    
