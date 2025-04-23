@@ -1,17 +1,14 @@
 
-all: minipython.exe
-	dune exec ./minipython.exe test.py
+all: biplang.exe
+	dune exec ./biplang.exe test.py
 
-tests: minipython.exe
-	bash run-tests "dune exec ./minipython.exe"
+tests: biplang.exe
+	bash run-tests "dune exec ./biplang.exe"
 
-minipython.exe:
-	dune build minipython.exe
+biplang.exe:
+	dune build biplang.exe
 
 clean:
 	dune clean
 
-.PHONY: all clean minipython.exe
-
-
-
+.PHONY: all clean biplang.exe

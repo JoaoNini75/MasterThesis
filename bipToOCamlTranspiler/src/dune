@@ -3,6 +3,6 @@
 (menhir
  (modules parser))
 (executable
- (name minipython)
+ (name biplang)
  (promote (until-clean))
  (flags ()))

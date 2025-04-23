@@ -1,4 +1,4 @@
-# dune exec ./minipython.exe test.py
+# dune build biplang.exe
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/joaonini/.cache/dune/db
@@ -13,4 +13,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /usr/bin/ocamlc.opt -config > /tmp/dune_a813cc_output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_01e49c_output

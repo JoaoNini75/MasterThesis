@@ -1,5 +1,5 @@
 
-(* Lexical analyzer for Mini-Python *)
+(* Lexical analyzer for BipLang *)
 
 {
   open Lexing
@@ -11,12 +11,15 @@
   let id_or_kwd =
     let h = Hashtbl.create 32 in
     List.iter (fun (s, tok) -> Hashtbl.add h s tok)
-      ["def", DEF; "if", IF; "else", ELSE;
-       "return", RETURN; "print", PRINT;
-       "for", FOR; "in", IN;
+      ["let", LET; "if", IF; "else", ELSE;
+       "then", THEN; "print", PRINT;
+       "for", FOR; "while", WHILE;
+       "do", DO; "done", DONE;
+       "ref", REF; "in", IN; 
        "and", AND; "or", OR; "not", NOT;
-       "True", CST (Cbool true);
-       "False", CST (Cbool false);
+       "true", CST (Cbool true);
+       "false", CST (Cbool false);
+       "int", INT; "bool", BOOL;
        "None", CST Cnone;];
    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
@@ -70,10 +73,15 @@ rule next_tokens = parse
             { try [CST (Cint (int_of_string s))]
               with _ -> raise (Lexing_error ("constant too large: " ^ s)) }
   | '"'     { [CST (Cstring (string lexbuf))] }
+
+  | ":="    { [ASSIGN] }
+  | "!"     { [DEREF] }
+
   | '|'     { [PIPE] }
-  | '⌊'     { [LEFT_FLOOR] }
-  | '⌋'     { [RIGHT_FLOOR] }
-  | '<->'   { [SPEC_EQUAL] }
+  | "⌊"     { [LEFT_FLOOR] } 
+  | "⌋"     { [RIGHT_FLOOR] } 
+  | "<->"   { [SPEC_EQUAL] }
+
   | eof     { NEWLINE :: unindent 0 @ [EOF] }
   | _ as c  { raise (Lexing_error ("illegal character: " ^ String.make 1 c)) }
 
@@ -116,4 +124,12 @@ and string = parse
 	List.iter (fun t -> Queue.add t tokens) l
       end;
       Queue.pop tokens
+
+  let () =
+  let lexbuf = Lexing.from_channel stdin in
+  try
+    let toks = Lexer.next_tokens lexbuf in
+    List.iter (fun t -> Printf.printf "Token: %s\n" (Parser.show_token t)) toks
+  with
+  | Lexer.Lexing_error msg -> Printf.eprintf "Lexing error: %s\n" msg
 }
