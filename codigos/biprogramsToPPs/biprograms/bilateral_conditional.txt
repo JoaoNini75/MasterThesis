@@ -1,6 +1,0 @@
-meth bip (⌊c : bool⌋) : ⌊int⌋ 
-    requires { c ¨= c }
-=
-    if ⌊c⌋ then ⌊1⌋
-    else ⌊0⌋
-  

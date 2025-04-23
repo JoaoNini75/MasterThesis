@@ -1,7 +1,0 @@
-meth bip (⌊x1 : int⌋) (⌊y1 : int⌋) : ⌊int⌋ 
-    requires { x1 ¨= x1 && y1 ¨= y1 }  
-=
-    x2 := y1 * 2; | y2 = y1 * 2 + 1;
-    y2 = x2 + 1; | x2 = y2 - 1;
-    ⌊result := x2 + y2⌋;
-   
