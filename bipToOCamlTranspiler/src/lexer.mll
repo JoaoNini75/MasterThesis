@@ -43,12 +43,10 @@ let digit = ['0'-'9']
 let ident = (letter | '_') (letter | digit | '_')*
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
-let comment = "#" [^'\n']*
 
 rule next_tokens = parse
   | '\n'    { new_line lexbuf; update_stack (indentation lexbuf) }
-  | (space | comment)+
-            { next_tokens lexbuf }
+  | "(*"    { comment lexbuf; token lexbuf }
   | ident as id { [id_or_kwd id] }
   | '+'     { [PLUS] }
   | '-'     { [MINUS] }
@@ -72,14 +70,24 @@ rule next_tokens = parse
             { try [CST (Cint (int_of_string s))]
               with _ -> raise (Lexing_error ("constant too large: " ^ s)) }
   | '"'     { [CST (Cstring (string lexbuf))] }
+  | '|'     { [PIPE] }
+  | '⌊'     { [LEFT_FLOOR] }
+  | '⌋'     { [RIGHT_FLOOR] }
+  | '<->'   { [SPEC_EQUAL] }
   | eof     { NEWLINE :: unindent 0 @ [EOF] }
   | _ as c  { raise (Lexing_error ("illegal character: " ^ String.make 1 c)) }
 
 and indentation = parse
-  | (space | comment)* '\n'
+  | (space)* '\n'
       { new_line lexbuf; indentation lexbuf }
   | space* as s
       { String.length s }
+
+and comment = parse
+  | "*)"  { () }
+  | "(*"  { comment lexbuf; comment lexbuf }
+  | _     { comment lexbuf }
+  | eof   { failwith "Comment not terminated" }
 
 and string = parse
   | '"'
