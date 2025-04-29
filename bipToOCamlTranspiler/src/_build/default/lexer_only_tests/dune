@@ -1,0 +1,22 @@
+;; dune
+
+;; Tell dune to generate lexer.ml from lexer.mll:
+(ocamllex
+ (modules lexer))
+
+;; If you’re using Menhir to build parser.ml from parser.mly
+;;(menhir
+ ;;(modules parser))
+
+;; compile your stubs + generated lexer into a library
+(library
+ (name biplang_lexer_only)
+ (modules ast parser lexer)
+)
+
+;; a tiny executable to test **only** the lexer
+(executable
+ (name lex_test)
+ (modules lex_test)
+ (libraries biplang_lexer_only)
+)

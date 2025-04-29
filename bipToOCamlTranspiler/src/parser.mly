@@ -1,5 +1,5 @@
 
-/* Parser for Mini-Python */
+/* Parser for BipLang */
 
 %{
   open Ast

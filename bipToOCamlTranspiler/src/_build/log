@@ -1,4 +1,4 @@
-# dune build biplang.exe
+# dune build
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/joaonini/.cache/dune/db
@@ -13,4 +13,35 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /usr/bin/ocamlc.opt -config > /tmp/dune_01e49c_output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_3b0a84_output
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -bin-annot -I lexer_only_tests/.biplang_lexer_only.objs/byte -no-alias-deps -opaque -o lexer_only_tests/.biplang_lexer_only.objs/byte/biplang_lexer_only.cmo -c -impl lexer_only_tests/biplang_lexer_only.ml-gen)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl lexer_only_tests/parser.ml) > _build/default/lexer_only_tests/.biplang_lexer_only.objs/biplang_lexer_only__Parser.impl.d
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl lexer_only_tests/lex_test.ml) > _build/default/lexer_only_tests/.lex_test.eobjs/lex_test.impl.d
+$ (cd _build/default && /usr/bin/ocamllex -q -o lexer_only_tests/lexer.ml lexer_only_tests/lexer.mll)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl lexer_only_tests/ast.ml) > _build/default/lexer_only_tests/.biplang_lexer_only.objs/biplang_lexer_only__Ast.impl.d
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -intf lexer_only_tests/parser.mli) > _build/default/lexer_only_tests/.biplang_lexer_only.objs/biplang_lexer_only__Parser.intf.d
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -w -49 -nopervasives -nostdlib -g -I lexer_only_tests/.biplang_lexer_only.objs/byte -I lexer_only_tests/.biplang_lexer_only.objs/native -intf-suffix .ml-gen -no-alias-deps -opaque -o lexer_only_tests/.biplang_lexer_only.objs/native/biplang_lexer_only.cmx -c -impl lexer_only_tests/biplang_lexer_only.ml-gen)
+$ (cd _build/default && /usr/bin/ocamldep.opt -modules -impl lexer_only_tests/lexer.ml) > _build/default/lexer_only_tests/.biplang_lexer_only.objs/biplang_lexer_only__Lexer.impl.d
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lexer_only_tests/.biplang_lexer_only.objs/byte -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/byte/biplang_lexer_only__Ast.cmo -c -impl lexer_only_tests/ast.ml)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lexer_only_tests/.biplang_lexer_only.objs/byte -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/byte/biplang_lexer_only__Parser.cmi -c -intf lexer_only_tests/parser.mli)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lexer_only_tests/.biplang_lexer_only.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/byte/biplang_lexer_only__Parser.cmo -c -impl lexer_only_tests/parser.ml)
+> File "lexer_only_tests/parser.ml", line 3, characters 8-11:
+> 3 |       | LET            -> "LET"
+>             ^^^
+> Error: Unbound constructor LET
+[2]
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lexer_only_tests/.biplang_lexer_only.objs/byte -I lexer_only_tests/.biplang_lexer_only.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/native/biplang_lexer_only__Parser.cmx -c -impl lexer_only_tests/parser.ml)
+> File "lexer_only_tests/parser.ml", line 3, characters 8-11:
+> 3 |       | LET            -> "LET"
+>             ^^^
+> Error: Unbound constructor LET
+[2]
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lexer_only_tests/.biplang_lexer_only.objs/byte -I lexer_only_tests/.biplang_lexer_only.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/native/biplang_lexer_only__Ast.cmx -c -impl lexer_only_tests/ast.ml)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lexer_only_tests/.biplang_lexer_only.objs/byte -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/byte/biplang_lexer_only__Lexer.cmo -c -impl lexer_only_tests/lexer.ml)
+$ (cd _build/default && /usr/bin/ocamlc.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lexer_only_tests/.lex_test.eobjs/byte -I lexer_only_tests/.biplang_lexer_only.objs/byte -no-alias-deps -opaque -o lexer_only_tests/.lex_test.eobjs/byte/lex_test.cmo -c -impl lexer_only_tests/lex_test.ml)
+> File "lexer_only_tests/lex_test.ml", line 8, characters 16-32:
+> 8 |       let tok = Lexer.next_token lexbuf in
+>                     ^^^^^^^^^^^^^^^^
+> Error: Unbound module Lexer
+[2]
+$ (cd _build/default && /usr/bin/ocamlopt.opt -w @1..3@5..28@30..39@43@46..47@49..57@61..62-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lexer_only_tests/.biplang_lexer_only.objs/byte -I lexer_only_tests/.biplang_lexer_only.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Biplang_lexer_only -o lexer_only_tests/.biplang_lexer_only.objs/native/biplang_lexer_only__Lexer.cmx -c -impl lexer_only_tests/lexer.ml)

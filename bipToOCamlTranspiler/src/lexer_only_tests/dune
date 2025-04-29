@@ -1,0 +1,16 @@
+;; dune (in src/lexer_only_tests)
+
+;; 1) Have Dune run ocamllex on lexer.mll
+(ocamllex
+ (modules lexer))
+
+;; 2) Build a little library of your stubs + generated lexer
+(library
+ (name biplang_lexer_only)
+ (modules ast parser lexer))
+
+;; 3) Build the lexer‐only test executable
+(executable
+ (name lex_test)
+ (modules lex_test)
+ (libraries biplang_lexer_only))
