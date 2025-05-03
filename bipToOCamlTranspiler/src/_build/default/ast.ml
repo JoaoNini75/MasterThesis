@@ -34,6 +34,7 @@ type expr =
 
 and stmt =
   | Sif of expr * stmt * stmt
+  | Sreturn of expr
   | Sassign of ident * expr
   | Sprint of expr
   | Sblock of stmt list
