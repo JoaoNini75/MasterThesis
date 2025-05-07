@@ -55,50 +55,44 @@ let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
 rule next_tokens = parse
-  | '\n'    { new_line lexbuf; update_stack (indentation lexbuf) }
+  | '\n'    { new_line lexbuf }
   | "(*"    { comment lexbuf; next_tokens lexbuf }
-  | ident as id { [id_or_kwd id] }
-  | '+'     { [PLUS] }
-  | '-'     { [MINUS] }
-  | '*'     { [TIMES] }
-  | "//"    { [DIV] }
-  | '%'     { [MOD] }
-  | '='     { [EQUAL] }
-  | "=="    { [CMP Beq] }
-  | "!="    { [CMP Bneq] }
-  | "<"     { [CMP Blt] }
-  | "<="    { [CMP Ble] }
-  | ">"     { [CMP Bgt] }
-  | ">="    { [CMP Bge] }
-  | '('     { [LP] }
-  | ')'     { [RP] }
-  | '['     { [LSQ] }
-  | ']'     { [RSQ] }
-  | ','     { [COMMA] }
-  | ':'     { [COLON] }
+  | ident as id { id_or_kwd id }
+  | '+'     { PLUS }
+  | '-'     { MINUS }
+  | '*'     { TIMES }
+  | "//"    { DIV }
+  | '%'     { MOD }
+  | '='     { EQUAL }
+  | "=="    { CMP Beq }
+  | "!="    { CMP Bneq }
+  | "<"     { CMP Blt }
+  | "<="    { CMP Ble }
+  | ">"     { CMP Bgt }
+  | ">="    { CMP Bge }
+  | '('     { LP }
+  | ')'     { RP }
+  | '['     { LSQ }
+  | ']'     { RSQ }
+  | ','     { COMMA }
+  | ':'     { COLON }
   | integer as s
-            { try [CST (Cint (int_of_string s))]
+            { try CST (Cint (int_of_string s))
               with _ -> raise (Lexing_error ("constant too large: " ^ s)) }
-  | '"'     { [CST (Cstring (string lexbuf))] }
+  | '"'     { CST (Cstring (string lexbuf)) }
 
-  | ":="    { [ASSIGN] }
-  | "!"     { [DEREF] }
-  | "&&"    { [AND] }
-  | "||"    { [OR] }
+  | ":="    { ASSIGN }
+  | "!"     { DEREF }
+  | "&&"    { AND }
+  | "||"    { OR }
 
-  | '|'     { [PIPE] }
-  | "⌊"     { [LFLOOR] } 
-  | "⌋"     { [RFLOOR] } 
-  | "<->"   { [SPEC_EQUAL] }
+  | '|'     { PIPE }
+  | "|_"    { LFLOOR } 
+  | "_|"    { RFLOOR } 
+  | "<->"   { SPEC_EQUAL }
 
-  | eof     { NEWLINE :: unindent 0 @ [EOF] }
+  | eof     { EOF }
   | _ as c  { raise (Lexing_error ("illegal character: " ^ String.make 1 c)) }
-
-and indentation = parse
-  | (space)* '\n'
-      { new_line lexbuf; indentation lexbuf }
-  | space* as s
-      { String.length s }
 
 and comment = parse
   | "*)"  { () }
