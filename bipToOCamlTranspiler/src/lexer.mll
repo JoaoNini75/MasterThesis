@@ -27,6 +27,7 @@
         "print", PRINT;
         "for", FOR;
         "while", WHILE;
+        "to", TO;
         "do", DO;
         "done", DONE;
         "not", NOT;
@@ -74,7 +75,7 @@ rule next_tokens = parse
             { try CST (Cint (int_of_string s))
               with _ -> raise (Lexing_error ("Constant too large: " ^ s)) }
   | '"'     { CST (Cstring (string lexbuf)) }
-  | ":="    { ASSIGN }
+  | ":="    { SET }
   | "!"     { DEREF }
   | "&&"    { AND }
   | "||"    { OR }
@@ -156,6 +157,7 @@ and string = parse
     | ELSE -> fprintf fmt "else"
     | DONE -> fprintf fmt "done"
     | DO -> fprintf fmt "do"
+    | TO -> fprintf fmt "to"
     | DIV -> fprintf fmt "/"
     | DEREF -> fprintf fmt "!"
     | CST c ->
@@ -185,7 +187,7 @@ and string = parse
 
     | BOOL -> fprintf fmt "bool"
     | BEGIN -> fprintf fmt "begin"
-    | ASSIGN -> fprintf fmt ":="
+    | SET -> fprintf fmt ":="
     | AND -> fprintf fmt "and"
 
   let () =

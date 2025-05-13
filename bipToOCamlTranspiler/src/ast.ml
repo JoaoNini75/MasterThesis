@@ -1,4 +1,3 @@
-
 (* Abstract Syntax of BipLang *)
 
 (* Parsed trees.
@@ -11,6 +10,7 @@ type ident = { loc: location; id: string; }
 type unop =
   | Uneg    (* -e *)
   | Unot    (* not e *)
+  | Uref    (* ref e *)
   | Uderef  (* !e *)
 
 type binop =
@@ -20,29 +20,37 @@ type binop =
 
 type constant =
   | Cnone
-  | Cbool of bool
-  | Cstring of string
-  | Cint of int
+  | Cint of     int
+  | Cbool of    bool
+  | Cstring of  string
 
 type expr =
-  | Ecst of constant
+  | Ecst of   constant
   | Eident of ident
+  | Eunop of  unop * expr
   | Ebinop of binop * expr * expr
-  | Eunop of unop * expr
-  | Ecall of ident * expr list
-  | Elist of expr list (* [e1,e2,...] *)
-  | Eget of expr * expr (* e1[e2] *)
+  (*| Elist of expr list (* [e1,e2,...] *)
+  | Eget of expr * expr (* e1[e2] *) *)
 
 and stmt =
-  | Sif of expr * stmt * stmt
-  | Sreturn of expr
-  | Sassign of ident * expr
-  | Sprint of expr
-  | Sblock of stmt list
-  | Sfor of ident * expr * stmt
+  | Slet of     ident * expr
+  | Sfun of     ident * ident list * stmt list
+  | Sapp of     ident * expr list
+  | Sif of      expr * stmt
+  | Sifelse of  expr * stmt * stmt
+  | Sfor of     ident * expr * expr * stmt (* list *)
+  | Swhile of   expr * stmt (* list *)
+  | Sassign of  ident * expr
+  | Sset of     ident * expr
+  | Sprint of   expr
+  | Sfloor of   stmt
+  | Spipe of    stmt * stmt
+  (* | Sblock of stmt list 
   | Seval of expr
-  | Sset of expr * expr * expr (* e1[e2] = e3 *)
+  | Sset of expr * expr * expr (* e1[e2] = e3 *) *)
 
-and def = ident * ident list * stmt
+(*and ast_let = ident * ident list * stmt list
 
-and file = def list * stmt
+ and ast_module = ast_let list * stmt *)
+
+and file = stmt list
