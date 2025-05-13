@@ -1,4 +1,4 @@
-# dune exec ./biplang.exe test.py
+# dune exec ./lexer.exe lexer_test.bml
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location: /home/joaonini/.cache/dune/db
@@ -13,4 +13,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /usr/bin/ocamlc.opt -config > /tmp/dune_c510d8_output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_d74797_output

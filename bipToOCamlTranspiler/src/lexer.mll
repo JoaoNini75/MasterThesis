@@ -8,6 +8,13 @@
 
   exception Lexing_error of string
 
+  type const =
+    | Cint of int
+    | Cbool of bool
+    | Cstring of string
+
+  type cmp = Beq | Bneq | Blt | Ble | Bgt | Bge
+
   let id_or_kwd =
     let h = Hashtbl.create 32 in
     List.iter (fun (s, tok) -> Hashtbl.add h s tok)
@@ -35,7 +42,7 @@
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let ident = (letter | '_') (letter | digit | '_')*
+let ident = (letter | '_') (letter | digit | '_')* (letter | digit)
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
@@ -64,7 +71,7 @@ rule next_tokens = parse
   | ':'     { COLON }
   | integer as s
             { try CST (Cint (int_of_string s))
-              with _ -> raise (Lexing_error ("constant too large: " ^ s)) }
+              with _ -> raise (Lexing_error ("Constant too large: " ^ s)) }
   | '"'     { CST (Cstring (string lexbuf)) }
 
   | ":="    { ASSIGN }
@@ -78,7 +85,7 @@ rule next_tokens = parse
   | "<->"   { SPEC_EQUAL }
 
   | eof     { EOF }
-  | _ as c  { raise (Lexing_error ("illegal character: " ^ String.make 1 c)) }
+  | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
 
 and comment = parse
   | "*)"  { () }
@@ -119,46 +126,66 @@ and string = parse
   let pp_token fmt (t: token) =
     match t with
     | WHILE -> fprintf fmt "while"
-    | TIMES -> assert false (* TODO *)
-    | THEN -> assert false (* TODO *)
+    | TIMES -> fprintf fmt "times"
+    | THEN -> fprintf fmt "then"
     | SPEC_EQUAL -> fprintf fmt "<->"
-    | RSQ -> assert false (* TODO *)
-    | RP -> assert false (* TODO *)
+    | RSQ -> fprintf fmt "]"
+    | RP -> fprintf fmt ")"
     | RFLOOR -> fprintf fmt "_|"
-    | REF -> assert false (* TODO *)
-    | PRINT -> assert false (* TODO *)
-    | PLUS -> assert false (* TODO *)
-    | PIPE -> assert false (* TODO *)
-    | OR -> assert false (* TODO *)
-    | NOT -> assert false (* TODO *)
-    | NEWLINE -> assert false (* TODO *)
-    | MOD -> assert false (* TODO *)
-    | MINUS -> assert false (* TODO *)
-    | LSQ -> assert false (* TODO *)
-    | LP -> assert false (* TODO *)
+    | REF -> fprintf fmt "ref"
+    | PRINT -> fprintf fmt "print"
+    | PLUS -> fprintf fmt "+"
+    | PIPE -> fprintf fmt "|"
+    | OR -> fprintf fmt "or"
+    | NOT -> fprintf fmt "not"
+    | NEWLINE -> fprintf fmt "newline"
+    | MOD -> fprintf fmt "mod"
+    | MINUS -> fprintf fmt "-"
+    | LSQ -> fprintf fmt "["
+    | LP -> fprintf fmt "("
     | LFLOOR -> fprintf fmt "|_"
     | LET -> fprintf fmt "let"
-    | INT -> assert false (* TODO *)
-    | IN -> assert false (* TODO *)
-    | IF -> assert false (* TODO *)
-    | IDENT s -> fprintf fmt "id: %s" s
-    | FOR -> assert false (* TODO *)
-    | EQUAL -> assert false (* TODO *)
+    | INT -> fprintf fmt "int"
+    | IN -> fprintf fmt "in"
+    | IF -> fprintf fmt "if"
+    | IDENT s -> fprintf fmt "%s (identifier)" s
+    | FOR -> fprintf fmt "for"
+    | EQUAL -> fprintf fmt "="
     | EOF -> fprintf fmt "eof"
-    | END -> assert false (* TODO *)
-    | ELSE -> assert false (* TODO *)
-    | DONE -> assert false (* TODO *)
-    | DO -> assert false (* TODO *)
-    | DIV -> assert false (* TODO *)
-    | DEREF -> assert false (* TODO *)
-    | CST _ -> assert false (* TODO *)
-    | COMMA -> assert false (* TODO *)
-    | COLON -> assert false (* TODO *)
-    | CMP _ -> assert false (* TODO *)
-    | BOOL -> assert false (* TODO *)
-    | BEGIN -> assert false (* TODO *)
-    | ASSIGN -> assert false (* TODO *)
-    | AND -> assert false (* TODO *)
+    | END -> fprintf fmt "end"
+    | ELSE -> fprintf fmt "else"
+    | DONE -> fprintf fmt "done"
+    | DO -> fprintf fmt "do"
+    | DIV -> fprintf fmt "/"
+    | DEREF -> fprintf fmt "!"
+    | CST c ->
+      let s =
+        match c with
+        | Cint  i -> string_of_int i
+        | Cbool b -> string_of_bool b
+        | Cstring str -> str
+        | Cnone -> "Cnone"
+      in
+      fprintf fmt "%s (const)" s
+
+    | COMMA -> fprintf fmt ","
+    | COLON -> fprintf fmt ":"
+    | CMP op ->
+      let s =
+        match op with
+        | Beq  -> "=="
+        | Bneq -> "!="
+        | Blt  -> "<"
+        | Ble  -> "<="
+        | Bgt  -> ">"
+        | Bge  -> ">="
+      in
+      fprintf fmt "%s (cmp)" s
+
+    | BOOL -> fprintf fmt "bool"
+    | BEGIN -> fprintf fmt "begin"
+    | ASSIGN -> fprintf fmt ":="
+    | AND -> fprintf fmt "and"
 
   let () =
     let fname = Sys.argv.(1) in
@@ -174,6 +201,6 @@ and string = parse
 
 (*
    Local Variables:
-   compile-command: "dune build && dune exec ./lexer.exe test.bml"
+   compile-command: "dune build && dune exec ./lexer.exe lexer_test.bml"
    End:
 *)
