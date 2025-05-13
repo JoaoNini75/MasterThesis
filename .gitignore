@@ -3,6 +3,11 @@
 
 ### NOVAthesis template ###
 
+### Joao Nini added: ###
+bipToOCamlTranspiler/src/_build/
+
+
+
 # Ignore all template files…
 template.*
 # …except template.tex
@@ -336,7 +341,8 @@ TSWLatexianTemp*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
