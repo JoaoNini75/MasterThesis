@@ -1,5 +1,5 @@
 
-(* Abstract Syntax of Mini-Python *)
+(* Abstract Syntax of BipLang *)
 
 (* Parsed trees.
    This is the output of the parser and the input of the interpreter. *)
@@ -9,13 +9,14 @@ type location = Lexing.position * Lexing.position
 type ident = { loc: location; id: string; }
 
 type unop =
-  | Uneg (* -e *)
-  | Unot (* not e *)
+  | Uneg    (* -e *)
+  | Unot    (* not e *)
+  | Uderef  (* !e *)
 
 type binop =
   | Badd | Bsub | Bmul | Bdiv | Bmod    (* + - * // % *)
   | Beq | Bneq | Blt | Ble | Bgt | Bge  (* == != < <= > >= *)
-  | Band | Bor                          (* and or *)
+  | Band | Bor | Bspeq                  (* and or <-> *)
 
 type constant =
   | Cnone

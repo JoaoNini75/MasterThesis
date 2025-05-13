@@ -74,16 +74,15 @@ rule next_tokens = parse
             { try CST (Cint (int_of_string s))
               with _ -> raise (Lexing_error ("Constant too large: " ^ s)) }
   | '"'     { CST (Cstring (string lexbuf)) }
-
   | ":="    { ASSIGN }
   | "!"     { DEREF }
   | "&&"    { AND }
   | "||"    { OR }
 
-  | '|'     { PIPE }
-  | "|_"    { LFLOOR }
-  | "_|"    { RFLOOR }
-  | "<->"   { SPEC_EQUAL }
+  | '|'     { PIPE }       
+  | "|_"    { LFLOOR }      
+  | "_|"    { RFLOOR }      
+  | "<->"   { SPEC_EQUAL }  
 
   | eof     { EOF }
   | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
