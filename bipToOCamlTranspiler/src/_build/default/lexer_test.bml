@@ -3,3 +3,28 @@ let bip (|_x1 : int_|) (|_y1 : int_|) : |_int_| =
     let y2 = x2 + 1 in | let x2 = y2 - 1 in
     |_x2 + y2_|
 (*@ requires x1 <-> x1 && y1 <-> y1 *)
+
+
+let bip (|_c : bool_|) : |_int_| =
+    if |_c_| then |_1_|
+    else |_0_|
+(*@ requires c <-> c *)
+
+
+let bip (|_b : int_|) (|_c : int_|) (|_n : int_|) : |_int_| =
+    |_let i = ref 0 in_|;
+    let j = ref 0 in; | let j = ref c in;
+    |_let x = ref 0 in_|;
+
+    while (|_!i < n_|) do
+        (*@ invariant |_!i >= 0_| 
+            invariant skip | !j = !i * b + c 
+            invariant !i <-> !i 
+            invariant !x ¨= !x 
+            variant |_n - !i_|  *)
+        j := !i * b + c; | x := !x + !j;
+        x := !x + !j;    | j := !j + b;
+        |_i := !i + 1_|
+    done;
+    |_!x_|
+(*@ requires b <-> b && c <-> c && n <-> n *)

@@ -6,6 +6,7 @@ type token =
   | TIMES
   | THEN
   | SPEC_EQUAL
+  | SEMICOLON
   | RSQ
   | RP
   | RFLOOR

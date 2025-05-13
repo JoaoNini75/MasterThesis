@@ -42,7 +42,7 @@
 
 let letter = ['a'-'z' 'A'-'Z']
 let digit = ['0'-'9']
-let ident = (letter | '_') (letter | digit | '_')* (letter | digit)
+let ident = letter | ((letter | '_') (letter | digit | '_')* (letter | digit))
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
@@ -69,6 +69,7 @@ rule next_tokens = parse
   | ']'     { RSQ }
   | ','     { COMMA }
   | ':'     { COLON }
+  | ';'     { SEMICOLON }
   | integer as s
             { try CST (Cint (int_of_string s))
               with _ -> raise (Lexing_error ("Constant too large: " ^ s)) }
@@ -170,6 +171,7 @@ and string = parse
 
     | COMMA -> fprintf fmt ","
     | COLON -> fprintf fmt ":"
+    | SEMICOLON -> fprintf fmt ";"
     | CMP op ->
       let s =
         match op with
