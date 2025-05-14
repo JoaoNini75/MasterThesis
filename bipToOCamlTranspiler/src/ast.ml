@@ -7,6 +7,9 @@ type location = Lexing.position * Lexing.position
 
 type ident = { loc: location; id: string; }
 
+type bip_type = BOOL | INT | NONE
+type parameter = ident * bip_type
+
 type unop =
   | Uneg    (* -e *)
   | Unot    (* not e *)
@@ -41,7 +44,7 @@ type expr =
   | Sfloor of   expr (* |_ expr _| *)
   | Spipe of    expr * expr (* expr | expr *)
 
-and def = ident * ident list * expr
+and def = ident * parameter list * expr
 
 and file = def list
    

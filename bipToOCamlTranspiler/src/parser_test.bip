@@ -1,21 +1,17 @@
-let bip (x1, y1) =
+let bip (x1 : int, y1 : bool) =
     let x2 = y1 * 2 in
     let y2 = 34 in
     |_x2 + y2_|
 (* @ requires x1 <-> x1 && y1 <-> y1 *)
 
-
-
-
-
-
-(* 
 let bip (|_c : bool_|) : |_int_| =
     if |_c_| then |_1_|
     else |_0_|
 (*@ requires c <-> c *)
 
 
+
+(* 
 let bip (|_b : int_|) (|_c : int_|) (|_n : int_|) : |_int_| =
     |_let i = ref 0 in_|;
     let j = ref 0 in; | let j = ref c in;

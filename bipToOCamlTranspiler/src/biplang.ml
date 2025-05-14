@@ -120,9 +120,18 @@ and pp_expr fmt expr =
     pp_expr fmt e1;
     pp_expr fmt e2 
 and pp_def fmt def =
-  let (id, id_list, e) = def in
+  let (id, param_list, e) = def in
   fprintf fmt "\n(fun) %s (def.id) (def.id_list): " id.id;
-  List.iter (fun id -> fprintf fmt "%s, " id.id) id_list;
+  List.iter (
+    fun param ->
+      let (ident, bip_type) = param in
+      fprintf fmt "%s (%s), " ident.id 
+      (match bip_type with
+      | INT -> "int"
+      | BOOL -> "bool"
+      | NONE -> "none"
+      )
+    ) param_list;
   pp_expr fmt e
   
 

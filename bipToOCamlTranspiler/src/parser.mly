@@ -8,7 +8,7 @@
 %token <Ast.constant> CST
 %token <Ast.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -30,7 +30,6 @@
 %nonassoc REF DEREF
 
 %start file
-
 %type <Ast.file> file
 
 %%
@@ -40,8 +39,8 @@ file:
     { dl }
 ;
 
-def:    (* let id (x, y, z) = body *)
-| LET f = ident LP x = separated_list(COMMA, ident) RP (*(COLON t = (INT | BOOL))?*) EQUAL s = expr 
+def:    
+| LET f = ident LP x = separated_list(COMMA, parameter) RP EQUAL s = expr 
     { f, x, s }
 ;
 
@@ -86,6 +85,18 @@ expr:
     { Sprint e }
 ;
 
+parameter:
+| id = ident COLON tp = bip_type
+    { id, tp }
+| id = ident
+    { id, NONE }
+;
+
+bip_type:
+| INT { INT }
+| BOOL { BOOL }
+| NONE { NONE }
+;
 
 %inline binop:
 | PLUS  { Badd }

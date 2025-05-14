@@ -27,7 +27,8 @@
         "true", CST (Cbool true);
         "false", CST (Cbool false);
         "int", INT;
-        "bool", BOOL;];
+        "bool", BOOL;
+        "None", NONE;];
    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -141,6 +142,7 @@ and string = parse
     | LFLOOR -> fprintf fmt "|_"
     | LET -> fprintf fmt "let"
     | INT -> fprintf fmt "int"
+    | NONE -> fprintf fmt "None"
     | IN -> fprintf fmt "in"
     | IF -> fprintf fmt "if"
     | IDENT s -> fprintf fmt "%s (identifier)" s
