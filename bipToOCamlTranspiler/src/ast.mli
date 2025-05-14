@@ -25,32 +25,23 @@ type constant =
   | Cstring of  string
 
 type expr =
-  | Ecst of   constant
-  | Eident of ident
-  | Eunop of  unop * expr
-  | Ebinop of binop * expr * expr
-  (*| Elist of expr list (* [e1,e2,...] *)
-  | Eget of expr * expr (* e1[e2] *) *)
-
-and stmt =
+  | Eident of   ident
+  | Ecst of     constant
+  | Eunop of    unop * expr
+  | Ebinop of   binop * expr * expr
   | Slet of     ident * expr
-  | Sfun of     ident * ident list * stmt list
+  | Sfun of     ident * ident list * expr
   | Sapp of     ident * expr list
-  | Sif of      expr * stmt
-  | Sifelse of  expr * stmt * stmt
-  | Sfor of     ident * expr * expr * stmt (* list *)
-  | Swhile of   expr * stmt (* list *)
+  | Sifelse of  expr * expr * expr
+  | Sfor of     ident * expr * expr * expr (* list? *)
+  | Swhile of   expr * expr (* list? *)
   | Sassign of  ident * expr
   | Sset of     ident * expr
   | Sprint of   expr
-  | Sfloor of   stmt
-  | Spipe of    stmt * stmt
-  (* | Sblock of stmt list 
-  | Seval of expr
-  | Sset of expr * expr * expr (* e1[e2] = e3 *) *)
+  | Sfloor of   expr (* |_ expr _| *)
+  | Spipe of    expr * expr (* expr | expr *)
 
-(*and ast_let = ident * ident list * stmt list
+and def = ident * ident list * expr
 
- and ast_module = ast_let list * stmt *)
-
-and file = stmt list
+and file = def list
+   

@@ -10,11 +10,15 @@
 %token <string> IDENT
 %token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
-%token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END NEWLINE
+%token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
 
 /* priorities and associativities */
 
+%left PIPE
+%left PRINT
+%nonassoc ELSE 
+%nonassoc SET
 %left OR
 %left AND
 %nonassoc NOT
@@ -22,21 +26,21 @@
 %left PLUS MINUS
 %left TIMES DIV MOD
 %nonassoc unary_minus
-%nonassoc LSQ
+%nonassoc REF DEREF
 
 %start file
+
 %type <Ast.file> file
 
 %%
 
 file:
-| NEWLINE? dl = list(def) b = nonempty_list(stmt) NEWLINE? EOF
-    { dl, Sblock b }
+| dl = list(def) EOF
+    { dl }
 ;
 
-def:
-| LET f = ident LP x = separated_list(COMMA, ident) RP
-  COLON s = suite
+def:    (* let id (x, y, z) = body *)
+| LET f = ident LP x = separated_list(COMMA, ident) RP EQUAL s = expr
     { f, x, s }
 ;
 
@@ -63,25 +67,11 @@ expr:
     { Elist l } *)
 | LP e = expr RP
     { e }
-;
-
-suite:
-| s = simple_stmt NEWLINE
-    { s }
-(*| NEWLINE BEGIN l = nonempty_list(stmt) END
-    { Sblock l } *)
-;
-
-stmt:
-| s = simple_stmt NEWLINE
-    { s }
-| IF c = expr THEN s = suite
-    { Sif (c, s) }
-| IF c = expr THEN s1 = suite ELSE s2 = suite
+| IF c = expr THEN s1 = expr ELSE s2 = expr
     { Sifelse (c, s1, s2) }
-| FOR id = ident EQUAL e1 = expr TO e2 = expr DO s = suite DONE SEMICOLON
+| FOR id = ident EQUAL e1 = expr TO e2 = expr DO s = expr DONE SEMICOLON
     { Sfor (id, e1, e2, s) }
-| WHILE e = expr DO s = suite DONE SEMICOLON
+| WHILE e = expr DO s = expr DONE SEMICOLON
     { Swhile (e, s) }   
 | LET id = ident EQUAL e = expr IN
     { Slet (id, e) }
@@ -89,22 +79,14 @@ stmt:
     { Sassign (id, e) }
 | id = ident SET e = expr
     { Sset (id, e) }    
-| LFLOOR s = suite RFLOOR
+| LFLOOR s = expr RFLOOR
     { Sfloor (s) }
-| s1 = suite PIPE s2 = suite
+| s1 = expr PIPE s2 = expr
     { Spipe (s1, s2) }
+| PRINT e = expr
+    { Sprint e }
 ;
 
-simple_stmt:
-(* | id = ident EQUAL e = expr
-    { Sassign (id, e) } 
-| e1 = expr LSQ e2 = expr RSQ EQUAL e3 = expr
-    { Sset (e1, e2, e3) } *)
-| PRINT LP e = expr RP
-    { Sprint e }
-(* | e = expr
-    { Seval e } *)
-;
 
 %inline binop:
 | PLUS  { Badd }
@@ -120,5 +102,3 @@ simple_stmt:
 ident:
   id = IDENT { { loc = ($startpos, $endpos); id } }
 ;
-
-

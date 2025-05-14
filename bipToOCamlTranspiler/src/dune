@@ -1,8 +1,18 @@
+;(ocamllex
+ ;(modules lexer))
+;(menhir
+ ;(modules parser))
+;(executable
+ ;(name lexer)
+; (promote (until-clean))
+; (flags ())) 
+
 (ocamllex
  (modules lexer))
 (menhir
  (modules parser))
 (executable
- (name lexer)
+ (name biplang)
  (promote (until-clean))
- (flags ()))
+ (flags ())
+ (modules_without_implementation ast))

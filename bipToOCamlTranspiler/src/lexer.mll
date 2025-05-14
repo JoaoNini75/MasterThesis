@@ -3,17 +3,10 @@
 
 {
   open Lexing
-  (* open Ast *)
+  open Ast
   open Parser
 
   exception Lexing_error of string
-
-  type const =
-    | Cint of int
-    | Cbool of bool
-    | Cstring of string
-
-  type cmp = Beq | Bneq | Blt | Ble | Bgt | Bge
 
   let id_or_kwd =
     let h = Hashtbl.create 32 in
@@ -91,6 +84,8 @@ rule next_tokens = parse
 and comment = parse
   | "*)"  { () }
   | "(*"  { comment lexbuf; comment lexbuf }
+  (* TODO: save gospel specifications *)
+  (* TODO: handle spec_equal situation *)
   | _     { comment lexbuf }
   | eof   { failwith "Comment not terminated" }
 
@@ -139,7 +134,6 @@ and string = parse
     | PIPE -> fprintf fmt "|"
     | OR -> fprintf fmt "or"
     | NOT -> fprintf fmt "not"
-    | NEWLINE -> fprintf fmt "newline"
     | MOD -> fprintf fmt "mod"
     | MINUS -> fprintf fmt "-"
     | LSQ -> fprintf fmt "["
@@ -182,6 +176,7 @@ and string = parse
         | Ble  -> "<="
         | Bgt  -> ">"
         | Bge  -> ">="
+        | _ -> assert false
       in
       fprintf fmt "%s (cmp)" s
 
@@ -196,7 +191,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-      eprintf "@[%a@]@." pp_token token;
+      (* eprintf "@[%a@]@." pp_token token; *)
       if token <> EOF then loop () in
     loop ()
 
@@ -204,6 +199,6 @@ and string = parse
 
 (*
    Local Variables:
-   compile-command: "dune build && dune exec ./lexer.exe lexer_test.bml"
+   compile-command: "dune build && dune exec ./lexer.exe lexer_test.bip"
    End:
 *)
