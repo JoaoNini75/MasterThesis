@@ -29,7 +29,7 @@ type expr =
   | Ecst of     constant
   | Eunop of    unop * expr
   | Ebinop of   binop * expr * expr
-  | Slet of     ident * expr
+  | Slet of     ident * expr * expr
   | Sfun of     ident * ident list * expr
   | Sapp of     ident * expr list
   | Sifelse of  expr * expr * expr

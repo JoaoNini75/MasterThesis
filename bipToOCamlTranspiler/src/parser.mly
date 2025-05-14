@@ -19,6 +19,7 @@
 %left PRINT
 %nonassoc ELSE 
 %nonassoc SET
+%nonassoc IN
 %left OR
 %left AND
 %nonassoc NOT
@@ -40,11 +41,13 @@ file:
 ;
 
 def:    (* let id (x, y, z) = body *)
-| LET f = ident LP x = separated_list(COMMA, ident) RP EQUAL s = expr
+| LET f = ident LP x = separated_list(COMMA, ident) RP (*(COLON t = (INT | BOOL))?*) EQUAL s = expr 
     { f, x, s }
 ;
 
 expr:
+| LP e = expr RP
+    { e }
 | c = CST
     { Ecst c }
 | id = ident
@@ -65,18 +68,14 @@ expr:
     { Ecall (f, e) }
 | LSQ l = separated_list(COMMA, expr) RSQ
     { Elist l } *)
-| LP e = expr RP
-    { e }
 | IF c = expr THEN s1 = expr ELSE s2 = expr
     { Sifelse (c, s1, s2) }
 | FOR id = ident EQUAL e1 = expr TO e2 = expr DO s = expr DONE SEMICOLON
     { Sfor (id, e1, e2, s) }
 | WHILE e = expr DO s = expr DONE SEMICOLON
     { Swhile (e, s) }   
-| LET id = ident EQUAL e = expr IN
-    { Slet (id, e) }
-| id = ident EQUAL e = expr IN
-    { Sassign (id, e) }
+| LET id = ident EQUAL e1 = expr IN e2 = expr
+    { Slet (id, e1, e2) }
 | id = ident SET e = expr
     { Sset (id, e) }    
 | LFLOOR s = expr RFLOOR

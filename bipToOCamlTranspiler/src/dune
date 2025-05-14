@@ -14,5 +14,4 @@
 (executable
  (name biplang)
  (promote (until-clean))
- (flags ())
- (modules_without_implementation ast))
+ (flags ()))

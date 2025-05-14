@@ -40,9 +40,8 @@ let pp_constant fmt constant =
       | Cbool b -> string_of_bool b
       | Cstring str -> str
       | Cnone -> "Cnone"
-      | _ -> assert false
   in 
-    fprintf fmt "%s (constant)" s
+    fprintf fmt "%s (constant) " s
 
 
 let rec pp_unop fmt unop e =
@@ -52,9 +51,8 @@ let rec pp_unop fmt unop e =
       | Unot -> "not "
       | Uref -> "ref "
       | Uderef -> "!" 
-      | _ -> assert false
   in
-    fprintf fmt "%se (unop):" s;
+    fprintf fmt "%se (unop): " s;
     pp_expr fmt e
 and pp_binop fmt binop e1 e2 =
   let s =
@@ -73,20 +71,20 @@ and pp_binop fmt binop e1 e2 =
       | Band -> "and" 
       | Bor -> "or" 
       | Bspeq -> "<->"
-      | _ -> assert false
   in
-    fprintf fmt "(binop %s):" s;
+    fprintf fmt "(binop %s): " s;
     pp_expr fmt e1;
     pp_expr fmt e2
 and pp_expr fmt expr = 
   match expr with
-  | Eident id -> fprintf fmt "%s (expr.id)" id.id
+  | Eident id -> fprintf fmt "%s (expr.id) " id.id
   | Ecst c -> pp_constant fmt c
   | Eunop (op, e) -> pp_unop fmt op e
   | Ebinop (op, e1, e2) -> pp_binop fmt op e1 e2
-  | Slet (id, e) -> 
-    fprintf fmt "%s = e (let):" id.id;
-    pp_expr fmt e
+  | Slet (id, e1, e2) -> 
+    fprintf fmt "\n(let) %s = " id.id;
+    pp_expr fmt e1;
+    pp_expr fmt e2
   | Sfun (id, id_list, e) -> pp_def fmt (id, id_list, e)
   | Sapp (id, expr_list) -> 
     fprintf fmt "%s (app):" id.id;
@@ -115,7 +113,7 @@ and pp_expr fmt expr =
     fprintf fmt "(print):";
     pp_expr fmt e
   | Sfloor e -> 
-    fprintf fmt "(floor):";
+    fprintf fmt "\n(floor): ";
     pp_expr fmt e
   | Spipe (e1, e2) -> 
     fprintf fmt "(pipe):";
@@ -123,8 +121,8 @@ and pp_expr fmt expr =
     pp_expr fmt e2 
 and pp_def fmt def =
   let (id, id_list, e) = def in
-  fprintf fmt "%s (def.id) (def.id_list):" id.id;
-  List.iter (fun id -> fprintf fmt "%s" id.id) id_list;
+  fprintf fmt "\n(fun) %s (def.id) (def.id_list): " id.id;
+  List.iter (fun id -> fprintf fmt "%s, " id.id) id_list;
   pp_expr fmt e
   
 
