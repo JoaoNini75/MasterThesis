@@ -8,7 +8,7 @@
 %token <Ast.constant> CST
 %token <Ast.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -16,6 +16,7 @@
 /* priorities and associativities */
 
 %left PIPE
+%left SEMICOLON
 %left PRINT
 %nonassoc ELSE 
 %nonassoc SET
@@ -30,6 +31,7 @@
 %nonassoc REF DEREF
 
 %start file
+
 %type <Ast.file> file
 
 %%
@@ -39,20 +41,26 @@ file:
     { dl }
 ;
 
-def:    
-| LET f = ident LP x = separated_list(COMMA, parameter) RP EQUAL s = expr 
+def:    (* let id (x, y, z) = body *)
+| LET f = ident LP x = separated_list(COMMA, ident) RP (*(COLON t = (INT | BOOL))?*) EQUAL s = expr 
     { f, x, s }
 ;
 
 expr:
 | LP e = expr RP
-    { e }
+    { Seval (e) }
+| BEGIN e = expr END
+    { Seval (e) }
+| e1 = expr SEMICOLON e2 = expr
+    { Sseq (e1, e2) }
+(*| e1 = expr SEMICOLON PIPE e2 = expr SEMICOLON
+    { Sseq (e1, e2) } *)
 | c = CST
     { Ecst c }
 | id = ident
     { Eident id }
-(* | e1 = expr LSQ e2 = expr RSQ
-    { Eget (e1, e2) } *)
+| LET id = ident EQUAL e1 = expr IN e2 = expr
+    { Slet (id, e1, e2) } 
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -60,43 +68,25 @@ expr:
 | REF e1 = expr
     { Eunop (Uref, e1) } 
 | DEREF e1 = expr
-    { Eunop (Uderef, e1) } 
+    { Eunop (Uderef, e1) }
+| id = ident SET e = expr
+    { Sset (id, e) } 
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
-(* | f = ident LP e = separated_list(COMMA, expr) RP
-    { Ecall (f, e) }
-| LSQ l = separated_list(COMMA, expr) RSQ
-    { Elist l } *)
 | IF c = expr THEN s1 = expr ELSE s2 = expr
     { Sifelse (c, s1, s2) }
-| FOR id = ident EQUAL e1 = expr TO e2 = expr DO s = expr DONE SEMICOLON
-    { Sfor (id, e1, e2, s) }
-| WHILE e = expr DO s = expr DONE SEMICOLON
-    { Swhile (e, s) }   
-| LET id = ident EQUAL e1 = expr IN e2 = expr
-    { Slet (id, e1, e2) }
-| id = ident SET e = expr
-    { Sset (id, e) }    
+| FOR id = ident EQUAL value = expr TO e_to = expr DO body = expr DONE SEMICOLON after = expr
+    { Sfor (id, value, e_to, body, after) }
+| WHILE cnd = expr DO body = expr DONE SEMICOLON after = expr
+    { Swhile (cnd, body, after) }     
 | LFLOOR s = expr RFLOOR
     { Sfloor (s) }
-| s1 = expr PIPE s2 = expr
-    { Spipe (s1, s2) }
-| PRINT e = expr
-    { Sprint e }
+| e1 = expr PIPE e2 = expr SEMICOLON after = expr
+    { Spipe (e1, e2, after) }
+(* | PRINT e = expr
+    { Sprint e } *)
 ;
 
-parameter:
-| id = ident COLON tp = bip_type
-    { id, tp }
-| id = ident
-    { id, NONE }
-;
-
-bip_type:
-| INT { INT }
-| BOOL { BOOL }
-| NONE { NONE }
-;
 
 %inline binop:
 | PLUS  { Badd }

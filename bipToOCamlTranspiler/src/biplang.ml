@@ -48,11 +48,11 @@ let rec pp_unop fmt unop e =
   let s =
     match unop with
       | Uneg -> "-"
-      | Unot -> "not "
-      | Uref -> "ref "
+      | Unot -> "not"
+      | Uref -> "ref"
       | Uderef -> "!" 
   in
-    fprintf fmt "%se (unop): " s;
+    fprintf fmt "(unop %s) " s;
     pp_expr fmt e
 and pp_binop fmt binop e1 e2 =
   let s =
@@ -72,7 +72,7 @@ and pp_binop fmt binop e1 e2 =
       | Bor -> "or" 
       | Bspeq -> "<->"
   in
-    fprintf fmt "(binop %s): " s;
+    fprintf fmt "(binop %s) " s;
     pp_expr fmt e1;
     pp_expr fmt e2
 and pp_expr fmt expr = 
@@ -81,61 +81,70 @@ and pp_expr fmt expr =
   | Ecst c -> pp_constant fmt c
   | Eunop (op, e) -> pp_unop fmt op e
   | Ebinop (op, e1, e2) -> pp_binop fmt op e1 e2
-  | Slet (id, e1, e2) -> 
+  | Slet (id, value, body) -> 
     fprintf fmt "\n(let) %s = " id.id;
-    pp_expr fmt e1;
-    pp_expr fmt e2
+    pp_expr fmt value;
+    fprintf fmt "in";
+    pp_expr fmt body
   | Sfun (id, id_list, e) -> pp_def fmt (id, id_list, e)
   | Sapp (id, expr_list) -> 
-    fprintf fmt "%s (app):" id.id;
+    fprintf fmt "%s (app) " id.id;
     List.iter (fun expr -> pp_expr fmt expr) expr_list
   | Sifelse (cnd, s1, s2) -> 
-    fprintf fmt "(if_else):"; 
+    fprintf fmt "\n(if) "; 
     pp_expr fmt cnd; 
+    fprintf fmt "\n(then) ";
     pp_expr fmt s1; 
+    fprintf fmt "\n(else) ";
     pp_expr fmt s2
-  | Sfor (id, e_from, e_to, e_body) -> 
-    fprintf fmt "(for) id = %s" id.id; 
-    pp_expr fmt e_from;              
+  | Sfor (id, e_from, e_to, e_body, e_after) -> 
+    fprintf fmt "\n(for) id = %s, val = " id.id; 
+    pp_expr fmt e_from;     
+    fprintf fmt "to ";         
     pp_expr fmt e_to; 
-    pp_expr fmt e_body
-  | Swhile (cnd, e) -> 
-    fprintf fmt "(while):"; 
+    fprintf fmt "do"; 
+    pp_expr fmt e_body;
+    fprintf fmt "done;\n";
+    pp_expr fmt e_after
+  | Swhile (cnd, body, after) -> 
+    fprintf fmt "\n(while) "; 
     pp_expr fmt cnd; 
-    pp_expr fmt e
-  | Sassign (id, e) -> 
-    fprintf fmt "(assign): %s = " id.id;
-    pp_expr fmt e
+    fprintf fmt "do"; 
+    pp_expr fmt body;
+    fprintf fmt "done;\n";
+    pp_expr fmt after
   | Sset (id, e) -> 
-    fprintf fmt "(set): %s := " id.id;
+    fprintf fmt "\n(set) %s := " id.id;
     pp_expr fmt e
   | Sprint e -> 
-    fprintf fmt "(print):";
+    fprintf fmt "(print) ";
     pp_expr fmt e
   | Sfloor e -> 
-    fprintf fmt "\n(floor): ";
+    fprintf fmt "\n(floor) ";
     pp_expr fmt e
-  | Spipe (e1, e2) -> 
-    fprintf fmt "(pipe):";
+  | Spipe (e1, e2, after) -> 
+    fprintf fmt "\n(pipe) ";
     pp_expr fmt e1;
+    fprintf fmt " | ";
+    pp_expr fmt e2 ;
+    fprintf fmt "\nafter:";
+    pp_expr fmt after
+  | Sseq (e1, e2) ->
+    pp_expr fmt e1;
+    fprintf fmt "\n(semicolon)\n";
     pp_expr fmt e2 
+  | Seval e -> 
+    fprintf fmt "(eval) ";
+    pp_expr fmt e
 and pp_def fmt def =
-  let (id, param_list, e) = def in
-  fprintf fmt "\n(fun) %s (def.id) (def.id_list): " id.id;
-  List.iter (
-    fun param ->
-      let (ident, bip_type) = param in
-      fprintf fmt "%s (%s), " ident.id 
-      (match bip_type with
-      | INT -> "int"
-      | BOOL -> "bool"
-      | NONE -> "none"
-      )
-    ) param_list;
+  let (id, id_list, e) = def in
+  fprintf fmt "\n\n\n(def) %s (def.id) (def.id_list): " id.id;
+  List.iter (fun id -> fprintf fmt "%s, " id.id) id_list;
   pp_expr fmt e
   
 
 let pp_file fmt file =
+  fprintf fmt "\n\nParser output:\n";
   List.iter (pp_def fmt) file
 
 

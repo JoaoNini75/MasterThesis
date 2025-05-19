@@ -23,12 +23,14 @@
         "to", TO;
         "do", DO;
         "done", DONE;
+        "begin", BEGIN;
+        "end", END;
         "not", NOT;
         "true", CST (Cbool true);
         "false", CST (Cbool false);
+        "mod", MOD;
         "int", INT;
-        "bool", BOOL;
-        "None", NONE;];
+        "bool", BOOL;];
    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -49,11 +51,11 @@ rule next_tokens = parse
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }
-  | "//"    { DIV }
+  | "/"    { DIV }
   | '%'     { MOD }
   | '='     { EQUAL }
   | "=="    { CMP Beq }
-  | "!="    { CMP Bneq }
+  | "<>"    { CMP Bneq }
   | "<"     { CMP Blt }
   | "<="    { CMP Ble }
   | ">"     { CMP Bgt }
@@ -142,7 +144,6 @@ and string = parse
     | LFLOOR -> fprintf fmt "|_"
     | LET -> fprintf fmt "let"
     | INT -> fprintf fmt "int"
-    | NONE -> fprintf fmt "None"
     | IN -> fprintf fmt "in"
     | IF -> fprintf fmt "if"
     | IDENT s -> fprintf fmt "%s (identifier)" s
@@ -173,7 +174,7 @@ and string = parse
       let s =
         match op with
         | Beq  -> "=="
-        | Bneq -> "!="
+        | Bneq -> "<>"
         | Blt  -> "<"
         | Ble  -> "<="
         | Bgt  -> ">"
