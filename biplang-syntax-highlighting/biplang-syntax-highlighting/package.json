@@ -1,0 +1,28 @@
+{
+  "name": "biplang-syntax-highlighting",
+  "displayName": "BipLang Syntax Highligthing",
+  "description": "A syntax highlighter for the biprograms language (BipLang).",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "extensionDependencies": [
+    "ocamllabs.ocaml-platform"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "biplang",
+      "aliases": ["BipLang", "biplang"],
+      "extensions": [".bip"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "biplang",
+      "scopeName": "source.biplang",
+      "path": "./syntaxes/biplang.tmLanguage.json"
+    }]
+  }
+}
