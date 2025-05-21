@@ -8,7 +8,7 @@
 %token <Ast.constant> CST
 %token <Ast.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -41,19 +41,29 @@ file:
     { dl }
 ;
 
-def:    (* let id (x, y, z) = body *)
-| LET f = ident LP x = separated_list(COMMA, ident) RP (*(COLON t = (INT | BOOL))?*) EQUAL s = expr 
-    { f, x, s }
+def:
+| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block 
+    { 
+      match fr with
+      | None -> (f, x, None, false, b)
+      | Some (tp, flrd) -> (f, x, Some tp, flrd, b)
+    }
 ;
+
+block:
+| e = expr
+    { [e] }
+| e = expr SEMICOLON b = block 
+    { e :: b }
 
 expr:
 | LP e = expr RP
-    { Seval (e) }
+    { e }
 | BEGIN e = expr END
-    { Seval (e) }
-| e1 = expr SEMICOLON e2 = expr
+    { e }
+(*| e1 = expr SEMICOLON e2 = expr
     { Sseq (e1, e2) }
-(*| e1 = expr SEMICOLON PIPE e2 = expr SEMICOLON
+| e1 = expr SEMICOLON PIPE e2 = expr SEMICOLON
     { Sseq (e1, e2) } *)
 | c = CST
     { Ecst c }
@@ -83,10 +93,31 @@ expr:
     { Sfloor (s) }
 | e1 = expr PIPE e2 = expr SEMICOLON after = expr
     { Spipe (e1, e2, after) }
-(* | PRINT e = expr
-    { Sprint e } *)
 ;
 
+parameter_core:
+| id = ident COLON? tp = bip_type?
+    { id, tp, false }
+;
+
+parameter:
+| pc = parameter_core
+| LFLOOR pc = parameter_core RFLOOR
+    { let (id, tp, _) = pc in (id, tp, true) }
+;
+
+fun_ret:
+| COLON tp = bip_type
+    { tp, false }
+| COLON LFLOOR tp = bip_type RFLOOR
+    { tp, true }
+;
+
+bip_type:
+| INT { INT }
+| BOOL { BOOL }
+| NONE { NONE }
+;
 
 %inline binop:
 | PLUS  { Badd }

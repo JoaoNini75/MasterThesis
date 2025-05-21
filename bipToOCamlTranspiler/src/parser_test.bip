@@ -1,4 +1,4 @@
-let bip (x1, y1) =
+let bip (x1 : int, y1 : bool) : int =
     let x2 = y1 * 2 in
     let y2 = 34 in
     if y2 > x2 then |_ x2 + y2 _|
@@ -11,7 +11,7 @@ let bip2 (x, y) =
     z := !z + 1;
     b
 
-let bip3 (x, y) = 
+ let bip3 (x : int, y) = 
     let z = ref x in
     for i = 0 to y do
         z := !z * 3
@@ -30,7 +30,12 @@ let fact_iter (n) =
 			!res
 		end
 
-let gcd_iter (a0, b0) =
+let bip (|_c_|) : |_ int _| =
+    if |_c_| then |_1_|
+    else |_0_| 
+(*@ requires c <-> c *)
+
+(* let gcd_iter (a0, b0) =
     let b = ref b0 in
     let a = ref a0 in
     while !b <> 0 do
@@ -48,12 +53,9 @@ let p2 () =
     let x = ref 0 in 
     let y = ref 2 in
     x := !x + 1 | y := !y + 2;
-    !y
+    !y *)
 
-let bip (|_c_|) =
-    if |_c_| then |_1_|
-    else |_0_|
-(*@ requires c <-> c *)
+
 
 
 (*let bip (|_b : int_|) (|_c : int_|) (|_n : int_|) : |_int_| =

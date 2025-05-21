@@ -32,6 +32,21 @@ let report (b,e) =
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
 
+let pp_floored fmt floored =
+  if floored 
+  then fprintf fmt "floored"
+  else fprintf fmt "not_floored"
+
+let pp_type fmt bip_type =
+  match bip_type with
+  | INT -> fprintf fmt "int"
+  | BOOL -> fprintf fmt "bool"
+  | NONE -> fprintf fmt "None"
+
+let pp_type_option fmt bip_type_opt =
+  match bip_type_opt with
+  | None -> fprintf fmt "implicit"
+  | Some bt -> pp_type fmt bt
 
 let pp_constant fmt constant =
   let s =
@@ -45,15 +60,15 @@ let pp_constant fmt constant =
 
 
 let rec pp_unop fmt unop e =
-  let s =
+  let pp_unop_aux fmt s =
     match unop with
-      | Uneg -> "-"
-      | Unot -> "not"
-      | Uref -> "ref"
-      | Uderef -> "!" 
+      | Uneg -> fprintf fmt "-"
+      | Unot -> fprintf fmt "not"
+      | Uref -> fprintf fmt "ref"
+      | Uderef -> fprintf fmt "!" 
   in
-    fprintf fmt "(unop %s) " s;
-    pp_expr fmt e
+  fprintf fmt "(unop %a) " pp_unop_aux unop;
+  pp_expr fmt e
 and pp_binop fmt binop e1 e2 =
   let s =
     match binop with
@@ -86,7 +101,8 @@ and pp_expr fmt expr =
     pp_expr fmt value;
     fprintf fmt "in";
     pp_expr fmt body
-  | Sfun (id, id_list, e) -> pp_def fmt (id, id_list, e)
+  | Sfun (id, param_list, fun_type, floored, expr_list) ->
+    pp_def fmt (id, param_list, fun_type, floored, expr_list)
   | Sapp (id, expr_list) -> 
     fprintf fmt "%s (app) " id.id;
     List.iter (fun expr -> pp_expr fmt expr) expr_list
@@ -116,9 +132,6 @@ and pp_expr fmt expr =
   | Sset (id, e) -> 
     fprintf fmt "\n(set) %s := " id.id;
     pp_expr fmt e
-  | Sprint e -> 
-    fprintf fmt "(print) ";
-    pp_expr fmt e
   | Sfloor e -> 
     fprintf fmt "\n(floor) ";
     pp_expr fmt e
@@ -132,19 +145,22 @@ and pp_expr fmt expr =
   | Sseq (e1, e2) ->
     pp_expr fmt e1;
     fprintf fmt "\n(semicolon)\n";
-    pp_expr fmt e2 
-  | Seval e -> 
-    fprintf fmt "(eval) ";
-    pp_expr fmt e
+    pp_expr fmt e2
 and pp_def fmt def =
-  let (id, id_list, e) = def in
-  fprintf fmt "\n\n\n(def) %s (def.id) (def.id_list): " id.id;
-  List.iter (fun id -> fprintf fmt "%s, " id.id) id_list;
-  pp_expr fmt e
+  let (id, param_list, fun_type, floored, expr_list) = def in
+  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " id.id pp_type_option fun_type pp_floored floored;
+  
+  List.iter (
+    fun (ident, bip_type_opt, floored) ->
+      fprintf fmt "%s (%a, %a), " 
+      ident.id pp_type_option bip_type_opt pp_floored floored
+  ) param_list;
+
+  List.iter (fun expr -> pp_expr fmt expr) expr_list
   
 
 let pp_file fmt file =
-  fprintf fmt "\n\nParser output:\n";
+  fprintf fmt "\n\nParser output:";
   List.iter (pp_def fmt) file
 
 

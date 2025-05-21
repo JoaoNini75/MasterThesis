@@ -30,7 +30,8 @@
         "false", CST (Cbool false);
         "mod", MOD;
         "int", INT;
-        "bool", BOOL;];
+        "bool", BOOL;
+        "None", NONE;];
    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
