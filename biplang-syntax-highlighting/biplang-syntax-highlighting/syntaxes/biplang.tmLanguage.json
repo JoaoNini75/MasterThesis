@@ -429,9 +429,14 @@
     "operators": {
       "patterns": [
         {
-          "comment": "special equals <->",
+          "comment": "special equals",
           "name": "keyword.other.ocaml",
           "match": "<->"
+        },
+        {
+          "comment": "biplang custom pipes (|_ and _|)",
+          "name":    "keyword.other.ocaml",
+          "match":   "(?:\\|_|_\\|)"
         },
         {
           "comment": "binding operator",
@@ -621,7 +626,7 @@
         {
           "comment": "builtin type",
           "name": "support.type.ocaml",
-          "match": "\\b(unit|bool|int|int32|int64|nativeint|float|char|bytes|string)\\b"
+          "match": "(?<![A-Za-z0-9])(?:unit|bool|int|int32|int64|nativeint|float|char|bytes|string)(?![A-Za-z0-9])"
         }
       ]
     },
