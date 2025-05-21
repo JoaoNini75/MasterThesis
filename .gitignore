@@ -5,7 +5,7 @@
 
 ### Joao Nini added: ###
 bipToOCamlTranspiler/src/_build/
-
+*.Identifier
 
 
 # Ignore all template files…
