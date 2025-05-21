@@ -17,7 +17,6 @@
         "if", IF;
         "then", THEN;
         "else", ELSE;
-        "print", PRINT;
         "for", FOR;
         "while", WHILE;
         "to", TO;
@@ -133,7 +132,6 @@ and string = parse
     | RP -> fprintf fmt ")"
     | RFLOOR -> fprintf fmt "_|"
     | REF -> fprintf fmt "ref"
-    | PRINT -> fprintf fmt "print"
     | PLUS -> fprintf fmt "+"
     | PIPE -> fprintf fmt "|"
     | OR -> fprintf fmt "or"
@@ -188,6 +186,7 @@ and string = parse
     | BEGIN -> fprintf fmt "begin"
     | SET -> fprintf fmt ":="
     | AND -> fprintf fmt "and"
+    | NONE -> fprintf fmt "none"
 
   let () =
     let fname = Sys.argv.(1) in
@@ -195,7 +194,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-       eprintf "@[%a@]@." pp_token token; 
+        eprintf "@[%a@]@." pp_token token; 
       if token <> EOF then loop () in
     loop ()
 

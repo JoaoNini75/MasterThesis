@@ -35,7 +35,13 @@ let bip (|_c_|) : |_ int _| =
     else |_0_| 
 (*@ requires c <-> c *)
 
-(* let gcd_iter (a0, b0) =
+let semicolon_test () =
+    let x = ref 0 in
+    x := 1;
+    x := 2;
+    x
+
+let gcd_iter (a0, b0) =
     let b = ref b0 in
     let a = ref a0 in
     while !b <> 0 do
@@ -49,13 +55,11 @@ let bip (|_c_|) : |_ int _| =
     done;
     !a
 
-let p2 () = 
+(* let p2 () = 
     let x = ref 0 in 
     let y = ref 2 in
     x := !x + 1 | y := !y + 2;
     !y *)
-
-
 
 
 (*let bip (|_b : int_|) (|_c : int_|) (|_n : int_|) : |_int_| =

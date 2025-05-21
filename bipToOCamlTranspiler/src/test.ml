@@ -1,6 +1,11 @@
-let bip3 (x, y) = 
-    let z = ref x in
-    for i = 0 to y do
-        z := !z * 3
-    done;
-    !z
+let semicolon_test () =
+    if 2 < 4
+    then begin
+        let x = ref 0 in
+        x := !x + 1;
+        x
+    end
+    else
+        let x = ref 40 in
+        x := !x + 4;
+        x

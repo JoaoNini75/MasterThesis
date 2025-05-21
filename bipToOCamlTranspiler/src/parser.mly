@@ -8,7 +8,7 @@
 %token <Ast.constant> CST
 %token <Ast.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE PRINT FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -17,7 +17,6 @@
 
 %left PIPE
 %left SEMICOLON
-%left PRINT
 %nonassoc ELSE 
 %nonassoc SET
 %nonassoc IN
@@ -57,20 +56,16 @@ block:
     { e :: b }
 
 expr:
-| LP e = expr RP
-    { e }
-| BEGIN e = expr END
-    { e }
-(*| e1 = expr SEMICOLON e2 = expr
-    { Sseq (e1, e2) }
-| e1 = expr SEMICOLON PIPE e2 = expr SEMICOLON
-    { Sseq (e1, e2) } *)
+| LP b = block RP
+    { b }
+| BEGIN b = block END
+    { b }
 | c = CST
     { Ecst c }
 | id = ident
     { Eident id }
-| LET id = ident EQUAL e1 = expr IN e2 = expr
-    { Slet (id, e1, e2) } 
+| LET id = ident EQUAL value = expr IN body = block
+    { Slet (id, value, body) } 
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -83,16 +78,16 @@ expr:
     { Sset (id, e) } 
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
-| IF c = expr THEN s1 = expr ELSE s2 = expr
-    { Sifelse (c, s1, s2) }
-| FOR id = ident EQUAL value = expr TO e_to = expr DO body = expr DONE SEMICOLON after = expr
+| IF c = expr THEN s1 = block ELSE s2 = block
+    { Sif (c, s1, s2) }
+| FOR id = ident EQUAL value = expr TO e_to = expr DO body = block DONE SEMICOLON after = block
     { Sfor (id, value, e_to, body, after) }
-| WHILE cnd = expr DO body = expr DONE SEMICOLON after = expr
+| WHILE cnd = expr DO body = block DONE SEMICOLON after = block
     { Swhile (cnd, body, after) }     
 | LFLOOR s = expr RFLOOR
     { Sfloor (s) }
-| e1 = expr PIPE e2 = expr SEMICOLON after = expr
-    { Spipe (e1, e2, after) }
+| e1 = expr PIPE e2 = expr
+    { Spipe (e1, e2) }
 ;
 
 parameter_core:

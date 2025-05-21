@@ -100,51 +100,45 @@ and pp_expr fmt expr =
     fprintf fmt "\n(let) %s = " id.id;
     pp_expr fmt value;
     fprintf fmt "in";
-    pp_expr fmt body
+    List.iter (fun expr -> pp_expr fmt expr) body
   | Sfun (id, param_list, fun_type, floored, expr_list) ->
     pp_def fmt (id, param_list, fun_type, floored, expr_list)
   | Sapp (id, expr_list) -> 
-    fprintf fmt "%s (app) " id.id;
+    fprintf fmt "\n(app) id = %s, expr_list: " id.id;
     List.iter (fun expr -> pp_expr fmt expr) expr_list
-  | Sifelse (cnd, s1, s2) -> 
+  | Sif (cnd, s1, s2) -> 
     fprintf fmt "\n(if) "; 
     pp_expr fmt cnd; 
     fprintf fmt "\n(then) ";
-    pp_expr fmt s1; 
+    List.iter (fun expr -> pp_expr fmt expr) s1;
     fprintf fmt "\n(else) ";
-    pp_expr fmt s2
-  | Sfor (id, e_from, e_to, e_body, e_after) -> 
+    List.iter (fun expr -> pp_expr fmt expr) s2
+  | Sfor (id, value, e_to, body, after) -> 
     fprintf fmt "\n(for) id = %s, val = " id.id; 
-    pp_expr fmt e_from;     
+    pp_expr fmt value;     
     fprintf fmt "to ";         
     pp_expr fmt e_to; 
     fprintf fmt "do"; 
-    pp_expr fmt e_body;
+    List.iter (fun expr -> pp_expr fmt expr) body;
     fprintf fmt "done;\n";
-    pp_expr fmt e_after
+    List.iter (fun expr -> pp_expr fmt expr) after
   | Swhile (cnd, body, after) -> 
     fprintf fmt "\n(while) "; 
     pp_expr fmt cnd; 
     fprintf fmt "do"; 
-    pp_expr fmt body;
+    List.iter (fun expr -> pp_expr fmt expr) body;
     fprintf fmt "done;\n";
-    pp_expr fmt after
+    List.iter (fun expr -> pp_expr fmt expr) after
   | Sset (id, e) -> 
     fprintf fmt "\n(set) %s := " id.id;
     pp_expr fmt e
   | Sfloor e -> 
     fprintf fmt "\n(floor) ";
     pp_expr fmt e
-  | Spipe (e1, e2, after) -> 
+  | Spipe (e1, e2) -> 
     fprintf fmt "\n(pipe) ";
     pp_expr fmt e1;
     fprintf fmt " | ";
-    pp_expr fmt e2 ;
-    fprintf fmt "\nafter:";
-    pp_expr fmt after
-  | Sseq (e1, e2) ->
-    pp_expr fmt e1;
-    fprintf fmt "\n(semicolon)\n";
     pp_expr fmt e2
 and pp_def fmt def =
   let (id, param_list, fun_type, floored, expr_list) = def in
@@ -162,7 +156,6 @@ and pp_def fmt def =
 let pp_file fmt file =
   fprintf fmt "\n\nParser output:";
   List.iter (pp_def fmt) file
-
 
 let pp_ast ast =
   eprintf "@[%a@]@." pp_file ast
