@@ -71,7 +71,7 @@ rule next_tokens = parse
             { try CST (Cint (int_of_string s))
               with _ -> raise (Lexing_error ("Constant too large: " ^ s)) }
   | '"'     { CST (Cstring (string lexbuf)) }
-  | ":="    { SET }
+  | ":="    { ASSIGN }
   | "!"     { DEREF }
   | "&&"    { AND }
   | "||"    { OR }
@@ -184,7 +184,7 @@ and string = parse
 
     | BOOL -> fprintf fmt "bool"
     | BEGIN -> fprintf fmt "begin"
-    | SET -> fprintf fmt ":="
+    | ASSIGN -> fprintf fmt ":="
     | AND -> fprintf fmt "and"
     | NONE -> fprintf fmt "none"
 

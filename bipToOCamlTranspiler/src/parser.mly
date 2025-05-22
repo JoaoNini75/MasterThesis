@@ -8,7 +8,7 @@
 %token <Ast.constant> CST
 %token <Ast.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR SET DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -17,7 +17,7 @@
 
 %nonassoc IN
 %left PIPE
-%nonassoc SET
+%nonassoc ASSIGN
 %left OR
 %left AND
 %nonassoc NOT
@@ -74,8 +74,8 @@ expr:
     { Eunop (Uref, e1) } 
 | DEREF e1 = expr
     { Eunop (Uderef, e1) }
-| id = ident SET e = expr
-    { Sset (id, e) } 
+| id = ident ASSIGN e = expr
+    { Sassign (id, e) } 
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
 | IF c = expr THEN s1 = block ELSE s2 = block

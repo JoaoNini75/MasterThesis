@@ -38,7 +38,7 @@ type expr =
   | Sif of      expr * expr list * expr list
   | Sfor of     ident * expr * expr * expr list  
   | Swhile of   expr * expr list 
-  | Sset of     ident * expr (* x := 3 *)
+  | Sassign of  ident * expr (* x := 3 *)
   | Sfloor of   expr (* |_ expr _| *)
   | Spipe of    expr * expr (* expr | expr *)
   | Sflrlet of  ident * expr (* |_ let x = 2 in _| *)

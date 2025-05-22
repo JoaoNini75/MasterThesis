@@ -127,13 +127,13 @@ and pp_expr fmt expr =
     fprintf fmt "do"; 
     List.iter (fun expr -> pp_expr fmt expr) body;
     fprintf fmt "done";
-  | Sset (id, e) -> 
-    fprintf fmt "\n(set) %s := " id.id;
+  | Sassign (id, e) -> 
+    fprintf fmt "\n(assign) %s := " id.id;
     pp_expr fmt e
   | Sfloor e -> 
     fprintf fmt "\n(floor) |_ ";
     pp_expr fmt e;
-    fprintf fmt " _| "
+    fprintf fmt "_| "
   | Spipe (e1, e2) -> 
     fprintf fmt "\n(pipe) ";
     pp_expr fmt e1;
