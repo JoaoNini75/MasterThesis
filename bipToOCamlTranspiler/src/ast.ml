@@ -32,12 +32,12 @@ type expr =
   | Ecst of     constant
   | Eunop of    unop * expr
   | Ebinop of   binop * expr * expr
-  | Slet of     ident * expr * expr list
-  | Sfun of     ident * parameter list * bip_type option * bool * expr list
+  | Slet of     ident * expr * expr
+  | Sfun of     def
   | Sapp of     ident * expr list
   | Sif of      expr * expr list * expr list
-  | Sfor of     ident * expr * expr * expr list * expr list 
-  | Swhile of   expr * expr list * expr list
+  | Sfor of     ident * expr * expr * expr list  
+  | Swhile of   expr * expr list 
   | Sset of     ident * expr (* x := 3 *)
   | Sfloor of   expr (* |_ expr _| *)
   | Spipe of    expr * expr (* expr | expr *)

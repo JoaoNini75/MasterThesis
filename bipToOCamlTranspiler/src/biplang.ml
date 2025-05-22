@@ -100,7 +100,7 @@ and pp_expr fmt expr =
     fprintf fmt "\n(let) %s = " id.id;
     pp_expr fmt value;
     fprintf fmt "in";
-    List.iter (fun expr -> pp_expr fmt expr) body
+    pp_expr fmt body
   | Sfun (id, param_list, fun_type, floored, expr_list) ->
     pp_def fmt (id, param_list, fun_type, floored, expr_list)
   | Sapp (id, expr_list) -> 
@@ -113,22 +113,20 @@ and pp_expr fmt expr =
     List.iter (fun expr -> pp_expr fmt expr) s1;
     fprintf fmt "\n(else) ";
     List.iter (fun expr -> pp_expr fmt expr) s2
-  | Sfor (id, value, e_to, body, after) -> 
+  | Sfor (id, value, e_to, body) -> 
     fprintf fmt "\n(for) id = %s, val = " id.id; 
     pp_expr fmt value;     
     fprintf fmt "to ";         
     pp_expr fmt e_to; 
     fprintf fmt "do"; 
     List.iter (fun expr -> pp_expr fmt expr) body;
-    fprintf fmt "done;\n";
-    List.iter (fun expr -> pp_expr fmt expr) after
-  | Swhile (cnd, body, after) -> 
+    fprintf fmt "done";
+  | Swhile (cnd, body) -> 
     fprintf fmt "\n(while) "; 
     pp_expr fmt cnd; 
     fprintf fmt "do"; 
     List.iter (fun expr -> pp_expr fmt expr) body;
-    fprintf fmt "done;\n";
-    List.iter (fun expr -> pp_expr fmt expr) after
+    fprintf fmt "done";
   | Sset (id, e) -> 
     fprintf fmt "\n(set) %s := " id.id;
     pp_expr fmt e

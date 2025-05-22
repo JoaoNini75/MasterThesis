@@ -15,11 +15,9 @@
 
 /* priorities and associativities */
 
-%left PIPE
-%left SEMICOLON
-%nonassoc ELSE 
-%nonassoc SET
 %nonassoc IN
+%left PIPE
+%nonassoc SET
 %left OR
 %left AND
 %nonassoc NOT
@@ -29,8 +27,8 @@
 %nonassoc unary_minus
 %nonassoc REF DEREF
 
-%start file
 
+%start file
 %type <Ast.file> file
 
 %%
@@ -50,21 +48,23 @@ def:
 ;
 
 block:
+| BEGIN b = block_core END
+    { b }
+
+block_core:
 | e = expr
     { [e] }
-| e = expr SEMICOLON b = block 
+| e = expr SEMICOLON b = block_core 
     { e :: b }
 
 expr:
-| LP b = block RP
-    { b }
-| BEGIN b = block END
-    { b }
+| LP e = expr RP
+    { e }
 | c = CST
     { Ecst c }
 | id = ident
     { Eident id }
-| LET id = ident EQUAL value = expr IN body = block
+| LET id = ident EQUAL value = expr IN body = expr
     { Slet (id, value, body) } 
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
@@ -80,10 +80,10 @@ expr:
     { Ebinop (op, e1, e2) }
 | IF c = expr THEN s1 = block ELSE s2 = block
     { Sif (c, s1, s2) }
-| FOR id = ident EQUAL value = expr TO e_to = expr DO body = block DONE SEMICOLON after = block
-    { Sfor (id, value, e_to, body, after) }
-| WHILE cnd = expr DO body = block DONE SEMICOLON after = block
-    { Swhile (cnd, body, after) }     
+| FOR id = ident EQUAL value = expr TO e_to = expr DO body = block_core DONE 
+    { Sfor (id, value, e_to, body) }
+| WHILE cnd = expr DO body = block_core DONE 
+    { Swhile (cnd, body) }     
 | LFLOOR s = expr RFLOOR
     { Sfloor (s) }
 | e1 = expr PIPE e2 = expr
