@@ -131,13 +131,24 @@ and pp_expr fmt expr =
     fprintf fmt "\n(set) %s := " id.id;
     pp_expr fmt e
   | Sfloor e -> 
-    fprintf fmt "\n(floor) ";
-    pp_expr fmt e
+    fprintf fmt "\n(floor) |_ ";
+    pp_expr fmt e;
+    fprintf fmt " _| "
   | Spipe (e1, e2) -> 
     fprintf fmt "\n(pipe) ";
     pp_expr fmt e1;
     fprintf fmt " | ";
     pp_expr fmt e2
+  | Sflrlet (id, value) ->
+    fprintf fmt "\n(flrlet) |_ %s = " id.id;
+    pp_expr fmt value;
+    fprintf fmt "in _| ";
+  | Spipelet (id1, value1, id2, value2) -> 
+    fprintf fmt "\n(pipelet) %s = " id1.id;
+    pp_expr fmt value1;
+    fprintf fmt "in | %s = " id2.id;
+    pp_expr fmt value2;
+    fprintf fmt "in "
 and pp_def fmt def =
   let (id, param_list, fun_type, floored, expr_list) = def in
   fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " id.id pp_type_option fun_type pp_floored floored;

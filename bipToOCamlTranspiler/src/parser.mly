@@ -88,6 +88,18 @@ expr:
     { Sfloor (s) }
 | e1 = expr PIPE e2 = expr
     { Spipe (e1, e2) }
+| LFLOOR ls = let_short RFLOOR
+    { let (id, value) = ls in
+      Sflrlet (id, value) }
+| ls1 = let_short PIPE ls2 = let_short
+    { let (id1, value1) = ls1 in 
+      let (id2, value2) = ls2 in 
+      Spipelet (id1, value1, id2, value2) }
+;
+
+let_short:
+| LET id = ident EQUAL value = expr IN
+    { (id, value) }
 ;
 
 parameter_core:

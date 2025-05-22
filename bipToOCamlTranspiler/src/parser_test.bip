@@ -1,22 +1,25 @@
-let bip (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| =
+let bip_short (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+    let i = ref 0 in
+    let j = ref 0 in | let j = ref c in;
+    |_ let x = ref 0 in _|;
+    !x 
+end
+
+let bip_complete (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     |_ let i = ref 0 in _|;
     let j = ref 0 in | let j = ref c in;
     |_ let x = ref 0 in _|;
 
-    while (|_!i < n_|) do
-        (*@ invariant |_!i >= 0_| 
-            invariant skip | !j = !i * b + c 
-            invariant !i <-> !i 
-            invariant !x <-> !x 
-            variant |_n - !i_|  *)
-        j := !i * b + c; | x := !x + !j;
-        x := !x + !j;    | j := !j + b;
-        |_i := !i + 1_|
+    while (|_ !i < n _|) do
+        j := !i * b + c | x := !x + !j;
+        x := !x + !j    | j := !j + b;
+        |_ i := !i + 1 _|
     done;
-    |_ !x _|
-(*@ requires b <-> b && c <-> c && n <-> n *)
 
-(*let bip (x1 : int, y1 : bool) : int = begin
+    |_ !x _|
+end
+
+let bip (x1 : int, y1 : bool) : int = begin
     let x2 = y1 * 2 in
     let y2 = 34 in
     if y2 > x2 then begin |_ x2 + y2 _| end
@@ -52,7 +55,7 @@ let fact_iter (n) = begin
 		end
 end
 
-let bip (|_c_|) : |_int_| = begin
+let bip_if (|_c_|) : |_int_| = begin
     if |_c_| 
     then begin |_1_| end
     else begin |_0_| end
@@ -86,4 +89,4 @@ let p2 () = begin
     let y = ref 2 in
     x := !x + 1 | y := !y + 2;
     !x
-end*)
+end
