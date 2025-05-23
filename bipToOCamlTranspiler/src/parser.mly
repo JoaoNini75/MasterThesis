@@ -2,11 +2,11 @@
 /* Parser for BipLang */
 
 %{
-  open Ast
+  open Ast_bip
 %}
 
-%token <Ast.constant> CST
-%token <Ast.binop> CMP
+%token <Ast_bip.constant> CST
+%token <Ast_bip.binop> CMP
 %token <string> IDENT
 %token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
@@ -29,7 +29,7 @@
 
 
 %start file
-%type <Ast.file> file
+%type <Ast_bip.file> file
 
 %%
 
@@ -65,7 +65,7 @@ expr:
 | id = ident
     { Eident id }
 | LET id = ident EQUAL value = expr IN body = expr
-    { Slet (id, value, body) } 
+    { Elet (id, value, body) } 
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -75,26 +75,26 @@ expr:
 | DEREF e1 = expr
     { Eunop (Uderef, e1) }
 | id = ident ASSIGN e = expr
-    { Sassign (id, e) } 
+    { Eassign (id, e) } 
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
 | IF c = expr THEN s1 = block ELSE s2 = block
-    { Sif (c, s1, s2) }
+    { Eif (c, s1, s2) }
 | FOR id = ident EQUAL value = expr TO e_to = expr DO body = block_core DONE 
-    { Sfor (id, value, e_to, body) }
+    { Efor (id, value, e_to, body) }
 | WHILE cnd = expr DO body = block_core DONE 
-    { Swhile (cnd, body) }     
+    { Ewhile (cnd, body) }     
 | LFLOOR s = expr RFLOOR
-    { Sfloor (s) }
+    { Efloor (s) }
 | e1 = expr PIPE e2 = expr
-    { Spipe (e1, e2) }
+    { Epipe (e1, e2) }
 | LFLOOR ls = let_short RFLOOR
     { let (id, value) = ls in
-      Sflrlet (id, value) }
+      Eflrlet (id, value) }
 | ls1 = let_short PIPE ls2 = let_short
     { let (id1, value1) = ls1 in 
       let (id2, value2) = ls2 in 
-      Spipelet (id1, value1, id2, value2) }
+      Epipelet (id1, value1, id2, value2) }
 ;
 
 let_short:

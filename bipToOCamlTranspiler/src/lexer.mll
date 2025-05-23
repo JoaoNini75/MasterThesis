@@ -3,7 +3,7 @@
 
 {
   open Lexing
-  open Ast
+  open Ast_bip
   open Parser
 
   exception Lexing_error of string
