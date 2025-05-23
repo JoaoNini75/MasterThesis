@@ -41,7 +41,7 @@ type expr =
   | Eassign of  ident * expr (* x := 3 *)
   | Efloor of   expr (* |_ expr _| *)
   | Epipe of    expr * expr (* expr | expr *)
-  | Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
+  | Eflrlet of  ident * expr * expr (* |_ let x = 2 in _| *)
   | Epipelet of ident * expr * ident * expr (* let x = 2 in | let x = 3 in *)
 
 and def = ident * parameter list * bip_type option * bool (* floored *) * expr list

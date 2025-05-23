@@ -3,8 +3,10 @@
 open Format
 open Lexing
 open Parser
-open Ast_bip
 open Ast_ml
+open Ast_bip
+
+type oexpr_sided = oexpr * string
 
 let usage = "usage: biplang [options] file.bip"
 (* dune build && dune exec ./biplang.exe parser_test.bip *)
@@ -32,6 +34,30 @@ let report (b,e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
+let rec pib_to_ml (e: Ast_bip.expr) : Ast_ml.oexpr =
+  match e with 
+  | Eident x -> Oident x
+  | Ecst _ -> assert false (* TODO *)
+  | Eunop of    unop * expr
+  | Ebinop of   binop * expr * expr
+  | Elet (x, Efloor e1, e2) ->
+      let x_l = { x with id = x.id ^ "_l"} in
+      let x_r = { x with id = x.id ^ "_r"} in
+      let e1 = pib_to_ml e1 in
+      Olet (x_l, e1, Olet (x_r, e1, pib_to_ml e2))
+  | Elet (x, e1, e2) ->
+      Olet (x, pib_to_ml e1, pib_to_ml e2)
+  | Efun of     def
+  | Eapp of     ident * expr list
+  | Eif of      expr * expr list * expr list
+  | Efor of     ident * expr * expr * expr list  
+  | Ewhile of   expr * expr list 
+  | Eassign of  ident * expr (* x := 3 *)
+  | Efloor e ->
+      
+  | Epipe of    expr * expr (* expr | expr *)
+  | Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
+  | Epipelet of ident * expr * ident * expr (* let x = 2 in | let x = 3 in *)
 
 
 let get_const_str (const : Ast_ml.constant) = 
@@ -133,7 +159,7 @@ and pp_binop fmt binop e1 e2 =
     fprintf fmt "(binop %s) " s;
     pp_expr fmt e1;
     pp_expr fmt e2
-and pp_expr fmt (expr : Ast_bip.expr) = 
+and pp_expr fmt expr = 
   match expr with
   | Eident id -> fprintf fmt "%s (expr.id) " id.id
   | Ecst c -> pp_constant fmt c
@@ -203,63 +229,59 @@ and pp_def fmt def =
   ) param_list;
 
   List.iter (fun expr -> pp_expr fmt expr) expr_list
-and pp_oexpr fmt oexpr = 
+and pp_oexpr fmt oexpr_sided = 
+  let (oexpr, side) = oexpr_sided in
   match oexpr with
-  | Oident id -> fprintf fmt "%s" id.id
+  | Oident id ->
+    if side = ""
+    then fprintf fmt "%s" id.id
+    else fprintf fmt "%s" (id.id ^ "_" ^ side)
   | Ocst c -> fprintf fmt "%s" (get_const_str c)
   | Ounop (op, e) -> 
     fprintf fmt "%s" (get_unop_str op);
-    pp_oexpr fmt e
+    pp_oexpr fmt (e, "") 
   | Obinop (op, e1, e2) -> 
-    pp_oexpr fmt e1;
+    pp_oexpr fmt (e1, "");
     fprintf fmt " %s " (get_binop_str op);
-    pp_oexpr fmt e2
+    pp_oexpr fmt (e2, "")
   | Olet (id, value, body) -> 
     fprintf fmt "let %s = " id.id;
-    pp_oexpr fmt value;
+    pp_oexpr fmt (value, "");
     fprintf fmt " in\n";
-    pp_oexpr fmt body
+    pp_oexpr fmt (body, "")
   | Ofun (id, param_list, fun_type, floored, oexpr_list) ->
     pp_def_ml fmt (id, param_list, fun_type, floored, oexpr_list)
   | Oapp (id, oexpr_list) -> 
     fprintf fmt "%s " id.id;
-    List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr fmt oexpr) oexpr_list
+    List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr (oexpr, "")) oexpr_list
   | Oif (cnd, s1, s2) -> 
     fprintf fmt "if "; 
-    pp_oexpr fmt cnd; 
+    pp_oexpr fmt (cnd, ""); 
     fprintf fmt "\nthen ";
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s1;
+    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) s1;
     fprintf fmt "\nelse ";
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s2
+    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) s2
   | Ofor (id, value, e_to, body) -> 
-    fprintf fmt "for %s = %a to %a do\n" id.id (pp_oexpr fmt value) (pp_oexpr fmt e_to); 
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
+    fprintf fmt "for %s = %a to %a do\n" id.id pp_oexpr (value, "") pp_oexpr (e_to, ""); 
+    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) body;
     fprintf fmt "\ndone ";
   | Owhile (cnd, body) -> 
-    fprintf fmt "while %a do\n" (pp_oexpr fmt cnd); 
-    List.iter (fun expr -> pp_oexpr fmt expr) body;
+    fprintf fmt "while %a do\n" pp_oexpr (cnd, ""); 
+    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) body;
     fprintf fmt "\ndone ";
-  | Oassign (id, e) -> fprintf fmt "%s := %a" id.id (pp_oexpr fmt e);
+  | Oassign (id, e) -> fprintf fmt "%s := %a" id.id pp_oexpr (e, "");
   | Ofloor e -> 
-    fprintf fmt "\n(floor) |_ ";
-    pp_oexpr fmt e;
-    fprintf fmt "_| "
+    fprintf fmt "(%a, %a)" pp_oexpr (e, "l") pp_oexpr (e, "r");
   | Opipe (e1, e2) -> 
-    fprintf fmt "\n(pipe) ";
-    pp_oexpr fmt e1;
-    fprintf fmt " | ";
-    pp_oexpr fmt e2
+    fprintf fmt "%a; %a" pp_oexpr (e1, "l") pp_oexpr (e2, "r")
   | Oflrlet (id, value) ->
-    fprintf fmt "\n(flrlet) |_ %s = " id.id;
-    pp_oexpr fmt value;
-    fprintf fmt "in _| ";
+    fprintf fmt "let %a = %a in\n let %a = %a in\n" 
+    pp_oexpr (Oident id, "l") pp_oexpr (value, "l")
+    pp_oexpr (Oident id, "r") pp_oexpr (value, "r") 
   | Opipelet (id1, value1, id2, value2) -> 
-    fprintf fmt "\n(pipelet) %s = " id1.id;
-    pp_oexpr fmt value1;
-    fprintf fmt "in | %s = " id2.id;
-    pp_oexpr fmt value2;
-    fprintf fmt "in "
-and pp_def_ml fmt def =
+    fprintf fmt "let %s = %a in\n let %s = %a in\n"
+    id1.id pp_oexpr (value1, "l") id2.id pp_oexpr (value2, "r")
+and pp_def_ml fmt (def: Ast_ml.def) =
   let (id, param_list, fun_type, fun_floored, oexpr_list) = def in
   let fun_type_str = get_type_str fun_type in
 
@@ -291,7 +313,7 @@ and pp_def_ml fmt def =
     else (fprintf fmt ") : %s = begin\n" fun_type_str)
   );
 
-  List.iter (fun oexpr -> pp_oexpr fmt oexpr) oexpr_list;
+  List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) oexpr_list;
 
   fprintf fmt "\nend\n\n"
   

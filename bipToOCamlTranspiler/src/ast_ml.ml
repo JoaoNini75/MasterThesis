@@ -39,10 +39,6 @@ type oexpr =
   | Ofor of     ident * oexpr * oexpr * oexpr list  
   | Owhile of   oexpr * oexpr list 
   | Oassign of  ident * oexpr (* x := 3 *)
-  | Ofloor of   oexpr (* |_ oexpr _| *)
-  | Opipe of    oexpr * oexpr (* oexpr | oexpr *)
-  | Oflrlet of  ident * oexpr (* |_ let x = 2 in _| *)
-  | Opipelet of ident * oexpr * ident * oexpr (* let x = 2 in | let x = 3 in *)
 
 and def = ident * parameter list * bip_type option * bool (* floored *) * oexpr list
 

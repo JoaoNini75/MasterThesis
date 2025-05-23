@@ -5,6 +5,13 @@ let bip_short (|_b : int_|) : |_int_| = begin
     |_ !x _|
 end
 
+let bip_short_pipe (b : int | b : int) : int | int = begin
+    let i = ref 0 in
+    let j = ref 0 in | let j = ref c in;
+    let x = ref 0 in | ;
+    !x | !x 
+end
+
 let bip_short_tp (b_l : int, b_r : int) : (int, int) = begin
     let i = ref 0 in
     let j_l = ref 0 in
@@ -14,17 +21,24 @@ let bip_short_tp (b_l : int, b_r : int) : (int, int) = begin
     (!x_l, !x_r) 
 end
 
+let x = 42 and y = 73 in
+
+let i_l = ref 0 in 
+let i_r = ref 0 in 
+let j_l = ref 0 in 
+let j_r = ref c in 
+
 
 let bip_complete (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
-    |_ let i = ref 0 in _|;
-    let j = ref 0 in | let j = ref c in;
-    |_ let x = ref 0 in _|;
+    let i = |_ ref 0 _| in
+    let j = (ref 0 | ref c) in
+    let x = |_ ref 0 _| in
 
-    while (|_ !i < n _|) do
+    |_ while (|_ !i < n _|) do
         j := !i * b + c | x := !x + !j;
         x := !x + !j    | j := !j + b;
         |_ i := !i + 1 _|
-    done;
+    done _|
 
     |_ !x _|
 end
