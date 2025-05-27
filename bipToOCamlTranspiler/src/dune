@@ -13,12 +13,5 @@
  (modules parser))
 (executable
  (name biplang)
- (modules
-   biplang       
-   lexer       
-   parser       
-   ast_bip      
-   ast_ml        
- )
  (promote (until-clean))
  (flags ()))

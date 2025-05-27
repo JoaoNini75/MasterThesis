@@ -2,11 +2,12 @@
 /* Parser for BipLang */
 
 %{
+  open Ast_core
   open Ast_bip
 %}
 
-%token <Ast_bip.constant> CST
-%token <Ast_bip.binop> CMP
+%token <Ast_core.constant> CST
+%token <Ast_core.binop> CMP
 %token <string> IDENT
 %token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
@@ -50,12 +51,22 @@ def:
 block:
 | BEGIN b = block_core END
     { b }
+;
 
 block_core:
 | e = expr
     { [e] }
 | e = expr SEMICOLON b = block_core 
     { e :: b }
+;
+
+bip_expr:
+| LFLOOR e = expr RFLOOR
+    { Efloor e }
+| e1 = expr PIPE e2 = expr
+    { Epipe (e1, e2) }
+| 
+;
 
 expr:
 | LP e = expr RP
@@ -66,6 +77,10 @@ expr:
     { Eident id }
 | LET id = ident EQUAL value = expr IN body = expr
     { Elet (id, value, body) } 
+| LET id = ident EQUAL LFLOOR value = expr RFLOOR IN body = expr
+    { Elet (id, Efloor value, body) } 
+| LET id = ident EQUAL LP value1 = expr PIPE value2 = expr RP IN body = expr
+    { Elet (id, Epipe (value1, value2), body) }     
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -88,18 +103,6 @@ expr:
     { Efloor (s) }
 | e1 = expr PIPE e2 = expr
     { Epipe (e1, e2) }
-| LFLOOR ls = let_short RFLOOR
-    { let (id, value) = ls in
-      Eflrlet (id, value) }
-| ls1 = let_short PIPE ls2 = let_short
-    { let (id1, value1) = ls1 in 
-      let (id2, value2) = ls2 in 
-      Epipelet (id1, value1, id2, value2) }
-;
-
-let_short:
-| LET id = ident EQUAL value = expr IN
-    { (id, value) }
 ;
 
 parameter_core:

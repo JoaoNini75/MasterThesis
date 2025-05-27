@@ -5,6 +5,7 @@ open Lexing
 open Parser
 open Ast_ml
 open Ast_bip
+open Ast_core
 
 type oexpr_sided = oexpr * string
 
@@ -34,30 +35,81 @@ let report (b,e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
-let rec pib_to_ml (e: Ast_bip.expr) : Ast_ml.oexpr =
-  match e with 
-  | Eident x -> Oident x
-  | Ecst _ -> assert false (* TODO *)
-  | Eunop of    unop * expr
-  | Ebinop of   binop * expr * expr
-  | Elet (x, Efloor e1, e2) ->
-      let x_l = { x with id = x.id ^ "_l"} in
-      let x_r = { x with id = x.id ^ "_r"} in
-      let e1 = pib_to_ml e1 in
-      Olet (x_l, e1, Olet (x_r, e1, pib_to_ml e2))
-  | Elet (x, e1, e2) ->
-      Olet (x, pib_to_ml e1, pib_to_ml e2)
-  | Efun of     def
-  | Eapp of     ident * expr list
-  | Eif of      expr * expr list * expr list
-  | Efor of     ident * expr * expr * expr list  
-  | Ewhile of   expr * expr list 
-  | Eassign of  ident * expr (* x := 3 *)
+let rec bip_to_ml (e: Ast_bip.bip_expr) (side: string) : Ast_ml.oexpr =
+  match e with  
+  | Eident ident -> 
+    if side = ""
+    then Oident ident
+    else Oident (ident.loc, ident.id ^ "_" ^ side)
+
+  | Ecst c -> Ocst c
+
+  | Eunop (op, e) -> Ounop (op, bip_to_ml e side)
+
+  | Ebinop (op, e1, e2) -> 
+    Obinop (op, bip_to_ml e1 side, bip_to_ml e2 side)
+
+  | Elet (ident, Efloor e1, e2) ->
+    let ident_l = { x with id = ident.id ^ "_l"} 
+    and ident_r = { x with id = ident.id ^ "_r"}
+    and oe1_l = bip_to_ml e1 "l" 
+    and oe1_r = bip_to_ml e1 "r" 
+    and oe2 = bip_to_ml e2 "" in
+    Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
+
+  | Elet (ident, Epipe (e1, e2), e_body) ->
+    let ident_l = { x with id = ident.id ^ "_l"} in
+    let ident_r = { x with id = ident.id ^ "_r"} in
+    let oe1 = bip_to_ml e1 "l" in
+    let oe2 = bip_to_ml e2 "r" in
+    let oe_body = bip_to_ml e_body "" in
+    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
+
+  | Elet (x, e1, e2) -> 
+    Olet (x, bip_to_ml e1 "", bip_to_ml e2 "")
+
+  | Efun (ident, param_list, bto, flrd, e_list) -> 
+    assert false (* TODO Ofun (bip_to_ml def) *)    
+
+  | Eapp (ident, expr_list) -> 
+    Oapp (ident, (List.iter (fun e -> bip_to_ml e "") expr_list))
+
+  | Eif (e_cnd, el_then, el_else) ->
+    let oe_cnd = bip_to_ml e_cnd ""
+    and oel_then = List.iter (fun e -> bip_to_ml e "") el_then
+    and oel_else = List.iter (fun e -> bip_to_ml e "") el_else in
+    Oif (oe_cnd, oel_then, oel_else)
+
+  | Efor (ident, e_val, e_to, el_body) ->
+    let oe_val = bip_to_ml e_val "" 
+    and oe_to = bip_to_ml e_to "" 
+    and oel_body = List.iter (fun e -> bip_to_ml e "") el_body in
+    Ofor (ident, oe_val, oe_to, oel_body)
+
+  | Ewhile (e_cnd, el_body) ->
+    let oe_cnd = bip_to_ml e_cnd ""
+    and oel_body = List.iter (fun e -> bip_to_ml e "") el_body in
+    Owhile (oe_cnd, oel_body)
+
+  | Eassign (ident, e) ->
+    Oassign (ident, bip_to_ml e "")
+
   | Efloor e ->
-      
-  | Epipe of    expr * expr (* expr | expr *)
-  | Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
-  | Epipelet of ident * expr * ident * expr (* let x = 2 in | let x = 3 in *)
+    (*
+    eval e "l";
+    eval e "r"
+    *)
+    assert false (* TODO *)  
+
+  | Epipe (e1, e2) ->
+    (*
+    eval e1 "l";
+    eval e2 "r"
+    *)
+    assert false (* TODO *)  
+    
+  (*| Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
+  | Epipelet of ident * expr * ident * expr (* let x = 2 in | let x = 3 in *) *)
 
 
 let get_const_str (const : Ast_ml.constant) = 
