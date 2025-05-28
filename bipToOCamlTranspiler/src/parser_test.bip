@@ -43,10 +43,11 @@ let bip_complete (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     |_ !x _|
 end
 
-let bip (x1 : int, y1 : bool) : int = begin
-    let x2 = y1 * 2 in
-    let y2 = 34 in
-    if y2 > x2 then begin |_ x2 + y2 _| end
+let bip (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
+    let x2 = |_ y1 * 2 _| in
+    let y2 = |_ 34 _| in
+    if |_ y2 > x2 _|
+    then begin |_ x2 + y2 _| end
     else begin |_ x2 - y2 _| end
 end
 (*@ requires x1 <-> x1 && y1 <-> y1*)
@@ -54,7 +55,7 @@ end
 let bip2 (x, y) = begin
     let z = ref (-1) in
     let b = not (true && false) in
-    z := !z + 1;
+    z := |_ !z + 1 _|;
     b
 end
 

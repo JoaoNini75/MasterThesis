@@ -7,7 +7,7 @@ open Ast_ml
 open Ast_bip
 open Ast_core
 
-type oexpr_sided = oexpr * string
+type side = Left | Right
 
 let usage = "usage: biplang [options] file.bip"
 (* dune build && dune exec ./biplang.exe parser_test.bip *)
@@ -35,12 +35,15 @@ let report (b,e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
-let rec bip_to_ml (e: Ast_bip.bip_expr) (side: string) : Ast_ml.oexpr =
+
+
+let rec bip_to_ml (e: Ast_bip.bip_expr) (side: side option) : Ast_ml.oexpr =
   match e with  
   | Eident ident -> 
-    if side = ""
-    then Oident ident
-    else Oident (ident.loc, ident.id ^ "_" ^ side)
+    match side with
+    | None -> Oident ident
+    | Left -> Oident (ident.loc, ident.id ^ "_l")
+    | Right -> Oident (ident.loc, ident.id ^ "_r")
 
   | Ecst c -> Ocst c
 
@@ -54,7 +57,7 @@ let rec bip_to_ml (e: Ast_bip.bip_expr) (side: string) : Ast_ml.oexpr =
     and ident_r = { x with id = ident.id ^ "_r"}
     and oe1_l = bip_to_ml e1 "l" 
     and oe1_r = bip_to_ml e1 "r" 
-    and oe2 = bip_to_ml e2 "" in
+    and oe2 = bip_to_ml e2 None in
     Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
 
   | Elet (ident, Epipe (e1, e2), e_body) ->
@@ -62,71 +65,62 @@ let rec bip_to_ml (e: Ast_bip.bip_expr) (side: string) : Ast_ml.oexpr =
     let ident_r = { x with id = ident.id ^ "_r"} in
     let oe1 = bip_to_ml e1 "l" in
     let oe2 = bip_to_ml e2 "r" in
-    let oe_body = bip_to_ml e_body "" in
+    let oe_body = bip_to_ml e_body None in
     Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
 
   | Elet (x, e1, e2) -> 
-    Olet (x, bip_to_ml e1 "", bip_to_ml e2 "")
+    Olet (x, bip_to_ml e1 None, bip_to_ml e2 None)
 
-  | Efun (ident, param_list, bto, flrd, e_list) -> 
-    assert false (* TODO Ofun (bip_to_ml def) *)    
+  | Efun def -> bip_to_ml_def def  
 
   | Eapp (ident, expr_list) -> 
-    Oapp (ident, (List.iter (fun e -> bip_to_ml e "") expr_list))
+    Oapp (ident, (List.iter (fun e -> bip_to_ml e None) expr_list))
 
   | Eif (e_cnd, el_then, el_else) ->
-    let oe_cnd = bip_to_ml e_cnd ""
-    and oel_then = List.iter (fun e -> bip_to_ml e "") el_then
-    and oel_else = List.iter (fun e -> bip_to_ml e "") el_else in
+    let oe_cnd = bip_to_ml e_cnd None
+    and oel_then = List.iter (fun e -> bip_to_ml e None) el_then
+    and oel_else = List.iter (fun e -> bip_to_ml e None) el_else in
     Oif (oe_cnd, oel_then, oel_else)
 
   | Efor (ident, e_val, e_to, el_body) ->
-    let oe_val = bip_to_ml e_val "" 
-    and oe_to = bip_to_ml e_to "" 
-    and oel_body = List.iter (fun e -> bip_to_ml e "") el_body in
+    let oe_val = bip_to_ml e_val None 
+    and oe_to = bip_to_ml e_to None 
+    and oel_body = List.iter (fun e -> bip_to_ml e None) el_body in
     Ofor (ident, oe_val, oe_to, oel_body)
 
   | Ewhile (e_cnd, el_body) ->
-    let oe_cnd = bip_to_ml e_cnd ""
-    and oel_body = List.iter (fun e -> bip_to_ml e "") el_body in
+    let oe_cnd = bip_to_ml e_cnd None
+    and oel_body = List.iter (fun e -> bip_to_ml e None) el_body in
     Owhile (oe_cnd, oel_body)
 
   | Eassign (ident, e) ->
-    Oassign (ident, bip_to_ml e "")
+    Oassign (ident, bip_to_ml e side)
 
-  | Efloor e ->
-    (*
-    eval e "l";
-    eval e "r"
-    *)
-    assert false (* TODO *)  
+  | Efloor e -> bip_to_ml (Epipe (e, e)) None 
 
   | Epipe (e1, e2) ->
-    (*
-    eval e1 "l";
-    eval e2 "r"
-    *)
-    assert false (* TODO *)  
+    bip_to_ml e1 (Some Left);
+    bip_to_ml e2 (Some Right)
     
   (*| Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
   | Epipelet of ident * expr * ident * expr (* let x = 2 in | let x = 3 in *) *)
 
 
-let get_const_str (const : Ast_ml.constant) = 
+let get_const_str (const : Ast_core.constant) = 
   match const with
   | Cint  i -> string_of_int i
   | Cbool b -> string_of_bool b
   | Cstring str -> str
   | Cnone -> "Cnone"
 
-let get_unop_str (unop : Ast_ml.unop) =
+let get_unop_str (unop : Ast_core.unop) =
   match unop with
     | Uneg -> "-"
     | Unot -> "not "
     | Uref -> "ref "
     | Uderef -> "!" 
 
-let get_binop_str (binop : Ast_ml.binop) =
+let get_binop_str (binop : Ast_core.binop) =
   match binop with
     | Badd -> "+"
     | Bsub -> "-"
@@ -143,7 +137,7 @@ let get_binop_str (binop : Ast_ml.binop) =
     | Bor -> "or" 
     | Bspeq -> "<->"
 
-let get_type_str (bip_type_opt : Ast_ml.bip_type option) =
+let get_type_str (bip_type_opt : Ast_core.bip_type option) =
   match bip_type_opt with
   | None -> ""
   | Some bt -> 
@@ -281,59 +275,66 @@ and pp_def fmt def =
   ) param_list;
 
   List.iter (fun expr -> pp_expr fmt expr) expr_list
-and pp_oexpr fmt oexpr_sided = 
-  let (oexpr, side) = oexpr_sided in
+and pp_oexpr fmt (oexpr : Ast_ml.oexpr) = 
   match oexpr with
-  | Oident id ->
-    if side = ""
-    then fprintf fmt "%s" id.id
-    else fprintf fmt "%s" (id.id ^ "_" ^ side)
+  | Oident id -> fprintf fmt "%s" id.id
+
   | Ocst c -> fprintf fmt "%s" (get_const_str c)
+
   | Ounop (op, e) -> 
     fprintf fmt "%s" (get_unop_str op);
-    pp_oexpr fmt (e, "") 
+    pp_oexpr fmt e
+
   | Obinop (op, e1, e2) -> 
-    pp_oexpr fmt (e1, "");
+    pp_oexpr fmt e1;
     fprintf fmt " %s " (get_binop_str op);
-    pp_oexpr fmt (e2, "")
+    pp_oexpr fmt e2
+
   | Olet (id, value, body) -> 
     fprintf fmt "let %s = " id.id;
-    pp_oexpr fmt (value, "");
+    pp_oexpr fmt value;
     fprintf fmt " in\n";
-    pp_oexpr fmt (body, "")
+    pp_oexpr fmt body
+
   | Ofun (id, param_list, fun_type, floored, oexpr_list) ->
     pp_def_ml fmt (id, param_list, fun_type, floored, oexpr_list)
+
   | Oapp (id, oexpr_list) -> 
     fprintf fmt "%s " id.id;
-    List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr (oexpr, "")) oexpr_list
+    List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr oexpr) oexpr_list
+  
   | Oif (cnd, s1, s2) -> 
-    fprintf fmt "if "; 
-    pp_oexpr fmt (cnd, ""); 
-    fprintf fmt "\nthen ";
-    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) s1;
+    fprintf fmt "if %a\nthen " pp_oexpr cnd; 
+    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s1;
     fprintf fmt "\nelse ";
-    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) s2
+    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s2
+
   | Ofor (id, value, e_to, body) -> 
-    fprintf fmt "for %s = %a to %a do\n" id.id pp_oexpr (value, "") pp_oexpr (e_to, ""); 
-    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) body;
+    fprintf fmt "for %s = %a to %a do\n" id.id pp_oexpr value pp_oexpr e_to; 
+    List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
     fprintf fmt "\ndone ";
+
   | Owhile (cnd, body) -> 
-    fprintf fmt "while %a do\n" pp_oexpr (cnd, ""); 
-    List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) body;
-    fprintf fmt "\ndone ";
-  | Oassign (id, e) -> fprintf fmt "%s := %a" id.id pp_oexpr (e, "");
-  | Ofloor e -> 
-    fprintf fmt "(%a, %a)" pp_oexpr (e, "l") pp_oexpr (e, "r");
+    fprintf fmt "while %a do\n" pp_oexpr cnd; 
+    List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
+    fprintf fmt "\ndone "
+
+  | Oassign (id, e) -> fprintf fmt "%s := %a" id.id pp_oexpr e
+
+  (*| Ofloor e -> 
+    fprintf fmt "(%a, %a)" pp_oexpr (e, "l") pp_oexpr (e, "r")
+
   | Opipe (e1, e2) -> 
     fprintf fmt "%a; %a" pp_oexpr (e1, "l") pp_oexpr (e2, "r")
+
   | Oflrlet (id, value) ->
     fprintf fmt "let %a = %a in\n let %a = %a in\n" 
     pp_oexpr (Oident id, "l") pp_oexpr (value, "l")
     pp_oexpr (Oident id, "r") pp_oexpr (value, "r") 
   | Opipelet (id1, value1, id2, value2) -> 
     fprintf fmt "let %s = %a in\n let %s = %a in\n"
-    id1.id pp_oexpr (value1, "l") id2.id pp_oexpr (value2, "r")
-and pp_def_ml fmt (def: Ast_ml.def) =
+    id1.id pp_oexpr (value1, "l") id2.id pp_oexpr (value2, "r")*)
+and pp_def_ml fmt (def: Ast_ml.odef) =
   let (id, param_list, fun_type, fun_floored, oexpr_list) = def in
   let fun_type_str = get_type_str fun_type in
 
@@ -365,8 +366,7 @@ and pp_def_ml fmt (def: Ast_ml.def) =
     else (fprintf fmt ") : %s = begin\n" fun_type_str)
   );
 
-  List.iter (fun oexpr -> pp_oexpr fmt (oexpr, "")) oexpr_list;
-
+  List.iter (fun oexpr -> pp_oexpr fmt oexpr) oexpr_list;
   fprintf fmt "\nend\n\n"
   
 
@@ -378,12 +378,19 @@ let pp_ast ast =
   eprintf "@[%a@]@." pp_file ast
 
 
-let pp_file_ml fmt (file : Ast_ml.file) =
+let pp_file_ml fmt (file : Ast_ml.ofile) =
   fprintf fmt "\n\nOCaml code:";
   List.iter (pp_def_ml fmt) file
 
-let pp_ast_to_ml ast =
-  eprintf "@[%a@]@." pp_file_ml ast
+let bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
+  let (ident, param_list, bto, flrd, body) = def in
+  (ident, param_list, bto, flrd, List.iter (fun e -> bip_to_ml e) body)
+
+let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
+  List.iter (fun def -> bip_to_ml_def def) file
+
+let pp_ast_to_ml (file : Ast_bip.file) =
+  eprintf "@[%a@]@." pp_file_ml (bip_to_ml_file file)
 
 
 let () =

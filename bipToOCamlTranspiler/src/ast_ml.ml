@@ -18,7 +18,8 @@ type oexpr =
   | Owhile of   oexpr * oexpr list 
   | Oassign of  ident * oexpr (* x := 3 *)
 
-and odef = ident * parameter list * bip_type option * oexpr list
+and odef = ident * parameter list * bip_type option
+           * bool (* return pair *) * oexpr list
 
 and ofile = odef list
    
