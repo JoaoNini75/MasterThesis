@@ -35,62 +35,65 @@ let report (b,e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
-
-
-let rec bip_to_ml (e: Ast_bip.bip_expr) (side: side option) : Ast_ml.oexpr =
+let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
+  let (ident, param_list, bto, special_op_opt, body) = def in
+  (ident, param_list, bto, special_op_opt <> None,
+   List.map (fun e -> bip_to_ml e None) body)
+and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
   match e with  
-  | Eident ident -> 
+  | Eident ident -> (
     match side with
     | None -> Oident ident
-    | Left -> Oident (ident.loc, ident.id ^ "_l")
-    | Right -> Oident (ident.loc, ident.id ^ "_r")
+    | Some Left -> Oident ({ ident with id = ident.id ^ "_l" })
+    | Some Right -> Oident ({ ident with id = ident.id ^ "_r" }))
 
   | Ecst c -> Ocst c
 
   | Eunop (op, e) -> Ounop (op, bip_to_ml e side)
 
   | Ebinop (op, e1, e2) -> 
-    Obinop (op, bip_to_ml e1 side, bip_to_ml e2 side)
+    Obinop (op, (bip_to_ml e1 side), (bip_to_ml e2 side))
 
   | Elet (ident, Efloor e1, e2) ->
-    let ident_l = { x with id = ident.id ^ "_l"} 
-    and ident_r = { x with id = ident.id ^ "_r"}
-    and oe1_l = bip_to_ml e1 "l" 
-    and oe1_r = bip_to_ml e1 "r" 
+    let ident_l = { ident with id = ident.id ^ "_l"} 
+    and ident_r = { ident with id = ident.id ^ "_r"}
+    and oe1_l = bip_to_ml e1 (Some Left)
+    and oe1_r = bip_to_ml e1 (Some Right)  
     and oe2 = bip_to_ml e2 None in
     Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
 
   | Elet (ident, Epipe (e1, e2), e_body) ->
-    let ident_l = { x with id = ident.id ^ "_l"} in
-    let ident_r = { x with id = ident.id ^ "_r"} in
-    let oe1 = bip_to_ml e1 "l" in
-    let oe2 = bip_to_ml e2 "r" in
+    let ident_l = { ident with id = ident.id ^ "_l"} in
+    let ident_r = { ident with id = ident.id ^ "_r"} in
+    let oe1 = bip_to_ml e1 (Some Left) in
+    let oe2 = bip_to_ml e2 (Some Right) in
     let oe_body = bip_to_ml e_body None in
     Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
 
   | Elet (x, e1, e2) -> 
     Olet (x, bip_to_ml e1 None, bip_to_ml e2 None)
 
-  | Efun def -> bip_to_ml_def def  
+  | Efun def -> Ofun (bip_to_ml_def def) 
 
   | Eapp (ident, expr_list) -> 
-    Oapp (ident, (List.iter (fun e -> bip_to_ml e None) expr_list))
+    Oapp (ident, (List.map (fun e -> bip_to_ml e None) expr_list))
 
   | Eif (e_cnd, el_then, el_else) ->
-    let oe_cnd = bip_to_ml e_cnd None
-    and oel_then = List.iter (fun e -> bip_to_ml e None) el_then
-    and oel_else = List.iter (fun e -> bip_to_ml e None) el_else in
-    Oif (oe_cnd, oel_then, oel_else)
+    let oe_cnd_l = bip_to_ml e_cnd (Some Left)
+    and oe_cnd_r = bip_to_ml e_cnd (Some Right)
+    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
+    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
+    Oif (oe_cnd_l, oe_cnd_r, oel_then, oel_else)
 
   | Efor (ident, e_val, e_to, el_body) ->
     let oe_val = bip_to_ml e_val None 
     and oe_to = bip_to_ml e_to None 
-    and oel_body = List.iter (fun e -> bip_to_ml e None) el_body in
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
     Ofor (ident, oe_val, oe_to, oel_body)
 
   | Ewhile (e_cnd, el_body) ->
     let oe_cnd = bip_to_ml e_cnd None
-    and oel_body = List.iter (fun e -> bip_to_ml e None) el_body in
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
     Owhile (oe_cnd, oel_body)
 
   | Eassign (ident, e) ->
@@ -99,7 +102,7 @@ let rec bip_to_ml (e: Ast_bip.bip_expr) (side: side option) : Ast_ml.oexpr =
   | Efloor e -> bip_to_ml (Epipe (e, e)) None 
 
   | Epipe (e1, e2) ->
-    bip_to_ml e1 (Some Left);
+    (* bip_to_ml e1 (Some Left); *)
     bip_to_ml e2 (Some Right)
     
   (*| Eflrlet of  ident * expr (* |_ let x = 2 in _| *)
@@ -147,10 +150,11 @@ let get_type_str (bip_type_opt : Ast_core.bip_type option) =
     | NONE -> ""
 
 
-let pp_floored fmt floored =
-  if floored 
-  then fprintf fmt "floored"
-  else fprintf fmt "not_floored"
+let pp_special_op fmt special_op_opt =
+  match special_op_opt with 
+  | None -> fprintf fmt "normal"
+  | Some SOfloor -> fprintf fmt "floored"
+  | Some SOpipe -> fprintf fmt "piped"
 
 let pp_type fmt bip_type =
   match bip_type with
@@ -216,8 +220,8 @@ and pp_expr fmt expr =
     pp_expr fmt value;
     fprintf fmt "in";
     pp_expr fmt body
-  | Efun (id, param_list, fun_type, floored, expr_list) ->
-    pp_def fmt (id, param_list, fun_type, floored, expr_list)
+  | Efun (id, param_list, fun_type, special_op_opt, expr_list) ->
+    pp_def fmt (id, param_list, fun_type, special_op_opt, expr_list)
   | Eapp (id, expr_list) -> 
     fprintf fmt "\n(app) id = %s, expr_list: " id.id;
     List.iter (fun expr -> pp_expr fmt expr) expr_list
@@ -254,7 +258,7 @@ and pp_expr fmt expr =
     pp_expr fmt e1;
     fprintf fmt " | ";
     pp_expr fmt e2
-  | Eflrlet (id, value) ->
+  (*| Eflrlet (id, value) ->
     fprintf fmt "\n(flrlet) |_ %s = " id.id;
     pp_expr fmt value;
     fprintf fmt "in _| ";
@@ -263,15 +267,15 @@ and pp_expr fmt expr =
     pp_expr fmt value1;
     fprintf fmt "in | %s = " id2.id;
     pp_expr fmt value2;
-    fprintf fmt "in "
+    fprintf fmt "in "*)
 and pp_def fmt def =
-  let (id, param_list, fun_type, floored, expr_list) = def in
-  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " id.id pp_type_option fun_type pp_floored floored;
+  let (id, param_list, fun_type, special_op_opt, expr_list) = def in
+  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " id.id pp_type_option fun_type pp_special_op special_op_opt;
   
   List.iter (
-    fun (ident, bip_type_opt, floored) ->
+    fun (ident, bip_type_opt, special_op_opt) ->
       fprintf fmt "%s (%a, %a), " 
-      ident.id pp_type_option bip_type_opt pp_floored floored
+      ident.id pp_type_option bip_type_opt pp_special_op special_op_opt
   ) param_list;
 
   List.iter (fun expr -> pp_expr fmt expr) expr_list
@@ -291,35 +295,36 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) =
     pp_oexpr fmt e2
 
   | Olet (id, value, body) -> 
-    fprintf fmt "let %s = " id.id;
+    fprintf fmt "  let %s = " id.id;
     pp_oexpr fmt value;
     fprintf fmt " in\n";
     pp_oexpr fmt body
 
-  | Ofun (id, param_list, fun_type, floored, oexpr_list) ->
-    pp_def_ml fmt (id, param_list, fun_type, floored, oexpr_list)
+  | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list) ->
+    pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list)
 
   | Oapp (id, oexpr_list) -> 
-    fprintf fmt "%s " id.id;
+    fprintf fmt "  %s " id.id;
     List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr oexpr) oexpr_list
   
-  | Oif (cnd, s1, s2) -> 
-    fprintf fmt "if %a\nthen " pp_oexpr cnd; 
+  | Oif (cnd_l, cnd_r, s1, s2) -> 
+    fprintf fmt "  assert { (%a) = (%a) };\n  if %a\n  then "
+      pp_oexpr cnd_l pp_oexpr cnd_r pp_oexpr cnd_l; 
     List.iter (fun oexpr -> pp_oexpr fmt oexpr) s1;
-    fprintf fmt "\nelse ";
+    fprintf fmt "\n  else ";
     List.iter (fun oexpr -> pp_oexpr fmt oexpr) s2
 
   | Ofor (id, value, e_to, body) -> 
-    fprintf fmt "for %s = %a to %a do\n" id.id pp_oexpr value pp_oexpr e_to; 
+    fprintf fmt "  for %s = %a to %a do\n  " id.id pp_oexpr value pp_oexpr e_to; 
     List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
-    fprintf fmt "\ndone ";
+    fprintf fmt "\n  done ";
 
   | Owhile (cnd, body) -> 
-    fprintf fmt "while %a do\n" pp_oexpr cnd; 
+    fprintf fmt "  while %a do\n  " pp_oexpr cnd; 
     List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
-    fprintf fmt "\ndone "
+    fprintf fmt "\n  done "
 
-  | Oassign (id, e) -> fprintf fmt "%s := %a" id.id pp_oexpr e
+  | Oassign (id, e) -> fprintf fmt "  %s := %a" id.id pp_oexpr e
 
   (*| Ofloor e -> 
     fprintf fmt "(%a, %a)" pp_oexpr (e, "l") pp_oexpr (e, "r")
@@ -335,35 +340,35 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) =
     fprintf fmt "let %s = %a in\n let %s = %a in\n"
     id1.id pp_oexpr (value1, "l") id2.id pp_oexpr (value2, "r")*)
 and pp_def_ml fmt (def: Ast_ml.odef) =
-  let (id, param_list, fun_type, fun_floored, oexpr_list) = def in
+  let (id, param_list, fun_type, ret_pair, oexpr_list) = def in
   let fun_type_str = get_type_str fun_type in
 
   fprintf fmt "let %s (" id.id;
   
   List.iter (
-    fun (ident, param_type, floored) ->
+    fun (ident, param_type, special_op_opt) ->
       let param_type_str = get_type_str param_type in
 
-      if floored then (
+      match special_op_opt with 
+      | None -> (
+        if param_type_str = "" 
+        then fprintf fmt "%s," ident.id
+        else fprintf fmt "%s : %s, " ident.id param_type_str )
+      | _ -> (
         let id1 = ident.id ^ "_l" in
         let id2 = ident.id ^ "_r" in
 
         if param_type_str = "" 
         then fprintf fmt "%s, %s, " id1 id2
-        else fprintf fmt "%s : %s, %s : %s" id1 param_type_str id2 param_type_str
-      ) else (
-        if param_type_str = "" 
-        then fprintf fmt "%s," ident.id
-        else fprintf fmt "%s : %s, " ident.id param_type_str 
-      )
+        else fprintf fmt "%s : %s, %s : %s, " id1 param_type_str id2 param_type_str ) 
   ) param_list;
 
   if fun_type_str = "" then (
     fprintf fmt ") = begin\n"
   ) else (
-    if fun_floored
-    then (fprintf fmt ") : (%s, %s) = begin\n" fun_type_str fun_type_str)
-    else (fprintf fmt ") : %s = begin\n" fun_type_str)
+    if ret_pair
+    then fprintf fmt ") : (%s, %s) = begin\n" fun_type_str fun_type_str
+    else fprintf fmt ") : %s = begin\n" fun_type_str
   );
 
   List.iter (fun oexpr -> pp_oexpr fmt oexpr) oexpr_list;
@@ -379,15 +384,11 @@ let pp_ast ast =
 
 
 let pp_file_ml fmt (file : Ast_ml.ofile) =
-  fprintf fmt "\n\nOCaml code:";
+  fprintf fmt "\n\nOCaml code:\n\n";
   List.iter (pp_def_ml fmt) file
 
-let bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
-  let (ident, param_list, bto, flrd, body) = def in
-  (ident, param_list, bto, flrd, List.iter (fun e -> bip_to_ml e) body)
-
 let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
-  List.iter (fun def -> bip_to_ml_def def) file
+  List.map bip_to_ml_def file
 
 let pp_ast_to_ml (file : Ast_bip.file) =
   eprintf "@[%a@]@." pp_file_ml (bip_to_ml_file file)

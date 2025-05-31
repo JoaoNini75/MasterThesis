@@ -8,8 +8,9 @@ type location = Lexing.position * Lexing.position
 type ident = { loc: location; id: string; }
 
 type bip_type = BOOL | INT | NONE
-type parameter = ident * bip_type option * bool (* floored *)
-
+type special_op = SOfloor | SOpipe  
+type parameter = ident * bip_type option * special_op option
+  
 type unop =
   | Uneg    (* -e *)
   | Unot    (* not e *)

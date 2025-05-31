@@ -19,11 +19,9 @@ type expr =
   | Eassign of  ident * expr (* x := 3 *)
   | Efloor of   expr (* |_ expr _| *)
   | Epipe of    expr * expr (* expr | expr *)
-  (* | Eflrlet of  ident * expr * expr (* let j = |_ ref 0 _| in ... *)
-  | Epipelet of ident * expr * expr * expr (* let j = (ref 0 | ref c) in ... *)*) *)
 
 and def = ident * parameter list * bip_type option
-          * bool (* floored *) * expr list
+          * special_op option * expr list
 
 and file = def list
    

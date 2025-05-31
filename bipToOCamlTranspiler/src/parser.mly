@@ -43,8 +43,8 @@ def:
 | LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block 
     { 
       match fr with
-      | None -> (f, x, None, false, b)
-      | Some (tp, flrd) -> (f, x, Some tp, flrd, b)
+      | None -> (f, x, None, None, b)
+      | Some (tp, spop) -> (f, x, Some tp, spop, b)
     }
 ;
 
@@ -58,14 +58,6 @@ block_core:
     { [e] }
 | e = expr SEMICOLON b = block_core 
     { e :: b }
-;
-
-bip_expr:
-| LFLOOR e = expr RFLOOR
-    { Efloor e }
-| e1 = expr PIPE e2 = expr
-    { Epipe (e1, e2) }
-| 
 ;
 
 expr:
@@ -99,28 +91,33 @@ expr:
     { Efor (id, value, e_to, body) }
 | WHILE cnd = expr DO body = block_core DONE 
     { Ewhile (cnd, body) }     
-| LFLOOR s = expr RFLOOR
-    { Efloor (s) }
+| LFLOOR e = expr RFLOOR
+    { Efloor (e) }
 | e1 = expr PIPE e2 = expr
     { Epipe (e1, e2) }
 ;
 
 parameter_core:
 | id = ident COLON? tp = bip_type?
-    { id, tp, false }
+    { id, tp }
 ;
 
 parameter:
 | pc = parameter_core
+    { let (id, tp) = pc in(id, tp, None) }
 | LFLOOR pc = parameter_core RFLOOR
-    { let (id, tp, _) = pc in (id, tp, true) }
+    { let (id, tp) = pc in (id, tp, Some SOfloor) }
+| pc1 = parameter_core PIPE pc2 = parameter_core
+    { let (id, tp) = pc1 in (id, tp, Some SOpipe) }
 ;
 
 fun_ret:
 | COLON tp = bip_type
-    { tp, false }
+    { tp, None }
 | COLON LFLOOR tp = bip_type RFLOOR
-    { tp, true }
+    { tp, Some SOfloor }
+| COLON tp1 = bip_type PIPE tp2 = bip_type
+    { tp1, Some SOpipe }
 ;
 
 bip_type:

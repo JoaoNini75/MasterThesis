@@ -13,7 +13,7 @@ type oexpr =
   | Olet of     ident * oexpr * oexpr
   | Ofun of     odef
   | Oapp of     ident * oexpr list
-  | Oif of      oexpr * oexpr list * oexpr list
+  | Oif of      oexpr * oexpr * oexpr list * oexpr list
   | Ofor of     ident * oexpr * oexpr * oexpr list  
   | Owhile of   oexpr * oexpr list 
   | Oassign of  ident * oexpr (* x := 3 *)
