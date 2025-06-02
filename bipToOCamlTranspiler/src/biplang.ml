@@ -131,9 +131,16 @@ and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
     let ident_r = { ident with id = ident.id ^ "_r"} in
     Oassign (ident_l, ident_r, bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right)) 
 
-  | Eassign (ident, e) -> 
-    Oassign (ident, ident, bip_to_ml e None, Onone)
-
+  | Eassign (ident, e) ->
+    ( match side with 
+      | None -> Oassign (ident, ident, bip_to_ml e side, Onone)
+      | Some Left -> 
+        let ident_l = { ident with id = ident.id ^ "_l"} in
+        Oassign (ident_l, ident_l, bip_to_ml e side, Onone)
+      | Some Right -> 
+        let ident_r = { ident with id = ident.id ^ "_r"} in
+        Oassign (ident_r, ident_r, bip_to_ml e side, Onone) )
+     
   | Efloor e -> bip_to_ml (Epipe (e, e)) None 
 
   | Epipe (e1, e2) -> Oseq(bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right))
@@ -209,6 +216,9 @@ let pp_constant fmt constant =
       | Cnone -> "Cnone"
   in 
     fprintf fmt "%s (constant) " s
+
+let indent depth =
+  String.make (depth * 2) ' '
 
 
 let rec pp_unop fmt unop e =
@@ -312,87 +322,141 @@ and pp_def fmt def =
   ) param_list;
 
   List.iter (fun expr -> pp_expr fmt expr) expr_list
-and pp_oexpr fmt (oexpr : Ast_ml.oexpr) = 
+and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
+  (* if not not_last_elem then fprintf fmt "\n%s" (indent depth) else (); *)
+  let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
+  if not_last_elem then fprintf fmt " (NOT LAST) " else fprintf fmt " (LAST) ";
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
 
-  | Oident id -> fprintf fmt "%s" id.id
+  | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
-  | Ocst c -> fprintf fmt "%s" (get_const_str c)
+  | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
 
   | Ounop (op, e) -> 
+    fprintf fmt "%s" last_elem_str;
     fprintf fmt "%s" (get_unop_str op);
-    pp_oexpr fmt e
+    pp_oexpr fmt e depth not_last_elem
 
   | Obinop (op, e1, e2) -> 
-    pp_oexpr fmt e1;
+    fprintf fmt "%s" last_elem_str;
+    pp_oexpr fmt e1 depth false;
     fprintf fmt " %s " (get_binop_str op);
-    pp_oexpr fmt e2
+    pp_oexpr fmt e2 depth not_last_elem
 
   | Olet (id, value, body) -> 
-    fprintf fmt "  let %s = " id.id;
-    pp_oexpr fmt value;
-    fprintf fmt " in\n";
-    pp_oexpr fmt body
+    fprintf fmt "\n%slet %s = " (indent depth) id.id;
+    pp_oexpr fmt value depth true;
+    fprintf fmt " in";
+    pp_oexpr fmt body (depth) true
 
   | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list) ->
     pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list)
+    (* TODO add depth *)
 
   | Oapp (id, oexpr_list) -> 
-    fprintf fmt "  %s " id.id;
-    List.iter (fun oexpr -> fprintf fmt "%a " pp_oexpr oexpr) oexpr_list
+    fprintf fmt "\n%s%s " (indent depth) id.id;
+    List.iter (fun oe -> 
+                fprintf fmt "%a " 
+                (fun fmt _ -> pp_oexpr fmt oe depth true)
+                oe) oexpr_list
   
   | Oif (cnd_l, cnd_r, s1, s2) -> 
+    let indentation = (indent depth) in
     ( match cnd_r with 
-      | Onone -> fprintf fmt "  if %a\n  then " pp_oexpr cnd_l
-      | _ -> fprintf fmt "  assert ( (%a) = (%a) );\n  if %a\n  then "
-            pp_oexpr cnd_l pp_oexpr cnd_r pp_oexpr cnd_l); 
+      | Onone -> fprintf fmt "%sif %a\n%sthen " 
+                 indentation 
+                 (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) false) cnd_l
+                 indentation
 
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s1;
-    fprintf fmt "\n  else ";
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) s2
+      | _ -> fprintf fmt "\n%sassert ( (%a) = (%a) );\n%sif %a\n%sthen "
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth false) cnd_r
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) false) cnd_l
+              indentation
+    ); 
+
+    let len1 = List.length s1 in
+    let len2 = List.length s2 in
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) s1;
+    fprintf fmt "\n%selse " indentation;
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) s2
 
   | Ofor (id, value, e_to, body) -> 
-    fprintf fmt "  for %s = %a to %a do\n  "
-      id.id pp_oexpr value pp_oexpr e_to; 
-    List.iter (fun oexpr -> pp_oexpr fmt oexpr) body;
-    fprintf fmt "\n  done\n";
+    let indentation = (indent depth) in
+
+    fprintf fmt "\n%sfor %s = %a to %a do\n"
+      indentation
+      id.id
+      (fun fmt _ -> pp_oexpr fmt value depth false) value
+      (fun fmt _ -> pp_oexpr fmt e_to depth false) e_to; 
+
+    let len = List.length body in
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+
+    if not_last_elem
+    then fprintf fmt "\n%sdone;\n" indentation
+    else fprintf fmt "\n%sdone\n" indentation
 
   | Owhile (cnd_l, cnd_r, body) -> 
+    let indentation = (indent depth) in
+
     ( match cnd_r with
-      | Onone -> 
-        fprintf fmt "  while %a do\n    " pp_oexpr cnd_l;
-        List.iter (fun oexpr -> pp_oexpr fmt oexpr) body
-                 
-      | _ -> 
-        fprintf fmt "  while %a do\n    (*@@ invariant %a = %a *)\n"
-        pp_oexpr cnd_l pp_oexpr cnd_l pp_oexpr cnd_r;
-        List.iter (fun oexpr -> pp_oexpr fmt oexpr) body);
+      | Onone -> fprintf fmt "\n%swhile %a do\n" 
+                  indentation
+                  (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l;
+
+      | _ -> fprintf fmt "\n%swhile %a do\n%s(*@@ invariant %a = %a *)"
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
+              (indent (depth+1))
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth false) cnd_r
+    );
     
-    fprintf fmt "\n  done\n"
+    let len = List.length body in
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+    
+    if not_last_elem
+    then fprintf fmt "\n%sdone;\n" indentation
+    else fprintf fmt "\n%sdone\n" indentation
 
   | Oassign (id1, id2, e1, e2) ->
+    let indentation = (indent depth) in
+    let semicolon_str = if not_last_elem then ";" else "" in
     ( match e2 with
-      | Onone -> fprintf fmt "\n  %s := %a" id1.id pp_oexpr e1
-      | _ -> fprintf fmt "\n  %s := %a\n  %s := %a"
-             id1.id pp_oexpr e1 id2.id pp_oexpr e2
+      | Onone -> fprintf fmt "\n%s%s := %a%s"
+                  indentation
+                  id1.id
+                  (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+                  semicolon_str
+
+      | _ -> fprintf fmt "\n%s%s := %a;\n%s%s := %a%s"
+              indentation
+              id1.id
+              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+              indentation
+              id2.id
+              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
+              semicolon_str
     ) 
 
-  | Oseq (e1, e2) -> fprintf fmt "  (%a, %a)" pp_oexpr e1 pp_oexpr e2
+  | Oseq (e1, e2) -> 
+    ( match e1 with 
+      (* case where there are assigns on both sides of a pipe but the left-hand identifiers are different *)
+      | Oassign (id1, id2, oe1, oe2) -> pp_oexpr fmt e1 depth not_last_elem; pp_oexpr fmt e2 depth not_last_elem
+      | _ -> fprintf fmt "\n%s(%a, %a)"
+              (indent depth)
+              (fun fmt _ -> pp_oexpr fmt e1 depth false) e1
+              (fun fmt _ -> pp_oexpr fmt e2 depth false) e2
+    )
 
-  (*| Ofloor e -> 
-    fprintf fmt "(%a, %a)" pp_oexpr (e, "l") pp_oexpr (e, "r")
-
-  | Opipe (e1, e2) -> 
-    fprintf fmt "%a; %a" pp_oexpr (e1, "l") pp_oexpr (e2, "r")
-
-  | Oflrlet (id, value) ->
-    fprintf fmt "let %a = %a in\n let %a = %a in\n" 
-    pp_oexpr (Oident id, "l") pp_oexpr (value, "l")
-    pp_oexpr (Oident id, "r") pp_oexpr (value, "r") 
-  | Opipelet (id1, value1, id2, value2) -> 
-    fprintf fmt "let %s = %a in\n let %s = %a in\n"
-    id1.id pp_oexpr (value1, "l") id2.id pp_oexpr (value2, "r")*)
 and pp_def_ml fmt (def: Ast_ml.odef) =
   let (id, param_list, fun_type, ret_pair, oexpr_list) = def in
   let fun_type_str = get_type_str fun_type in
@@ -418,14 +482,16 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
   ) param_list;
 
   if fun_type_str = "" then (
-    fprintf fmt " =\n"
+    fprintf fmt " ="
   ) else (
     if ret_pair
-    then fprintf fmt " : %s * %s =\n" fun_type_str fun_type_str
-    else fprintf fmt " : %s =\n" fun_type_str
+    then fprintf fmt " : %s * %s =" fun_type_str fun_type_str
+    else fprintf fmt " : %s =" fun_type_str
   );
 
-  List.iter (fun oexpr -> pp_oexpr fmt oexpr) oexpr_list;
+  let len = List.length oexpr_list in
+  List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
+                            pp_oexpr fmt oe 1 not_last_elem) oexpr_list;
   fprintf fmt "\n\n"
   
 

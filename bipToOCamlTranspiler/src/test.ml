@@ -1,9 +1,18 @@
-let bip_if (x1_l : int) (x1_r : int) (y1_l : bool) (y1_r : bool) : int * int =
-  let x2_l = x1_l * 2 in
-  let x2_r = x1_r * 2 in
-  let y2_l = 34 in
-  let y2_r = 34 in
-  assert ( (y2_l > x2_l) = (y2_r > x2_r) );
-  if y2_l > x2_l
-  then   (x2_l + y2_l, x2_r + y2_r)
-  else   (x2_l - y2_l, x2_r - y2_r)
+let bip_while (b_l : int) (b_r : int) (c_l : int) (c_r : int) (n_l : int) (n_r : int) : int * int =
+  let i_l = ref 0 in
+  let i_r = ref 0 in
+  let j_l = ref 0 in
+  let j_r = ref c_r in
+  let x_l = ref 0 in
+  let x_r = ref 0 in
+  while !i_l < n_l do
+    (*@ invariant !i_l < n_l = !i_r < n_r *)
+    j_l := !i_l * b_l + c_l;
+    x_r := !x_r + !j_r;
+    x_l := !x_l + !j_l;
+    j_r := !j_r + b_r;
+    i_l := !i_l + 1;
+    i_r := !i_r + 1
+  done;
+
+  (!x_l, !x_r)

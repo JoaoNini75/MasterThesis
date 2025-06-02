@@ -28,6 +28,13 @@ let bip_if (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
 end
 (*@ requires x1 <-> x1 && y1 <-> y1*)
 
+let semicolon_assign () = begin
+    let a = ref 0 in
+    a := 5;
+    a := !a + 1;
+    !a
+end
+
 let bip_while (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     let i = |_ ref 0 _| in
     let j = (ref 0 | ref c) in
