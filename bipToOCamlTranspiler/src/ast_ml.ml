@@ -6,6 +6,7 @@
 open Ast_core
 
 type oexpr =
+  | Onone
   | Oident of   ident
   | Ocst of     constant
   | Ounop of    unop * oexpr
@@ -15,8 +16,9 @@ type oexpr =
   | Oapp of     ident * oexpr list
   | Oif of      oexpr * oexpr * oexpr list * oexpr list
   | Ofor of     ident * oexpr * oexpr * oexpr list  
-  | Owhile of   oexpr * oexpr list 
-  | Oassign of  ident * oexpr (* x := 3 *)
+  | Owhile of   oexpr * oexpr * oexpr list
+  | Oassign of  ident * ident * oexpr * oexpr (* x := 3 *)
+  | Oseq of     oexpr * oexpr
 
 and odef = ident * parameter list * bip_type option
            * bool (* return pair *) * oexpr list

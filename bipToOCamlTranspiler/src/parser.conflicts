@@ -1,0 +1,207 @@
+
+** Conflict (shift/reduce) in state 137.
+** Token involved: RP
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN WHILE LP expr PIPE expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 137, looking ahead at RP, shifting is permitted
+** because of the following sub-derivation:
+
+WHILE LP expr PIPE expr . RP DO block_core DONE 
+
+** In state 137, looking ahead at RP, reducing production
+** expr -> expr PIPE expr
+** is permitted because of the following sub-derivation:
+
+WHILE expr DO block_core DONE 
+      LP expr RP // lookahead token appears
+         expr PIPE expr . 
+
+** Conflict (shift/reduce) in state 130.
+** Token involved: RP
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN WHILE LP LFLOOR expr RFLOOR
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 130, looking ahead at RP, shifting is permitted
+** because of the following sub-derivation:
+
+WHILE LP LFLOOR expr RFLOOR . RP DO block_core DONE 
+
+** In state 130, looking ahead at RP, reducing production
+** expr -> LFLOOR expr RFLOOR
+** is permitted because of the following sub-derivation:
+
+WHILE expr DO block_core DONE 
+      LP expr RP // lookahead token appears
+         LFLOOR expr RFLOOR . 
+
+** Conflict (shift/reduce) in state 115.
+** Token involved: IN
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN LET ident EQUAL LFLOOR expr RFLOOR
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 115, looking ahead at IN, shifting is permitted
+** because of the following sub-derivation:
+
+LET ident EQUAL LFLOOR expr RFLOOR . IN expr 
+
+** In state 115, looking ahead at IN, reducing production
+** expr -> LFLOOR expr RFLOOR
+** is permitted because of the following sub-derivation:
+
+LET ident EQUAL expr IN expr // lookahead token appears
+                LFLOOR expr RFLOOR . 
+
+** Conflict (shift/reduce) in state 109.
+** Token involved: RP
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN LET ident EQUAL LP expr PIPE expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 109, looking ahead at RP, shifting is permitted
+** because of the following sub-derivation:
+
+LET ident EQUAL LP expr PIPE expr . RP IN expr 
+
+** In state 109, looking ahead at RP, reducing production
+** expr -> expr PIPE expr
+** is permitted because of the following sub-derivation:
+
+LET ident EQUAL expr IN expr 
+                LP expr RP // lookahead token appears
+                   expr PIPE expr . 
+
+** Conflict (shift/reduce) in state 102.
+** Token involved: THEN
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN IF expr PIPE expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 102, looking ahead at THEN, shifting is permitted
+** because of the following sub-derivation:
+
+IF expr PIPE expr . THEN block ELSE block 
+
+** In state 102, looking ahead at THEN, reducing production
+** expr -> expr PIPE expr
+** is permitted because of the following sub-derivation:
+
+IF expr THEN block ELSE block // lookahead token appears
+   expr PIPE expr . 
+
+** Conflict (shift/reduce) in state 91.
+** Token involved: THEN
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN IF LFLOOR expr RFLOOR
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 91, looking ahead at THEN, shifting is permitted
+** because of the following sub-derivation:
+
+IF LFLOOR expr RFLOOR . THEN block ELSE block 
+
+** In state 91, looking ahead at THEN, reducing production
+** expr -> LFLOOR expr RFLOOR
+** is permitted because of the following sub-derivation:
+
+IF expr THEN block ELSE block // lookahead token appears
+   LFLOOR expr RFLOOR . 
+
+** Conflict (shift/reduce) in state 67.
+** Token involved: RP
+** This state is reached from file after reading:
+
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL BEGIN ident ASSIGN LP expr PIPE expr
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(def) EOF 
+def list(def) 
+LET ident LP loption(separated_nonempty_list(COMMA,parameter)) RP option(fun_ret) EQUAL block 
+                                                                                        BEGIN block_core END 
+                                                                                              expr 
+                                                                                              (?)
+
+** In state 67, looking ahead at RP, shifting is permitted
+** because of the following sub-derivation:
+
+ident ASSIGN LP expr PIPE expr . RP 
+
+** In state 67, looking ahead at RP, reducing production
+** expr -> expr PIPE expr
+** is permitted because of the following sub-derivation:
+
+ident ASSIGN expr 
+             LP expr RP // lookahead token appears
+                expr PIPE expr . 
