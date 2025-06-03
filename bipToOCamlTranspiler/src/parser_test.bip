@@ -22,9 +22,11 @@ end*)
 let bip_if (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
     let x2 = |_ x1 * 2 _| in
     let y2 = |_ 34 _| in
-    if |_ y2 > x2 _|
-    then begin |_ x2 + y2 _| end
-    else begin |_ x2 - y2 _| end
+    if |_ y2 > x2 _| then begin
+      |_ x2 + y2 _|
+    end else begin
+      |_ x2 - y2 _|
+    end
 end
 (*@ requires x1 <-> x1 && y1 <-> y1*)
 
@@ -49,8 +51,8 @@ let bip_while (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     |_ !x _|
 end
 
-(*let bip2 (x, y) = begin
-    let z = ref (-1) in
+let bip2 (x, y) = begin
+    let z = |_ ref -1 _| in
     let b = not (true && false) in
     z := |_ !z + 1 _|;
     b
@@ -73,7 +75,8 @@ let fact_iter (n) = begin
 			for i = 2 to n do
 				(*@ invariant !res = fact (i-1) *)
 				res := !res * i
-			done
+			done;
+            !res
 		end
 end
 
@@ -107,9 +110,9 @@ let gcd_iter (a0, b0) = begin
 end
 
 let p2 () = begin
-    let x = ref 1 in
-    let y = ref 2 in
+    let x = |_ ref 1 _| in
+    let y = |_ ref 2 _| in
     x := !x + 1 | y := !y + 2;
-    !x
+    let z = ref 22 in
+    !z
 end
-*)

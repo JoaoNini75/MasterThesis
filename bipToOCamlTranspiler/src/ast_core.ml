@@ -20,7 +20,7 @@ type unop =
 type binop =
   | Badd | Bsub | Bmul | Bdiv | Bmod    (* + - * // % *)
   | Beq | Bneq | Blt | Ble | Bgt | Bge  (* == != < <= > >= *)
-  | Band | Bor | Bspeq                  (* and or <-> *)
+  | Band | Bor | Bspeq                  (* && || <-> *)
 
 type constant =
   | Cnone

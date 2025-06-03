@@ -159,8 +159,8 @@ let get_const_str (const : Ast_core.constant) =
 let get_unop_str (unop : Ast_core.unop) =
   match unop with
     | Uneg -> "-"
-    | Unot -> "not "
-    | Uref -> "ref "
+    | Unot -> "not " (* TODO how to put the pars in "not (true && false)"? *)
+    | Uref -> "ref ("
     | Uderef -> "!" 
 
 let get_binop_str (binop : Ast_core.binop) =
@@ -176,8 +176,8 @@ let get_binop_str (binop : Ast_core.binop) =
     | Ble -> "<=" 
     | Bgt -> ">" 
     | Bge -> ">="  
-    | Band -> "and" 
-    | Bor -> "or" 
+    | Band -> "&&" 
+    | Bor -> "||" 
     | Bspeq -> "<->"
 
 let get_type_str (bip_type_opt : Ast_core.bip_type option) =
@@ -313,7 +313,8 @@ and pp_expr fmt expr =
     fprintf fmt "in "*)
 and pp_def fmt def =
   let (id, param_list, fun_type, special_op_opt, expr_list) = def in
-  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " id.id pp_type_option fun_type pp_special_op special_op_opt;
+  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " 
+  id.id pp_type_option fun_type pp_special_op special_op_opt;
   
   List.iter (
     fun (ident, bip_type_opt, special_op_opt) ->
@@ -325,7 +326,7 @@ and pp_def fmt def =
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   (* if not not_last_elem then fprintf fmt "\n%s" (indent depth) else (); *)
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
-  if not_last_elem then fprintf fmt " (NOT LAST) " else fprintf fmt " (LAST) ";
+  (* if not_last_elem then fprintf fmt " (NOT LAST) " else fprintf fmt " (LAST) ";*)
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
 
@@ -334,21 +335,26 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
 
   | Ounop (op, e) -> 
-    fprintf fmt "%s" last_elem_str;
-    fprintf fmt "%s" (get_unop_str op);
-    pp_oexpr fmt e depth not_last_elem
+    let operator_str = (get_unop_str op) in
+    fprintf fmt "%s%s" last_elem_str operator_str;
+
+    (if not_last_elem 
+    then pp_oexpr fmt e depth not_last_elem
+    else pp_oexpr fmt e depth true);
+
+    if operator_str = "ref (" then fprintf fmt ")" else ()
 
   | Obinop (op, e1, e2) -> 
     fprintf fmt "%s" last_elem_str;
-    pp_oexpr fmt e1 depth false;
+    pp_oexpr fmt e1 depth true;
     fprintf fmt " %s " (get_binop_str op);
-    pp_oexpr fmt e2 depth not_last_elem
+    pp_oexpr fmt e2 depth true
 
   | Olet (id, value, body) -> 
     fprintf fmt "\n%slet %s = " (indent depth) id.id;
     pp_oexpr fmt value depth true;
     fprintf fmt " in";
-    pp_oexpr fmt body (depth) true
+    pp_oexpr fmt body depth not_last_elem
 
   | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list) ->
     pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list)
@@ -363,37 +369,40 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   
   | Oif (cnd_l, cnd_r, s1, s2) -> 
     let indentation = (indent depth) in
+    let len1 = List.length s1 in
+    let len2 = List.length s2 in
+
     ( match cnd_r with 
-      | Onone -> fprintf fmt "%sif %a\n%sthen " 
+      | Onone -> fprintf fmt "\n%sif %a\n%sthen " 
                  indentation 
-                 (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) false) cnd_l
+                 (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
                  indentation
 
       | _ -> fprintf fmt "\n%sassert ( (%a) = (%a) );\n%sif %a\n%sthen "
               indentation
-              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
-              (fun fmt _ -> pp_oexpr fmt cnd_r depth false) cnd_r
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
               indentation
-              (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) false) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
               indentation
     ); 
-
-    let len1 = List.length s1 in
-    let len2 = List.length s2 in
+    
     List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) s1;
+
     fprintf fmt "\n%selse " indentation;
+
     List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) s2
 
   | Ofor (id, value, e_to, body) -> 
     let indentation = (indent depth) in
 
-    fprintf fmt "\n%sfor %s = %a to %a do\n"
+    fprintf fmt "\n\n%sfor %s = %a to %a do"
       indentation
       id.id
-      (fun fmt _ -> pp_oexpr fmt value depth false) value
-      (fun fmt _ -> pp_oexpr fmt e_to depth false) e_to; 
+      (fun fmt _ -> pp_oexpr fmt value depth true) value
+      (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to; 
 
     let len = List.length body in
     List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
@@ -407,16 +416,16 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let indentation = (indent depth) in
 
     ( match cnd_r with
-      | Onone -> fprintf fmt "\n%swhile %a do\n" 
+      | Onone -> fprintf fmt "\n\n%swhile %a do" 
                   indentation
-                  (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l;
+                  (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l;
 
-      | _ -> fprintf fmt "\n%swhile %a do\n%s(*@@ invariant %a = %a *)"
+      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant %a = %a *)"
               indentation
-              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (indent (depth+1))
-              (fun fmt _ -> pp_oexpr fmt cnd_l depth false) cnd_l
-              (fun fmt _ -> pp_oexpr fmt cnd_r depth false) cnd_r
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
     );
     
     let len = List.length body in
@@ -449,12 +458,16 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Oseq (e1, e2) -> 
     ( match e1 with 
-      (* case where there are assigns on both sides of a pipe but the left-hand identifiers are different *)
-      | Oassign (id1, id2, oe1, oe2) -> pp_oexpr fmt e1 depth not_last_elem; pp_oexpr fmt e2 depth not_last_elem
+      (* case where there are assigns on both sides of a pipe
+         but the left-hand identifiers are different *)
+      | Oassign (id1, id2, oe1, oe2) -> 
+        pp_oexpr fmt e1 depth not_last_elem;
+        pp_oexpr fmt e2 depth not_last_elem
+
       | _ -> fprintf fmt "\n%s(%a, %a)"
               (indent depth)
-              (fun fmt _ -> pp_oexpr fmt e1 depth false) e1
-              (fun fmt _ -> pp_oexpr fmt e2 depth false) e2
+              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
     )
 
 and pp_def_ml fmt (def: Ast_ml.odef) =

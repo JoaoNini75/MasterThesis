@@ -9,7 +9,7 @@
 %token <Ast_core.constant> CST
 %token <Ast_core.binop> CMP
 %token <string> IDENT
-%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL NONE AND OR ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -19,8 +19,7 @@
 %nonassoc IN
 %left PIPE
 %nonassoc ASSIGN
-%left OR
-%left AND
+%left LOGICOR LOGICAND
 %nonassoc NOT
 %nonassoc CMP
 %left PLUS MINUS
@@ -139,14 +138,14 @@ bip_type:
 ;
 
 %inline binop:
-| PLUS  { Badd }
-| MINUS { Bsub }
-| TIMES { Bmul }
-| DIV   { Bdiv }
-| MOD   { Bmod }
-| c=CMP { c    }
-| AND   { Band }
-| OR    { Bor  }
+| PLUS      { Badd }
+| MINUS     { Bsub }
+| TIMES     { Bmul }
+| DIV       { Bdiv }
+| MOD       { Bmod }
+| c=CMP     { c    }
+| LOGICAND  { Band }
+| LOGICOR   { Bor  }
 ;
 
 ident:

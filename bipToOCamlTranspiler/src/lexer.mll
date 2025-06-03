@@ -51,7 +51,7 @@ rule next_tokens = parse
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }
-  | "/"    { DIV }
+  | "/"     { DIV }
   | '%'     { MOD }
   | '='     { EQUAL }
   | "=="    { CMP Beq }
@@ -60,6 +60,8 @@ rule next_tokens = parse
   | "<="    { CMP Ble }
   | ">"     { CMP Bgt }
   | ">="    { CMP Bge }
+  | "&&"    { LOGICAND }
+  | "||"    { LOGICOR }
   | '('     { LP }
   | ')'     { RP }
   | '['     { LSQ }
@@ -73,8 +75,6 @@ rule next_tokens = parse
   | '"'     { CST (Cstring (string lexbuf)) }
   | ":="    { ASSIGN }
   | "!"     { DEREF }
-  | "&&"    { AND }
-  | "||"    { OR }
 
   | '|'     { PIPE }       
   | "|_"    { LFLOOR }      
@@ -133,8 +133,9 @@ and string = parse
     | REF -> fprintf fmt "ref"
     | PLUS -> fprintf fmt "+"
     | PIPE -> fprintf fmt "|"
-    | OR -> fprintf fmt "or"
     | NOT -> fprintf fmt "not"
+    | LOGICAND -> fprintf fmt "&&"
+    | LOGICOR -> fprintf fmt "||"
     | MOD -> fprintf fmt "mod"
     | MINUS -> fprintf fmt "-"
     | LSQ -> fprintf fmt "["
@@ -184,7 +185,6 @@ and string = parse
     | BOOL -> fprintf fmt "bool"
     | BEGIN -> fprintf fmt "begin"
     | ASSIGN -> fprintf fmt ":="
-    | AND -> fprintf fmt "and"
     | NONE -> fprintf fmt "none"
 
   let () =
