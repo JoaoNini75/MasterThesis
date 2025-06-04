@@ -116,3 +116,11 @@ let p2 () = begin
     let z = ref 22 in
     !z
 end
+
+let app () = begin
+    let a = ref 4 in
+    let res = fact_iter (!a * 5) in
+    fact_iter (res)
+end
+
+(* depth 1 comment (* depth 2 comment *) (* depth 2 comment n2 *) *)

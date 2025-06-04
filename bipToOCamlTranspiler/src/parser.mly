@@ -9,6 +9,7 @@
 %token <Ast_core.constant> CST
 %token <Ast_core.binop> CMP
 %token <string> IDENT
+%token <string> COMMENT
 %token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
@@ -106,6 +107,8 @@ expr:
     { Efloor (e) }
 | e1 = expr PIPE e2 = expr
     { Epipe (e1, e2) }
+| id = ident LP args = separated_list(COMMA, expr) RP
+    { Eapp (id, args) }
 ;
 
 parameter_core:
@@ -132,7 +135,7 @@ fun_ret:
 ;
 
 bip_type:
-| INT { INT }
+| INT  { INT }
 | BOOL { BOOL }
 | NONE { NONE }
 ;

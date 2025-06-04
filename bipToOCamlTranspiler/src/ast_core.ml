@@ -6,6 +6,7 @@
 type location = Lexing.position * Lexing.position
 
 type ident = { loc: location; id: string; }
+type comment = { loc: location; text: string; }
 
 type bip_type = BOOL | INT | NONE
 type special_op = SOfloor | SOpipe  

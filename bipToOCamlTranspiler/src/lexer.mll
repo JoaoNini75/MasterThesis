@@ -31,10 +31,10 @@
         "int", INT;
         "bool", BOOL;
         "None", NONE;];
-   fun s -> try Hashtbl.find h s with Not_found -> IDENT s
+    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
-
+  let comment_buf = Buffer.create 1024
 }
 
 let letter = ['a'-'z' 'A'-'Z']
@@ -46,7 +46,13 @@ let space = ' ' | '\t'
 rule next_tokens = parse
   | '\n'    { new_line lexbuf; next_tokens lexbuf }
   | space+  { next_tokens lexbuf }
-  | "(*"    { comment lexbuf; next_tokens lexbuf }
+  
+  | "(*"       
+    {
+      Buffer.clear comment_buf; (* reset buffer *)
+      gather_comment 1 lexbuf   (* go gather until depth=0 *)
+    }
+  
   | ident as id { id_or_kwd id }
   | '+'     { PLUS }
   | '-'     { MINUS }
@@ -84,12 +90,28 @@ rule next_tokens = parse
   | eof     { EOF }
   | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
 
-and comment = parse
-  | "*)"  { () }
-  | "(*"  { comment lexbuf; comment lexbuf }
-  (* TODO: save gospel specifications *)
-  | _     { comment lexbuf }
-  | eof   { failwith "Comment not terminated" }
+(* Helper rule to gather nested comments. *)
+and gather_comment depth = parse
+  | "(*"  
+    { 
+      Buffer.add_string comment_buf "(*";
+      gather_comment (depth + 1) lexbuf
+    }         
+  | "*)" 
+    {
+      if depth = 1 then
+        COMMENT (Buffer.contents comment_buf)
+      else (
+        Buffer.add_string comment_buf "*)";
+        gather_comment (depth - 1) lexbuf 
+      )
+    }
+  | eof  { raise (Lexing_error "Unterminated comment") }
+  | _ as c         
+    { 
+      Buffer.add_char comment_buf c;
+      gather_comment depth lexbuf
+    }
 
 and string = parse
   | '"'
@@ -186,6 +208,7 @@ and string = parse
     | BEGIN -> fprintf fmt "begin"
     | ASSIGN -> fprintf fmt ":="
     | NONE -> fprintf fmt "none"
+    | COMMENT s -> fprintf fmt "(*%s*)" s
 
   let () =
     let fname = Sys.argv.(1) in
@@ -193,7 +216,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        (*eprintf "@[%a@]@." pp_token token;*) 
+        eprintf "@[%a@]@." pp_token token;
       if token <> EOF then loop () in
     loop ()
 

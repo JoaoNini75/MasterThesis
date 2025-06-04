@@ -338,9 +338,9 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let operator_str = (get_unop_str op) in
     fprintf fmt "%s%s" last_elem_str operator_str;
 
-    (if not_last_elem 
-    then pp_oexpr fmt e depth not_last_elem
-    else pp_oexpr fmt e depth true);
+    ( if not_last_elem 
+      then pp_oexpr fmt e depth not_last_elem
+      else pp_oexpr fmt e depth true );
 
     if operator_str = "ref (" then fprintf fmt ")" else ()
 
@@ -361,9 +361,9 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     (* TODO add depth *)
 
   | Oapp (id, oexpr_list) -> 
-    fprintf fmt "\n%s%s " (indent depth) id.id;
+    fprintf fmt "%s%s" last_elem_str id.id;
     List.iter (fun oe -> 
-                fprintf fmt "%a " 
+                fprintf fmt " %a" 
                 (fun fmt _ -> pp_oexpr fmt oe depth true)
                 oe) oexpr_list
   
@@ -509,7 +509,7 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
   
 
 let pp_file fmt (file : Ast_bip.file) =
-  fprintf fmt "\n\nParser output:"(*;
+  fprintf fmt "" (*"\n\nParser output:";
   List.iter (pp_def fmt) file*)
 
 let pp_ast ast =
@@ -517,14 +517,21 @@ let pp_ast ast =
 
 
 let pp_file_ml fmt (file : Ast_ml.ofile) =
-  fprintf fmt "\n\nOCaml code:\n\n";
+  (*fprintf fmt "\n\nOCaml code:\n\n";*)
   List.iter (pp_def_ml fmt) file
+
+let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
+  let oc = open_out filename in
+  let fmt = formatter_of_out_channel oc in
+  pp_file_ml fmt file;
+  pp_print_flush fmt ();
+  close_out oc
 
 let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
   List.map bip_to_ml_def file
 
-let pp_ast_to_ml (file : Ast_bip.file) =
-  eprintf "@[%a@]@." pp_file_ml (bip_to_ml_file file)
+let pp_ml (ofile : Ast_ml.ofile) =
+  eprintf "@[%a@]@." pp_file_ml ofile
 
 
 let () =
@@ -533,8 +540,12 @@ let () =
   try
     let f = Parser.file Lexer.next_token lb in
     close_in c;
-    pp_ast f;
-    pp_ast_to_ml f;
+
+    pp_ast f; (* print ast *)
+
+    let ofile = bip_to_ml_file f in
+    pp_ml ofile; (* print OCaml code to terminal *)
+    write_ml_to_file "test.ml" ofile; (* print OCaml code to file *)
 
     if !parse_only then exit 0
   with
