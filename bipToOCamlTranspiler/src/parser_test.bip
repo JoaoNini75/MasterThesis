@@ -6,7 +6,116 @@ end
 let bip (|_b : int_|) : |_int_| = begin
     (* comment1 *);
     let i = ref 0 in
-    let j = (ref 0 | ref b) in
+    let j = ref 0 | ref b in
     let x = |_ ref 0 _| in
     |_ !x _|
 end
+
+
+
+let bip_if (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
+    let x2 = |_ x1 * 2 _| in
+    let y2 = |_ 34 _| in
+    if |_ y2 > x2 _| then begin
+      |_ x2 + y2 _|
+    end else begin
+      |_ x2 - y2 _|
+    end
+end
+
+
+let semicolon_assign () = begin
+    let a = ref 0 in
+    a := 5;
+    a := !a + 1;
+    !a
+end
+
+let bip_while (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+    let i = |_ ref 0 _| in
+    let j = ref 0 | ref c in
+    let x = |_ ref 0 _| in
+
+    while |_ !i < n _| do
+        j := !i * b + c | x := !x + !j;
+        x := !x + !j    | j := !j + b;
+        i := |_ !i + 1 _|
+    done;
+
+    |_ !x _|
+end
+
+let bip2 (x, y) = begin
+    let z = |_ ref -1 _| in
+    let b = not (true && false) in
+    z := |_ !z + 1 _|;
+    b
+end
+
+let bip3 (x : int, y) = begin
+    let z = ref x in
+    for i = 0 to y do
+        z := !z * 3
+    done;
+    !z
+end
+
+let fact_iter (n) = begin
+	if n <= 1 
+    then begin 1 end
+	else
+		begin 
+			let res = ref 1 in
+			for i = 2 to n do
+				
+				res := !res * i
+			done;
+            !res
+		end
+end
+
+let bip_if (|_c_|) : |_int_| = begin
+    if |_c_| 
+    then begin |_1_| end
+    else begin |_0_| end
+end
+
+
+let semicolon_test () = begin
+    let x = ref 0 in
+    x := 1;
+    x := 2;
+    x
+end
+
+let gcd_iter (a0, b0) = begin 
+    let b = ref b0 in
+    let a = ref a0 in
+    while !b <> 0 do
+        
+        let tmp = !a in
+        a := !b;
+        b := tmp mod !b
+    done;
+    !a
+end
+
+let p2 () = begin
+    let x = |_ ref 1 _| in
+    let y = |_ ref 2 _| in
+    x := !x + 1 | y := !y + 2;
+    let z = ref 22 in
+    !z
+end
+
+let app2 (arg1 : int, arg2 : int) : int = begin
+    arg1 * arg2
+end
+
+let app () = begin
+    let a = ref 4 in
+    let res = fact_iter (!a * 5) in
+    app2 (1 * !a, 2 * !a)
+end
+
+

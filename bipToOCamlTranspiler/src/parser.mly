@@ -64,7 +64,7 @@ expr:
 | c = comment 
     { Ecomment c }
 | LP e = expr RP
-    { e }
+    { Epars e }
 | c = CST
     { Ecst c }
 | id = ident
@@ -81,30 +81,14 @@ expr:
     { Ebinop (op, e1, e2) }
 | LET id = ident EQUAL value = expr IN body = expr
     { Elet (id, value, body) } 
-| LET id = ident EQUAL LFLOOR value = expr RFLOOR IN body = expr
-    { Elet (id, Efloor value, body) } 
-| LET id = ident EQUAL LP value1 = expr PIPE value2 = expr RP IN body = expr
-    { Elet (id, Epipe (value1, value2), body) }   
 | IF c = expr THEN s1 = block ELSE s2 = block
     { Eif (c, s1, s2) }
-| IF LFLOOR c = expr RFLOOR THEN s1 = block ELSE s2 = block
-    { Eif (Efloor c, s1, s2) }
-| IF c1 = expr PIPE c2 = expr THEN s1 = block ELSE s2 = block
-    { Eif (Epipe (c1, c2), s1, s2) }
 | FOR id = ident EQUAL value = expr TO e_to = expr DO body = block_core DONE 
     { Efor (id, value, e_to, body) }
 | WHILE cnd = expr DO body = block_core DONE 
     { Ewhile (cnd, body) }
-| WHILE LP LFLOOR cnd = expr RFLOOR RP DO body = block_core DONE 
-    { Ewhile (Efloor cnd, body) }
-| WHILE LP c1 = expr PIPE c2 = expr RP DO body = block_core DONE 
-    { Ewhile (Epipe (c1, c2), body) }    
 | id = ident ASSIGN e = expr
     { Eassign (id, e) }
-| id = ident ASSIGN LP e = expr RFLOOR
-    { Eassign (id, Efloor e) }
-| id = ident ASSIGN LP e1 = expr PIPE e2 = expr RP
-    { Eassign (id, Epipe (e1, e2)) }          
 | LFLOOR e = expr RFLOOR
     { Efloor (e) }
 | e1 = expr PIPE e2 = expr

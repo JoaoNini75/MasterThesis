@@ -37,12 +37,14 @@ let report (b,e) =
 
 let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
   let (ident, param_list, bto, special_op_opt, body) = def in
-  (ident, param_list, bto, special_op_opt <> None,
+    (ident, param_list, bto, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None) body)
 and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
   match e with  
 
   | Ecomment c -> Ocomment c
+
+  | Epars e -> Opars (bip_to_ml e side)
 
   | Eident ident -> (
     match side with
@@ -258,6 +260,7 @@ and pp_binop fmt binop e1 e2 =
 and pp_expr fmt expr = 
   match expr with
   | Ecomment c -> fprintf fmt "%s (comment) " c.text
+  | Epars e -> fprintf fmt "(%a)" pp_expr e
   | Eident id -> fprintf fmt "%s (expr.id) " id.id
   | Ecst c -> pp_constant fmt c
   | Eunop (op, e) -> pp_unop fmt op e
@@ -336,6 +339,10 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Ocomment c -> fprintf fmt "%s" c.text
 
+  | Opars e -> 
+    fprintf fmt "(%a)"
+    (fun fmt _ -> pp_oexpr fmt e depth not_last_elem) e
+
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
@@ -369,7 +376,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Oapp (id, oexpr_list) -> 
     fprintf fmt "%s%s" last_elem_str id.id;
     List.iter (fun oe -> 
-                fprintf fmt " %a" 
+                fprintf fmt " (%a)" 
                 (fun fmt _ -> pp_oexpr fmt oe depth true)
                 oe) oexpr_list
   
@@ -391,7 +398,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
               indentation
               (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
               indentation
-    ); 
+    );
     
     List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) s1;

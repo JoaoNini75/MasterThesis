@@ -8,6 +8,7 @@ open Ast_core
 type oexpr =
   | Onone
   | Ocomment of comment
+  | Opars of    oexpr
   | Oident of   ident
   | Ocst of     constant
   | Ounop of    unop * oexpr

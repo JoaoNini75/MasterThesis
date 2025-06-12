@@ -7,6 +7,7 @@ open Ast_core
 
 type expr =
   | Ecomment of comment
+  | Epars of    expr
   | Eident of   ident
   | Ecst of     constant
   | Eunop of    unop * expr
