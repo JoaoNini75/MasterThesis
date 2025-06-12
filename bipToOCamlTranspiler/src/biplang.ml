@@ -41,6 +41,9 @@ let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
     List.map (fun e -> bip_to_ml e None) body)
 and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
   match e with  
+
+  | Ecomment c -> Ocomment c
+
   | Eident ident -> (
     match side with
     | None -> Oident ident
@@ -254,6 +257,7 @@ and pp_binop fmt binop e1 e2 =
     pp_expr fmt e2
 and pp_expr fmt expr = 
   match expr with
+  | Ecomment c -> fprintf fmt "%s (comment) " c.text
   | Eident id -> fprintf fmt "%s (expr.id) " id.id
   | Ecst c -> pp_constant fmt c
   | Eunop (op, e) -> pp_unop fmt op e
@@ -329,6 +333,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   (* if not_last_elem then fprintf fmt " (NOT LAST) " else fprintf fmt " (LAST) ";*)
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
+
+  | Ocomment c -> fprintf fmt "%s" c.text
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 

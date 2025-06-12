@@ -61,6 +61,8 @@ block_core:
 ;
 
 expr:
+| c = comment 
+    { Ecomment c }
 | LP e = expr RP
     { e }
 | c = CST
@@ -153,4 +155,8 @@ bip_type:
 
 ident:
   id = IDENT { { loc = ($startpos, $endpos); id } }
+;
+
+comment:
+  text = COMMENT { { loc = ($startpos, $endpos); text } }
 ;

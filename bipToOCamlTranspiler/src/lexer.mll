@@ -49,8 +49,9 @@ rule next_tokens = parse
   
   | "(*"       
     {
-      Buffer.clear comment_buf; (* reset buffer *)
-      gather_comment 1 lexbuf   (* go gather until depth=0 *)
+      Buffer.clear comment_buf; 
+      Buffer.add_string comment_buf "(*"; 
+      gather_comment 1 lexbuf  (* go gather until depth = 0 *)
     }
   
   | ident as id { id_or_kwd id }
@@ -99,10 +100,10 @@ and gather_comment depth = parse
     }         
   | "*)" 
     {
+      Buffer.add_string comment_buf "*)";
       if depth = 1 then
         COMMENT (Buffer.contents comment_buf)
       else (
-        Buffer.add_string comment_buf "*)";
         gather_comment (depth - 1) lexbuf 
       )
     }
@@ -208,7 +209,7 @@ and string = parse
     | BEGIN -> fprintf fmt "begin"
     | ASSIGN -> fprintf fmt ":="
     | NONE -> fprintf fmt "none"
-    | COMMENT s -> fprintf fmt "(*%s*)" s
+    | COMMENT s -> fprintf fmt "%s" s
 
   let () =
     let fname = Sys.argv.(1) in
