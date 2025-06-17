@@ -9,7 +9,7 @@
 %token <Ast_core.constant> CST
 %token <Ast_core.binop> CMP
 %token <string> IDENT
-%token <string> COMMENT
+%token <string> SPEC
 %token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
@@ -40,11 +40,11 @@ file:
 ;
 
 def:
-| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block 
+| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec?
     { 
       match fr with
-      | None -> (f, x, None, None, b)
-      | Some (tp, spop) -> (f, x, Some tp, spop, b)
+      | None -> (f, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, x, Some tp, spop, b, sp)
     }
 ;
 
@@ -61,10 +61,8 @@ block_core:
 ;
 
 expr:
-| c = comment 
-    { Ecomment c }
 | LP e = expr RP
-    { Epars e }
+    { e }
 | c = CST
     { Ecst c }
 | id = ident
@@ -83,10 +81,10 @@ expr:
     { Elet (id, value, body) } 
 | IF c = expr THEN s1 = block ELSE s2 = block
     { Eif (c, s1, s2) }
-| FOR id = ident EQUAL value = expr TO e_to = expr DO body = block_core DONE 
-    { Efor (id, value, e_to, body) }
-| WHILE cnd = expr DO body = block_core DONE 
-    { Ewhile (cnd, body) }
+| FOR id = ident EQUAL value = expr TO e_to = expr DO sp = spec? body = block_core DONE 
+    { Efor (id, value, e_to, sp, body) }
+| WHILE cnd = expr DO sp = spec? body = block_core DONE 
+    { Ewhile (cnd, sp, body) }
 | id = ident ASSIGN e = expr
     { Eassign (id, e) }
 | LFLOOR e = expr RFLOOR
@@ -141,6 +139,6 @@ ident:
   id = IDENT { { loc = ($startpos, $endpos); id } }
 ;
 
-comment:
-  text = COMMENT { { loc = ($startpos, $endpos); text } }
+spec:
+  text = SPEC { { loc = ($startpos, $endpos); text } }
 ;

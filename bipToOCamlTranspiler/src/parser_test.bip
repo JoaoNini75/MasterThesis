@@ -4,7 +4,7 @@ let bip_short (b : int | b : int) : int | int = begin
 end
 
 let bip (|_b : int_|) : |_int_| = begin
-    (* comment1 *);
+    (* comment1 *)
     let i = ref 0 in
     let j = ref 0 | ref b in
     let x = |_ ref 0 _| in
@@ -31,12 +31,16 @@ let semicolon_assign () = begin
     !a
 end
 
-let bip_while (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+let bip_cycle (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     let i = |_ ref 0 _| in
     let j = ref 0 | ref c in
     let x = |_ ref 0 _| in
 
     while |_ !i < n _| do
+        (*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
+            invariant !j_r = !i_r * b_r + c_r
+            invariant !x_l = !x_r 
+            variant n_l - !i_l *)
         j := !i * b + c | x := !x + !j;
         x := !x + !j    | j := !j + b;
         i := |_ !i + 1 _|
@@ -44,7 +48,10 @@ let bip_while (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
 
     |_ !x _|
 end
+(*@ requires true 
+    ensures true *)
 
+(*
 let bip2 (x, y) = begin
     let z = |_ ref -1 _| in
     let b = not (true && false) in
@@ -74,7 +81,7 @@ let fact_iter (n) = begin
 		end
 end
 
-let bip_if (|_c_|) : |_int_| = begin
+let bip_if2 (|_c : bool _|) : |_int_| = begin
     if |_c_| 
     then begin |_1_| end
     else begin |_0_| end
@@ -116,6 +123,4 @@ let app () = begin
     let a = ref 4 in
     let res = fact_iter (!a * 5) in
     app2 (1 * !a, 2 * !a)
-end
-
-
+end*)

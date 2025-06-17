@@ -36,15 +36,11 @@ let report (b,e) =
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
 let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
-  let (ident, param_list, bto, special_op_opt, body) = def in
+  let (ident, param_list, bto, special_op_opt, body, spec_op) = def in
     (ident, param_list, bto, special_op_opt <> None,
-    List.map (fun e -> bip_to_ml e None) body)
+    List.map (fun e -> bip_to_ml e None) body, spec_op)
 and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
   match e with  
-
-  | Ecomment c -> Ocomment c
-
-  | Epars e -> Opars (bip_to_ml e side)
 
   | Eident ident -> (
     match side with
@@ -103,28 +99,28 @@ and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
     and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
     Oif (oe_cnd, Onone, oel_then, oel_else)
 
-  | Efor (ident, e_val, e_to, el_body) ->
+  | Efor (ident, e_val, e_to, spec, el_body) ->
     let oe_val = bip_to_ml e_val None 
     and oe_to = bip_to_ml e_to None 
     and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Ofor (ident, oe_val, oe_to, oel_body)
+    Ofor (ident, oe_val, oe_to, spec, oel_body)
 
-  | Ewhile (Efloor e_cnd, el_body) ->
+  | Ewhile (Efloor e_cnd, spec, el_body) ->
     let oe_cnd_l = bip_to_ml e_cnd (Some Left)
     and oe_cnd_r = bip_to_ml e_cnd (Some Right)
     and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd_l, oe_cnd_r, oel_body)
+    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
 
-  | Ewhile (Epipe (e_cnd1, e_cnd2), el_body) ->
+  | Ewhile (Epipe (e_cnd1, e_cnd2), spec, el_body) ->
     let oe_cnd_l = bip_to_ml e_cnd1 (Some Left)
     and oe_cnd_r = bip_to_ml e_cnd2 (Some Right)
     and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd_l, oe_cnd_r, oel_body)
+    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
 
-  | Ewhile (e_cnd, el_body) ->
+  | Ewhile (e_cnd, spec, el_body) ->
     let oe_cnd = bip_to_ml e_cnd None
     and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd, Onone, oel_body)
+    Owhile (oe_cnd, Onone, spec, oel_body)
 
   | Eassign (ident, Efloor e) ->
     let ident_l = { ident with id = ident.id ^ "_l"} in
@@ -164,7 +160,7 @@ let get_const_str (const : Ast_core.constant) =
 let get_unop_str (unop : Ast_core.unop) =
   match unop with
     | Uneg -> "-"
-    | Unot -> "not " (* TODO how to put the pars in "not (true && false)"? *)
+    | Unot -> "not ("
     | Uref -> "ref ("
     | Uderef -> "!" 
 
@@ -201,6 +197,11 @@ let pp_special_op fmt special_op_opt =
   | Some SOfloor -> fprintf fmt "floored"
   | Some SOpipe -> fprintf fmt "piped"
 
+let pp_spec_opt spec_opt =
+  match spec_opt with 
+  | None -> ""
+  | Some spec -> spec.text 
+
 let pp_type fmt bip_type =
   match bip_type with
   | INT -> fprintf fmt "int"
@@ -224,6 +225,13 @@ let pp_constant fmt constant =
 
 let indent depth =
   String.make (depth * 2) ' '
+
+let indent_spec depth (spec_str : string) = 
+  if spec_str = "" then "" 
+  else
+    let spec_lines = String.split_on_char '\n' spec_str in
+    let first_line = (String.make ((depth+2) * 2 + 1) ' ') ^ List.hd spec_lines in
+    first_line ^ " TODO!!!"
 
 
 let rec pp_unop fmt unop e =
@@ -259,8 +267,6 @@ and pp_binop fmt binop e1 e2 =
     pp_expr fmt e2
 and pp_expr fmt expr = 
   match expr with
-  | Ecomment c -> fprintf fmt "%s (comment) " c.text
-  | Epars e -> fprintf fmt "(%a)" pp_expr e
   | Eident id -> fprintf fmt "%s (expr.id) " id.id
   | Ecst c -> pp_constant fmt c
   | Eunop (op, e) -> pp_unop fmt op e
@@ -270,8 +276,8 @@ and pp_expr fmt expr =
     pp_expr fmt value;
     fprintf fmt "in";
     pp_expr fmt body
-  | Efun (id, param_list, fun_type, special_op_opt, expr_list) ->
-    pp_def fmt (id, param_list, fun_type, special_op_opt, expr_list)
+  | Efun (id, param_list, fun_type, special_op_opt, expr_list, spec_opt) ->
+    pp_def fmt (id, param_list, fun_type, special_op_opt, expr_list, spec_opt)
   | Eapp (id, expr_list) -> 
     fprintf fmt "\n(app) id = %s, expr_list: " id.id;
     List.iter (fun expr -> pp_expr fmt expr) expr_list
@@ -282,18 +288,20 @@ and pp_expr fmt expr =
     List.iter (fun expr -> pp_expr fmt expr) s1;
     fprintf fmt "\n(else) ";
     List.iter (fun expr -> pp_expr fmt expr) s2
-  | Efor (id, value, e_to, body) -> 
+  | Efor (id, value, e_to, spec_opt, body) -> 
     fprintf fmt "\n(for) id = %s, val = " id.id; 
     pp_expr fmt value;     
     fprintf fmt "to ";         
     pp_expr fmt e_to; 
     fprintf fmt "do"; 
+    fprintf fmt "%s" (pp_spec_opt spec_opt);
     List.iter (fun expr -> pp_expr fmt expr) body;
     fprintf fmt "done";
-  | Ewhile (cnd, body) -> 
+  | Ewhile (cnd, spec_opt, body) -> 
     fprintf fmt "\n(while) "; 
     pp_expr fmt cnd; 
     fprintf fmt "do"; 
+    fprintf fmt "%s" (pp_spec_opt spec_opt);
     List.iter (fun expr -> pp_expr fmt expr) body;
     fprintf fmt "done";
   | Eassign (id, e) -> 
@@ -308,18 +316,8 @@ and pp_expr fmt expr =
     pp_expr fmt e1;
     fprintf fmt " | ";
     pp_expr fmt e2
-  (*| Eflrlet (id, value) ->
-    fprintf fmt "\n(flrlet) |_ %s = " id.id;
-    pp_expr fmt value;
-    fprintf fmt "in _| ";
-  | Epipelet (id1, value1, id2, value2) -> 
-    fprintf fmt "\n(pipelet) %s = " id1.id;
-    pp_expr fmt value1;
-    fprintf fmt "in | %s = " id2.id;
-    pp_expr fmt value2;
-    fprintf fmt "in "*)
 and pp_def fmt def =
-  let (id, param_list, fun_type, special_op_opt, expr_list) = def in
+  let (id, param_list, fun_type, special_op_opt, expr_list, spec_opt) = def in
   fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " 
   id.id pp_type_option fun_type pp_special_op special_op_opt;
   
@@ -329,19 +327,14 @@ and pp_def fmt def =
       ident.id pp_type_option bip_type_opt pp_special_op special_op_opt
   ) param_list;
 
-  List.iter (fun expr -> pp_expr fmt expr) expr_list
+  List.iter (fun expr -> pp_expr fmt expr) expr_list;
+  fprintf fmt "%s" (pp_spec_opt spec_opt)
+
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
-  (* if not not_last_elem then fprintf fmt "\n%s" (indent depth) else (); *)
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
-  (* if not_last_elem then fprintf fmt " (NOT LAST) " else fprintf fmt " (LAST) ";*)
+  
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
-
-  | Ocomment c -> fprintf fmt "%s" c.text
-
-  | Opars e -> 
-    fprintf fmt "(%a)"
-    (fun fmt _ -> pp_oexpr fmt e depth not_last_elem) e
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
@@ -355,7 +348,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       then pp_oexpr fmt e depth not_last_elem
       else pp_oexpr fmt e depth true );
 
-    if operator_str = "ref (" then fprintf fmt ")" else ()
+    if operator_str = "ref (" || operator_str = "not (" then fprintf fmt ")" else ()
 
   | Obinop (op, e1, e2) -> 
     fprintf fmt "%s" last_elem_str;
@@ -369,8 +362,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     fprintf fmt " in";
     pp_oexpr fmt body depth not_last_elem
 
-  | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list) ->
-    pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list)
+  | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list, spec_opt) ->
+    pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list, spec_opt)
     (* TODO add depth *)
 
   | Oapp (id, oexpr_list) -> 
@@ -408,14 +401,16 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) s2
 
-  | Ofor (id, value, e_to, body) -> 
+  | Ofor (id, value, e_to, spec_opt, body) -> 
     let indentation = (indent depth) in
+    let specification = if (pp_spec_opt spec_opt) = "" then "" else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
 
-    fprintf fmt "\n\n%sfor %s = %a to %a do"
+    fprintf fmt "\n\n%sfor %s = %a to %a do%s"
       indentation
       id.id
       (fun fmt _ -> pp_oexpr fmt value depth true) value
-      (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to; 
+      (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to
+      specification; 
 
     let len = List.length body in
     List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
@@ -425,22 +420,25 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     then fprintf fmt "\n%sdone;\n" indentation
     else fprintf fmt "\n%sdone\n" indentation
 
-  | Owhile (cnd_l, cnd_r, body) -> 
+  | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
+    let specification = if (pp_spec_opt spec_opt) = "" then "" else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
 
     ( match cnd_r with
-      | Onone -> fprintf fmt "\n\n%swhile %a do" 
+      | Onone -> fprintf fmt "\n\n%swhile %a do%s" 
                   indentation
-                  (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l;
+                  (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+                  specification
 
-      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant %a = %a *)"
+      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant %a = %a%s *)"
               indentation
               (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (indent (depth+1))
               (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
+              specification
     );
-    
+
     let len = List.length body in
     List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) body;
@@ -484,28 +482,30 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     )
 
 and pp_def_ml fmt (def: Ast_ml.odef) =
-  let (id, param_list, fun_type, ret_pair, oexpr_list) = def in
+  let (id, param_list, fun_type, ret_pair, oexpr_list, spec_opt) = def in
   let fun_type_str = get_type_str fun_type in
 
   fprintf fmt "let %s" id.id;
-  
-  List.iter (
-    fun (ident, param_type, special_op_opt) ->
-      let param_type_str = get_type_str param_type in
 
-      match special_op_opt with 
-      | None -> (
-        if param_type_str = "" 
-        then fprintf fmt " (%s)" ident.id
-        else fprintf fmt " (%s : %s)" ident.id param_type_str )
-      | _ -> (
-        let id1 = ident.id ^ "_l" in
-        let id2 = ident.id ^ "_r" in
+  if param_list = [] then fprintf fmt " ()" 
+  else
+    List.iter (
+      fun (ident, param_type, special_op_opt) ->
+        let param_type_str = get_type_str param_type in
 
-        if param_type_str = "" 
-        then fprintf fmt " (%s, %s)" id1 id2
-        else fprintf fmt " (%s : %s) (%s : %s)" id1 param_type_str id2 param_type_str ) 
-  ) param_list;
+        match special_op_opt with 
+        | None -> (
+          if param_type_str = "" 
+          then fprintf fmt " (%s)" ident.id
+          else fprintf fmt " (%s : %s)" ident.id param_type_str )
+        | _ -> (
+          let id1 = ident.id ^ "_l" in
+          let id2 = ident.id ^ "_r" in
+
+          if param_type_str = "" 
+          then fprintf fmt " (%s, %s)" id1 id2
+          else fprintf fmt " (%s : %s) (%s : %s)" id1 param_type_str id2 param_type_str ) 
+    ) param_list;
 
   if fun_type_str = "" then (
     fprintf fmt " ="
@@ -518,7 +518,11 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
   let len = List.length oexpr_list in
   List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
                             pp_oexpr fmt oe 1 not_last_elem) oexpr_list;
-  fprintf fmt "\n\n"
+
+  let specification = if (pp_spec_opt spec_opt) = "" then ""
+                      else "\n(*@" ^ (pp_spec_opt spec_opt) ^ ")" in
+
+  fprintf fmt "%s\n\n" specification
   
 
 let pp_file fmt (file : Ast_bip.file) =

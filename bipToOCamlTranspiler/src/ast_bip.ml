@@ -6,8 +6,6 @@
 open Ast_core
 
 type expr =
-  | Ecomment of comment
-  | Epars of    expr
   | Eident of   ident
   | Ecst of     constant
   | Eunop of    unop * expr
@@ -16,14 +14,14 @@ type expr =
   | Efun of     def
   | Eapp of     ident * expr list
   | Eif of      expr * expr list * expr list
-  | Efor of     ident * expr * expr * expr list  
-  | Ewhile of   expr * expr list 
+  | Efor of     ident * expr * expr * spec option * expr list  
+  | Ewhile of   expr * spec option * expr list 
   | Eassign of  ident * expr (* x := 3 *)
   | Efloor of   expr (* |_ expr _| *)
   | Epipe of    expr * expr (* expr | expr *)
 
 and def = ident * parameter list * bip_type option
-          * special_op option * expr list
+          * special_op option * expr list * spec option
 
 and file = def list
    
