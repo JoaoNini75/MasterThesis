@@ -446,7 +446,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
                   (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
                   specification
 
-      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) = (%a)%s*)"
+      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) <-> (%a)%s*)"
               indentation
               (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (indent (depth+1))
@@ -535,8 +535,13 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
   List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
                             pp_oexpr fmt oe 1 not_last_elem) oexpr_list;
 
+  let pair_ret_ensures = 
+    if ret_pair 
+    then "\n    ensures match result with (l_res, r_res) -> l_res = r_res"
+    else "" in
+
   let specification = if (pp_spec_opt spec_opt) = "" then ""
-                      else "\n(*@" ^ (pp_spec_opt spec_opt) ^ "*)" in
+                      else "\n(*@" ^ (pp_spec_opt spec_opt) ^ pair_ret_ensures ^ " *)" in
 
   fprintf fmt "%s\n\n" specification
   

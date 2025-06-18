@@ -1,37 +1,20 @@
-(*let bip_short (b : int | b : int) : int | int = begin
-    let x = ref 0 | ref 1 in
-    !x | !x 
+let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
+    let x2_l = y1_l * 2 in 
+    let y2_r = y1_r * 2 + 1 in
+    let y2_l = x2_l + 1 in
+    let x2_r = y2_r - 1 in
+    |_ x2 + y2 _|
 end
+(*@ requires x1_l = x1_r && y1_l = y1_r *)
 
-let bip (|_b : int_|) : |_int_| = begin
-    (* comment1 *)
-    let i = ref 0 in
-    let j = ref 0 | ref b in
-    let x = |_ ref 0 _| in
-    |_ !x _|
+let bilateral_conditional (|_c : bool _|) : |_int_| = begin
+    if |_c_| 
+    then begin |_1_| end
+    else begin |_0_| end
 end
+(*@ requires c_l <-> c_r *)
 
-
-
-let bip_if (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
-    let x2 = |_ x1 * 2 _| in
-    let y2 = |_ 34 _| in
-    if |_ y2 > x2 _| then begin
-      |_ x2 + y2 _|
-    end else begin
-      |_ x2 - y2 _|
-    end
-end
-
-
-let semicolon_assign () = begin
-    let a = ref 0 in
-    a := 5;
-    a := !a + 1;
-    !a
-end*)
-
-let bip_cycle (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     let i = |_ ref 0 _| in
     let j = ref 0 | ref c in
     let x = |_ ref 0 _| in
@@ -48,10 +31,42 @@ let bip_cycle (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
 
     |_ !x _|
 end
-(*@ requires true 
-    ensures true *)
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) 
 
-(*
+
+(*let bip_short (b : int | b : int) : int | int = begin
+    let x = ref 0 | ref 1 in
+    !x | !x 
+end
+
+let bip (|_b : int_|) : |_int_| = begin
+    (* comment1 *)
+    let i = ref 0 in
+    let j = ref 0 | ref b in
+    let x = |_ ref 0 _| in
+    |_ !x _|
+end
+
+
+
+let bip_if_long (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
+    let x2 = |_ x1 * 2 _| in
+    let y2 = |_ 34 _| in
+    if |_ y2 > x2 _| then begin
+      |_ x2 + y2 _|
+    end else begin
+      |_ x2 - y2 _|
+    end
+end
+
+
+let semicolon_assign () = begin
+    let a = ref 0 in
+    a := 5;
+    a := !a + 1;
+    !a
+end
+
 let bip2 (x, y) = begin
     let z = |_ ref -1 _| in
     let b = not (true && false) in
@@ -99,7 +114,6 @@ let gcd_iter (a0, b0) = begin
     let b = ref b0 in
     let a = ref a0 in
     while !b <> 0 do
-        
         let tmp = !a in
         a := !b;
         b := tmp mod !b
