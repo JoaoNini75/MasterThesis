@@ -546,6 +546,9 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
   fprintf fmt "%s\n\n" specification
   
 
+let pp_spec_ml fmt (sp: spec) =
+  fprintf fmt "(*@%s*)\n\n" sp.text
+
 let pp_file fmt (file : Ast_bip.file) =
   fprintf fmt "" (*"\n\nParser output:";
   List.iter (pp_def fmt) file*)
@@ -556,7 +559,11 @@ let pp_ast ast =
 
 let pp_file_ml fmt (file : Ast_ml.ofile) =
   (*fprintf fmt "\n\nOCaml code:\n\n";*)
-  List.iter (pp_def_ml fmt) file
+  List.iter (fun odecl ->
+    match odecl with 
+    | Odef odef -> pp_def_ml fmt odef
+    | Ospec ospec -> pp_spec_ml fmt ospec
+  ) file
 
 let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
   let oc = open_out filename in
@@ -566,7 +573,11 @@ let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
   close_out oc
 
 let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
-  List.map bip_to_ml_def file
+  List.map (fun decl -> 
+    match decl with 
+    | Edef def -> Odef (bip_to_ml_def def)
+    | Espec spec -> (Ospec spec)
+  ) file
 
 let pp_ml (ofile : Ast_ml.ofile) =
   eprintf "@[%a@]@." pp_file_ml ofile

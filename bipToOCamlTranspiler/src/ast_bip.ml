@@ -23,5 +23,9 @@ type expr =
 and def = ident * parameter list * bip_type option
           * special_op option * expr list * spec option
 
-and file = def list
+and decl = 
+  | Edef of   def
+  | Espec of  spec
+  
+and file = decl list
    

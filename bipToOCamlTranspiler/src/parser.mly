@@ -35,16 +35,18 @@
 %%
 
 file:
-| dl = list(def) EOF
+| dl = list(decl) EOF
     { dl }
 ;
 
-def:
+decl:
+| sp = spec
+    { Espec sp }
 | LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec?
     { 
       match fr with
-      | None -> (f, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, x, Some tp, spop, b, sp)
+      | None -> Edef (f, x, None, None, b, sp)
+      | Some (tp, spop) -> Edef (f, x, Some tp, spop, b, sp)
     }
 ;
 

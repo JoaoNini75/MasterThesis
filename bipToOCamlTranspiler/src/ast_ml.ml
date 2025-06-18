@@ -23,5 +23,9 @@ type oexpr =
 and odef = ident * parameter list * bip_type option
            * bool (* return pair *) * oexpr list * spec option
 
-and ofile = odef list
+and odecl = 
+  | Odef of   odef
+  | Ospec of  spec
+  
+and ofile = odecl list
    
