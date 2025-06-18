@@ -226,13 +226,29 @@ let pp_constant fmt constant =
 let indent depth =
   String.make (depth * 2) ' '
 
+let rec skip s i len =
+  if i < len then
+    match s.[i] with
+    | ' ' | '\t' -> skip s (i+1) len
+    | _ -> i
+  else
+    len
+
+let trim_leading s =
+  let len = String.length s in
+  let i = skip s 0 len in
+  if i = 0 then s 
+  else String.sub s i (len - i)
+
 let indent_spec depth (spec_str : string) = 
   if spec_str = "" then "" 
   else
-    let spec_lines = String.split_on_char '\n' spec_str in
-    let first_line = (String.make ((depth+2) * 2 + 1) ' ') ^ List.hd spec_lines in
-    first_line ^ " TODO!!!"
-
+    let lines = String.split_on_char '\n' spec_str in
+    match lines with
+    | [] -> spec_str
+    | _ -> 
+      let prefix_str = indent (depth + 3) in
+      String.concat "\n" (List.map (fun line -> prefix_str ^ trim_leading line) lines)
 
 let rec pp_unop fmt unop e =
   let pp_unop_aux fmt s =
@@ -430,7 +446,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
                   (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
                   specification
 
-      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant %a = %a%s *)"
+      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) = (%a)%s*)"
               indentation
               (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (indent (depth+1))
@@ -520,7 +536,7 @@ and pp_def_ml fmt (def: Ast_ml.odef) =
                             pp_oexpr fmt oe 1 not_last_elem) oexpr_list;
 
   let specification = if (pp_spec_opt spec_opt) = "" then ""
-                      else "\n(*@" ^ (pp_spec_opt spec_opt) ^ ")" in
+                      else "\n(*@" ^ (pp_spec_opt spec_opt) ^ "*)" in
 
   fprintf fmt "%s\n\n" specification
   

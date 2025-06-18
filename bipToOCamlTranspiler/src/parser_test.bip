@@ -1,4 +1,4 @@
-let bip_short (b : int | b : int) : int | int = begin
+(*let bip_short (b : int | b : int) : int | int = begin
     let x = ref 0 | ref 1 in
     !x | !x 
 end
@@ -29,7 +29,7 @@ let semicolon_assign () = begin
     a := 5;
     a := !a + 1;
     !a
-end
+end*)
 
 let bip_cycle (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     let i = |_ ref 0 _| in
@@ -37,10 +37,10 @@ let bip_cycle (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
     let x = |_ ref 0 _| in
 
     while |_ !i < n _| do
-        (*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-            invariant !j_r = !i_r * b_r + c_r
-            invariant !x_l = !x_r 
-            variant n_l - !i_l *)
+      (*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
+          invariant !j_r = !i_r * b_r + c_r
+          invariant !x_l = !x_r 
+          variant n_l - !i_l *)
         j := !i * b + c | x := !x + !j;
         x := !x + !j    | j := !j + b;
         i := |_ !i + 1 _|
