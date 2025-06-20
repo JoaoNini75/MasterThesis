@@ -74,6 +74,14 @@ and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
   | Elet (x, e1, e2) -> 
     Olet (x, bip_to_ml e1 None, bip_to_ml e2 None)
 
+  | Eletpipe (id1, val1, id2, val2, body) -> 
+    let ident_l = { id1 with id = id1.id ^ "_l"} in
+    let ident_r = { id2 with id = id2.id ^ "_r"} in
+    let oe1 = bip_to_ml val1 (Some Left) in
+    let oe2 = bip_to_ml val2 (Some Right) in
+    let oe_body = bip_to_ml body None in
+    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
+
   | Efun def -> Ofun (bip_to_ml_def def) 
 
   | Eapp (ident, expr_list) -> 

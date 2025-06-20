@@ -11,6 +11,7 @@ type expr =
   | Eunop of    unop * expr
   | Ebinop of   binop * expr * expr
   | Elet of     ident * expr * expr
+  | Eletpipe of ident * expr * ident * expr * expr
   | Efun of     def
   | Eapp of     ident * expr list
   | Eif of      expr * expr list * expr list

@@ -210,7 +210,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        eprintf "@[%a@]@." pp_token token;
+        (*eprintf "@[%a@]@." pp_token token;*)
       if token <> EOF then loop () in
     loop ()
 

@@ -81,8 +81,8 @@ expr:
     { Ebinop (op, e1, e2) }
 | LET id = ident EQUAL value = expr IN body = expr
     { Elet (id, value, body) } 
-(*| LET id1 = ident EQUAL value1 = expr PIPE id2 = ident EQUAL value2 = expr IN body = expr
-    { Eletpipe (id1, value1, id2, value2, body) } *)
+| LET id1 = ident EQUAL value1 = expr PIPE id2 = ident EQUAL value2 = expr IN body = expr
+    { Eletpipe (id1, value1, id2, value2, body) } 
 | IF c = expr THEN s1 = block ELSE s2 = block
     { Eif (c, s1, s2) }
 | FOR id = ident EQUAL value = expr TO e_to = expr DO sp = spec? body = block_core DONE 

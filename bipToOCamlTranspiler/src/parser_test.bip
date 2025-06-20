@@ -7,6 +7,13 @@ let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
 end
 (*@ requires x1_l = x1_r && y1_l = y1_r *)
 
+let assignment_only_v2 (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
+    let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
+    let y2 = x2 + 1 | x2 = y2 - 1 in
+    |_ x2 + y2 _|
+end
+(*@ requires x1_l = x1_r && y1_l = y1_r *)
+
 let bilateral_conditional (|_c : bool _|) : |_int_| = begin
     if |_c_| 
     then begin |_1_| end
