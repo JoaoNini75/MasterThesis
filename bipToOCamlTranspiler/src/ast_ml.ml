@@ -21,7 +21,7 @@ type oexpr =
   | Oseq of     oexpr * oexpr
 
 and odef = ident * parameter list * bip_type option
-           * bool (* return pair *) * oexpr list * spec option
+           * bool (* return pair *) * oexpr list * spec
 
 and odecl = 
   | Odef of   odef

@@ -87,10 +87,12 @@ rule next_tokens = parse
   | '"'     { CST (Cstring (string lexbuf)) }
   | ":="    { ASSIGN }
   | "!"     { DEREF }
+  | "()"    { CST Cunit }
 
   | '|'     { PIPE }       
   | "|_"    { LFLOOR }      
   | "_|"    { RFLOOR }      
+  | "."     { DOT }
   | "<->"   { SPEC_EQUAL }  
 
   | eof     { EOF }
@@ -179,12 +181,14 @@ and string = parse
         | Cbool b -> string_of_bool b
         | Cstring str -> str
         | Cnone -> "Cnone"
+        | Cunit -> "Cunit"
       in
       fprintf fmt "%s (const)" s
 
     | COMMA -> fprintf fmt ","
     | COLON -> fprintf fmt ":"
     | SEMICOLON -> fprintf fmt ";"
+    | DOT -> fprintf fmt "."
     | CMP op ->
       let s =
         match op with

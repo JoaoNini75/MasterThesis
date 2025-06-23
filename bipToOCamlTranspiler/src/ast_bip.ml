@@ -6,23 +6,24 @@
 open Ast_core
 
 type expr =
-  | Eident of   ident
-  | Ecst of     constant
-  | Eunop of    unop * expr
-  | Ebinop of   binop * expr * expr
-  | Elet of     ident * expr * expr
-  | Eletpipe of ident * expr * ident * expr * expr
-  | Efun of     def
-  | Eapp of     ident * expr list
-  | Eif of      expr * expr list * expr list
-  | Efor of     ident * expr * expr * spec option * expr list  
-  | Ewhile of   expr * spec option * expr list 
-  | Eassign of  ident * expr (* x := 3 *)
-  | Efloor of   expr (* |_ expr _| *)
-  | Epipe of    expr * expr (* expr | expr *)
+  | Eident of     ident
+  | Ecst of       constant
+  | Eunop of      unop * expr
+  | Ebinop of     binop * expr * expr
+  | Elet of       ident * expr * expr
+  | Eletpipe of   ident * expr * ident * expr * expr
+  | Efun of       def
+  | Eapp of       ident * expr list
+  | Eif of        expr * expr list * expr list
+  | Efor of       ident * expr * expr * spec option * expr list  
+  | Ewhile of     expr * spec option * expr list 
+  | Ewhilecnd of  expr * expr * expr * expr * spec option * expr list 
+  | Eassign of    ident * expr (* x := 3 *)
+  | Efloor of     expr (* |_ expr _| *)
+  | Epipe of      expr * expr (* expr | expr *)
 
 and def = ident * parameter list * bip_type option
-          * special_op option * expr list * spec option
+          * special_op option * expr list * spec
 
 and decl = 
   | Edef of   def

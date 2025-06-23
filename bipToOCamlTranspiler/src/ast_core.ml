@@ -25,6 +25,7 @@ type binop =
 
 type constant =
   | Cnone
+  | Cunit
   | Cint of     int
   | Cbool of    bool
   | Cstring of  string

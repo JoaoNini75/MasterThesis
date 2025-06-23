@@ -1,44 +1,56 @@
 let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
-    let x2_l = y1_l * 2 in 
-    let y2_r = y1_r * 2 + 1 in
-    let y2_l = x2_l + 1 in
-    let x2_r = y2_r - 1 in
-    |_ x2 + y2 _|
-end
-(*@ requires x1_l = x1_r && y1_l = y1_r *)
-
-let assignment_only_v2 (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
-    let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
-    let y2 = x2 + 1 | x2 = y2 - 1 in
-    |_ x2 + y2 _|
+	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
+	let y2 = x2 + 1 | x2 = y2 - 1 in
+	|_ x2 + y2 _|
 end
 (*@ requires x1_l = x1_r && y1_l = y1_r *)
 
 let bilateral_conditional (|_c : bool _|) : |_int_| = begin
-    if |_c_| 
-    then begin |_1_| end
-    else begin |_0_| end
+	if |_c_| 
+	then begin |_1_| end
+	else begin |_0_| end
 end
 (*@ requires c_l <-> c_r *)
+(* requires c =:= c *)
 
 let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
-    let i = |_ ref 0 _| in
-    let j = ref 0 | ref c in
-    let x = |_ ref 0 _| in
+	let i = |_ ref 0 _| in
+	let j = ref 0 | ref c in
+	let x = |_ ref 0 _| in
 
-    while |_ !i < n _| do
-      (*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-          invariant !j_r = !i_r * b_r + c_r
-          invariant !x_l = !x_r 
-          variant n_l - !i_l *)
-        j := !i * b + c | x := !x + !j;
-        x := !x + !j    | j := !j + b;
-        i := |_ !i + 1 _|
-    done;
+	while |_ !i < n _| do
+		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
+				invariant !j_r = !i_r * b_r + c_r
+				invariant !x_l = !x_r 
+				variant n_l - !i_l *)
+		j := !i * b + c | x := !x + !j;
+		x := !x + !j    | j := !j + b;
+		i := |_ !i + 1 _|
+	done;
 
-    |_ !x _|
+	|_ !x _|
 end
 (*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) 
+
+let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 | ref 16 in 
+	let w = |_ ref 0 _| in
+
+	while !y > 4 | !y > 4 . (w mod n <> 0) | (w mod n <> 0) do
+    (*@ invariant z_l > z_r && y_l = y_r && y_r > 4 *)
+
+		if ((!w mod n == 0) | (!w mod n == 0)) then begin
+			z := (!z * !y | !z * 2);
+			y := |_ !y - 1 _|
+		end else begin () end;
+
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
+end
+(*@ requires x_l = x_r && n_l = n_r *)
 
 
 (*let bip_short (b : int | b : int) : int | int = begin

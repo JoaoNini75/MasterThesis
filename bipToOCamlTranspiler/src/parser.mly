@@ -12,11 +12,10 @@
 %token <string> SPEC
 %token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
-%token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON BEGIN END
+%token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
 
 /* priorities and associativities */
-
 %nonassoc IN
 %left PIPE
 %nonassoc ASSIGN
@@ -42,7 +41,7 @@ file:
 decl:
 | sp = spec
     { Espec sp }
-| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec?
+| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
     { 
       match fr with
       | None -> Edef (f, x, None, None, b, sp)
@@ -89,6 +88,8 @@ expr:
     { Efor (id, value, e_to, sp, body) }
 | WHILE cnd = expr DO sp = spec? body = block_core DONE 
     { Ewhile (cnd, sp, body) }
+| WHILE cnd1 = expr PIPE cnd2 = expr DOT ag1 = expr PIPE ag2 = expr DO sp = spec? body = block_core DONE
+    { Ewhilecnd (cnd1, cnd2, ag1, ag2, sp, body) }
 | id = ident ASSIGN e = expr
     { Eassign (id, e) }
 | LFLOOR e = expr RFLOOR
