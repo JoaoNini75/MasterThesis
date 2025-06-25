@@ -1,4 +1,4 @@
-let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
+(*let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
 	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
 	let y2 = x2 + 1 | x2 = y2 - 1 in
 	|_ x2 + y2 _|
@@ -20,9 +20,9 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 
 	while |_ !i < n _| do
 		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-				invariant !j_r = !i_r * b_r + c_r
-				invariant !x_l = !x_r 
-				variant n_l - !i_l *)
+            invariant !j_r = !i_r * b_r + c_r
+            invariant !x_l = !x_r 
+            variant n_l - !i_l *)
 		j := !i * b + c | x := !x + !j;
 		x := !x + !j    | j := !j + b;
 		i := |_ !i + 1 _|
@@ -30,15 +30,15 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 
 	|_ !x _|
 end
-(*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) 
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) *)
 
 let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
 	let z = ref 24 | ref 16 in 
 	let w = |_ ref 0 _| in
 
-	while !y > 4 | !y > 4 . (w mod n <> 0) | (w mod n <> 0) do
-    (*@ invariant z_l > z_r && y_l = y_r && y_r > 4 *)
+	while !y > 4 | !y > 4 . (!w mod n <> 0) | (!w mod n <> 0) do
+        (*@ invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 *)
 
 		if ((!w mod n == 0) | (!w mod n == 0)) then begin
 			z := (!z * !y | !z * 2);
@@ -50,7 +50,7 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 
 	|_ !z _|
 end
-(*@ requires x_l = x_r && n_l = n_r *)
+(*@ requires x_l = x_r && n_l = n_r *) 
 
 
 (*let bip_short (b : int | b : int) : int | int = begin

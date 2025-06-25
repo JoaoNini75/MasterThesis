@@ -35,127 +35,6 @@ let report (b,e) =
   let lc = e.pos_cnum - b.pos_bol + 1 in
   eprintf "File \"%s\", line %d, characters %d-%d:\n" file l fc lc
 
-let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
-  let (ident, param_list, bto, special_op_opt, body, spec_op) = def in
-    (ident, param_list, bto, special_op_opt <> None,
-    List.map (fun e -> bip_to_ml e None) body, spec_op)
-and bip_to_ml (e: Ast_bip.expr) (side: side option) : Ast_ml.oexpr =
-  match e with  
-
-  | Eident ident -> (
-    match side with
-    | None -> Oident ident
-    | Some Left -> Oident ({ ident with id = ident.id ^ "_l" })
-    | Some Right -> Oident ({ ident with id = ident.id ^ "_r" }))
-
-  | Ecst c -> Ocst c
-
-  | Eunop (op, e) -> Ounop (op, bip_to_ml e side)
-
-  | Ebinop (op, e1, e2) -> 
-    Obinop (op, (bip_to_ml e1 side), (bip_to_ml e2 side))
-
-  | Elet (ident, Efloor e1, e2) ->
-    let ident_l = { ident with id = ident.id ^ "_l"} 
-    and ident_r = { ident with id = ident.id ^ "_r"}
-    and oe1_l = bip_to_ml e1 (Some Left)
-    and oe1_r = bip_to_ml e1 (Some Right)  
-    and oe2 = bip_to_ml e2 None in
-    Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
-
-  | Elet (ident, Epipe (e1, e2), e_body) ->
-    let ident_l = { ident with id = ident.id ^ "_l"} in
-    let ident_r = { ident with id = ident.id ^ "_r"} in
-    let oe1 = bip_to_ml e1 (Some Left) in
-    let oe2 = bip_to_ml e2 (Some Right) in
-    let oe_body = bip_to_ml e_body None in
-    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
-
-  | Elet (x, e1, e2) -> 
-    Olet (x, bip_to_ml e1 None, bip_to_ml e2 None)
-
-  | Eletpipe (id1, val1, id2, val2, body) -> 
-    let ident_l = { id1 with id = id1.id ^ "_l"} in
-    let ident_r = { id2 with id = id2.id ^ "_r"} in
-    let oe1 = bip_to_ml val1 (Some Left) in
-    let oe2 = bip_to_ml val2 (Some Right) in
-    let oe_body = bip_to_ml body None in
-    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
-
-  | Efun def -> Ofun (bip_to_ml_def def) 
-
-  | Eapp (ident, expr_list) -> 
-    Oapp (ident, (List.map (fun e -> bip_to_ml e None) expr_list))
-
-  | Eif (Efloor e_cnd, el_then, el_else) ->
-    let oe_cnd_l = bip_to_ml e_cnd (Some Left)
-    and oe_cnd_r = bip_to_ml e_cnd (Some Right)
-    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
-    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
-    Oif (oe_cnd_l, oe_cnd_r, oel_then, oel_else)
-
-  | Eif (Epipe (e_cnd1, e_cnd2), el_then, el_else) ->
-    let oe_cnd_l = bip_to_ml e_cnd1 (Some Left)
-    and oe_cnd_r = bip_to_ml e_cnd2 (Some Right)
-    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
-    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
-    Oif (oe_cnd_l, oe_cnd_r, oel_then, oel_else)
-
-  | Eif (e_cnd, el_then, el_else) ->
-    let oe_cnd = bip_to_ml e_cnd None
-    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
-    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
-    Oif (oe_cnd, Onone, oel_then, oel_else)
-
-  | Efor (ident, e_val, e_to, spec, el_body) ->
-    let oe_val = bip_to_ml e_val None 
-    and oe_to = bip_to_ml e_to None 
-    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Ofor (ident, oe_val, oe_to, spec, oel_body)
-
-  | Ewhile (Efloor e_cnd, spec, el_body) ->
-    let oe_cnd_l = bip_to_ml e_cnd (Some Left)
-    and oe_cnd_r = bip_to_ml e_cnd (Some Right)
-    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
-
-  | Ewhile (Epipe (e_cnd1, e_cnd2), spec, el_body) ->
-    let oe_cnd_l = bip_to_ml e_cnd1 (Some Left)
-    and oe_cnd_r = bip_to_ml e_cnd2 (Some Right)
-    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
-
-  | Ewhile (e_cnd, spec, el_body) ->
-    let oe_cnd = bip_to_ml e_cnd None
-    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
-    Owhile (oe_cnd, Onone, spec, oel_body)
-
-  | Ewhilecnd (cnd1, cnd2, ag1, ag2, spec, body) ->
-    Onone (* TODO *)
-
-  | Eassign (ident, Efloor e) ->
-    let ident_l = { ident with id = ident.id ^ "_l"} in
-    let ident_r = { ident with id = ident.id ^ "_r"} in
-    Oassign (ident_l, ident_r, bip_to_ml e (Some Left), bip_to_ml e (Some Right))
-
-  | Eassign (ident, Epipe (e1, e2)) -> 
-    let ident_l = { ident with id = ident.id ^ "_l"} in
-    let ident_r = { ident with id = ident.id ^ "_r"} in
-    Oassign (ident_l, ident_r, bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right)) 
-
-  | Eassign (ident, e) ->
-    ( match side with 
-      | None -> Oassign (ident, ident, bip_to_ml e side, Onone)
-      | Some Left -> 
-        let ident_l = { ident with id = ident.id ^ "_l"} in
-        Oassign (ident_l, ident_l, bip_to_ml e side, Onone)
-      | Some Right -> 
-        let ident_r = { ident with id = ident.id ^ "_r"} in
-        Oassign (ident_r, ident_r, bip_to_ml e side, Onone) )
-     
-  | Efloor e -> bip_to_ml (Epipe (e, e)) None 
-
-  | Epipe (e1, e2) -> Oseq(bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right))
 
 
 let get_const_str (const : Ast_core.constant) = 
@@ -259,6 +138,329 @@ let indent_spec depth (spec_str : string) =
     | _ -> 
       let prefix_str = indent (depth + 3) in
       String.concat "\n" (List.map (fun line -> prefix_str ^ trim_leading line) lines)
+
+let rec get_oexpr_str (oexpr : Ast_ml.oexpr) : string = 
+  match oexpr with
+  | Onone -> "\nSOMETHING WENT WRONG!\n"
+
+  | Oident id -> id.id
+
+  | Ocst c -> get_const_str c
+
+  | Ounop (op, e) -> 
+    let operator_str = (get_unop_str op) in
+    let final_par = 
+      if operator_str = "ref (" || operator_str = "not (" then ")" else "" in
+    operator_str ^ (get_oexpr_str e) ^ final_par
+
+  | Obinop (op, e1, e2) -> 
+    (get_oexpr_str e1) ^ " " ^ (get_binop_str op) ^ " " ^ (get_oexpr_str e2)
+
+  | _ -> "\nREST TODO\n"
+
+  (*| Olet (id, value, body) -> 
+    fprintf fmt "\n%slet %s = " (indent depth) id.id;
+    pp_oexpr fmt value depth true;
+    fprintf fmt " in";
+    pp_oexpr fmt body depth not_last_elem
+
+  | Ofun (id, param_list, fun_type, special_op_opt, oexpr_list, spec_opt) ->
+    pp_def_ml fmt (id, param_list, fun_type, special_op_opt, oexpr_list, spec_opt)
+    (* TODO add depth *)
+
+  | Oapp (id, oexpr_list) -> 
+    fprintf fmt "%s%s" last_elem_str id.id;
+    List.iter (fun oe -> 
+                fprintf fmt " (%a)" 
+                (fun fmt _ -> pp_oexpr fmt oe depth true)
+                oe) oexpr_list
+  
+  | Oif (cnd_l, cnd_r, s1, s2) -> 
+    let indentation = (indent depth) in
+    let len1 = List.length s1 in
+    let len2 = List.length s2 in
+
+    ( match cnd_r with 
+      | Onone -> fprintf fmt "\n%sif %a\n%sthen " 
+                 indentation 
+                 (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
+                 indentation
+
+      | _ -> fprintf fmt "\n%sassert ( (%a) = (%a) );\n%sif %a\n%sthen "
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
+              indentation
+    );
+    
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) s1;
+
+    fprintf fmt "\n%selse " indentation;
+
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) s2
+
+  | Ofor (id, value, e_to, spec_opt, body) -> 
+    let indentation = (indent depth) in
+    let specification = 
+      if (pp_spec_opt spec_opt) = "" then "" 
+      else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
+
+    fprintf fmt "\n\n%sfor %s = %a to %a do%s"
+      indentation
+      id.id
+      (fun fmt _ -> pp_oexpr fmt value depth true) value
+      (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to
+      specification; 
+
+    let len = List.length body in
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+
+    if not_last_elem
+    then fprintf fmt "\n%sdone;\n" indentation
+    else fprintf fmt "\n%sdone\n" indentation
+
+  | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
+    let indentation = (indent depth) in
+    let specification = 
+      if (pp_spec_opt spec_opt) = "" then "" 
+      else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
+
+    ( match cnd_r with
+      | Onone -> fprintf fmt "\n\n%swhile %a do%s" 
+                  indentation
+                  (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+                  specification
+
+      | _ -> fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) <-> (%a)%s*)"
+              indentation
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+              (indent (depth+1))
+              (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+              (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
+              specification
+    );
+
+    let len = List.length body in
+    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
+                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+    
+    if not_last_elem
+    then fprintf fmt "\n%sdone;\n" indentation
+    else fprintf fmt "\n%sdone\n" indentation
+
+  | Oassign (id1, id2, e1, e2) ->
+    let indentation = (indent depth) in
+    let semicolon_str = if not_last_elem then ";" else "" in
+    ( match e2 with
+      | Onone -> fprintf fmt "\n%s%s := %a%s"
+                  indentation
+                  id1.id
+                  (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+                  semicolon_str
+
+      | _ -> fprintf fmt "\n%s%s := %a;\n%s%s := %a%s"
+              indentation
+              id1.id
+              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+              indentation
+              id2.id
+              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
+              semicolon_str
+    ) 
+
+  | Oseq (e1, e2) -> 
+    ( match e1 with 
+      (* case where there are assigns on both sides of a pipe
+         but the left-hand identifiers are different *)
+      | Oassign (id1, id2, oe1, oe2) -> 
+        pp_oexpr fmt e1 depth not_last_elem;
+        pp_oexpr fmt e2 depth not_last_elem
+
+      | _ -> fprintf fmt "\n%s(%a, %a)"
+              (indent depth)
+              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
+    )*)
+
+let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
+  let (ident, param_list, bto, special_op_opt, body, spec_op) = def in
+    (ident, param_list, bto, special_op_opt <> None,
+    List.map (fun e -> bip_to_ml e None) body, spec_op)
+and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
+                                (gen_side : side option) : Ast_ml.oexpr =
+  match e with  
+
+  | Eident ident -> (
+    match id_side with
+    | None -> Oident ident
+    | Some Left -> Oident ({ ident with id = ident.id ^ "_l" })
+    | Some Right -> Oident ({ ident with id = ident.id ^ "_r" }))
+
+  | Ecst c -> Ocst c
+
+  | Eunop (op, e) -> Ounop (op, bip_to_ml e id_side)
+
+  | Ebinop (op, e1, e2) -> 
+    Obinop (op, (bip_to_ml e1 id_side), (bip_to_ml e2 id_side))
+
+  | Elet (ident, Efloor e1, e2) ->
+    let ident_l = { ident with id = ident.id ^ "_l"} 
+    and ident_r = { ident with id = ident.id ^ "_r"}
+    and oe1_l = bip_to_ml e1 (Some Left)
+    and oe1_r = bip_to_ml e1 (Some Right)  
+    and oe2 = bip_to_ml e2 None in
+    Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
+
+  | Elet (ident, Epipe (e1, e2), e_body) ->
+    let ident_l = { ident with id = ident.id ^ "_l"} in
+    let ident_r = { ident with id = ident.id ^ "_r"} in
+    let oe1 = bip_to_ml e1 (Some Left) in
+    let oe2 = bip_to_ml e2 (Some Right) in
+    let oe_body = bip_to_ml e_body None in
+    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
+
+  | Elet (x, e1, e2) -> 
+    Olet (x, bip_to_ml e1 None, bip_to_ml e2 None)
+
+  | Eletpipe (id1, val1, id2, val2, body) -> 
+    let ident_l = { id1 with id = id1.id ^ "_l"} in
+    let ident_r = { id2 with id = id2.id ^ "_r"} in
+    let oe1 = bip_to_ml val1 (Some Left) in
+    let oe2 = bip_to_ml val2 (Some Right) in
+    let oe_body = bip_to_ml body None in
+    Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
+
+  | Efun def -> Ofun (bip_to_ml_def def) 
+
+  | Eapp (ident, expr_list) -> 
+    Oapp (ident, (List.map (fun e -> bip_to_ml e None) expr_list))
+
+  | Eif (Efloor e_cnd, el_then, el_else) ->
+    let oe_cnd_l = bip_to_ml e_cnd (Some Left)
+    and oe_cnd_r = bip_to_ml e_cnd (Some Right)
+    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
+    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
+    Oif (oe_cnd_l, oe_cnd_r, oel_then, oel_else)
+
+  | Eif (Epipe (e_cnd1, e_cnd2), el_then, el_else) ->
+    let oe_cnd_l = bip_to_ml e_cnd1 (Some Left)
+    and oe_cnd_r = bip_to_ml e_cnd2 (Some Right)
+    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
+    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
+    Oif (oe_cnd_l, oe_cnd_r, oel_then, oel_else)
+
+  | Eif (e_cnd, el_then, el_else) ->
+    let oe_cnd = bip_to_ml e_cnd None
+    and oel_then = List.map (fun e -> bip_to_ml e None) el_then
+    and oel_else = List.map (fun e -> bip_to_ml e None) el_else in
+    Oif (oe_cnd, Onone, oel_then, oel_else)
+
+  | Efor (ident, e_val, e_to, spec, el_body) ->
+    let oe_val = bip_to_ml e_val None 
+    and oe_to = bip_to_ml e_to None 
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
+    Ofor (ident, oe_val, oe_to, spec, oel_body)
+
+  | Ewhile (Efloor e_cnd, spec, el_body) ->
+    let oe_cnd_l = bip_to_ml e_cnd (Some Left)
+    and oe_cnd_r = bip_to_ml e_cnd (Some Right)
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
+    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
+
+  | Ewhile (Epipe (e_cnd1, e_cnd2), spec, el_body) ->
+    let oe_cnd_l = bip_to_ml e_cnd1 (Some Left)
+    and oe_cnd_r = bip_to_ml e_cnd2 (Some Right)
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
+    Owhile (oe_cnd_l, oe_cnd_r, spec, oel_body)
+
+  | Ewhile (e_cnd, spec, el_body) ->
+    let oe_cnd = bip_to_ml e_cnd None
+    and oel_body = List.map (fun e -> bip_to_ml e None) el_body in
+    Owhile (oe_cnd, Onone, spec, oel_body)
+
+  | Ewhilecnd (cnd1, cnd2, ag1, ag2, spec, body) ->
+    let el = bip_to_ml cnd1 (Some Left) in
+    let er = bip_to_ml cnd2 (Some Right) in 
+    let fp = bip_to_ml ag1 (Some Left) in 
+    let fp' = bip_to_ml ag2 (Some Right) in
+
+    let el_str = get_oexpr_str el in
+    let er_str = get_oexpr_str er in
+    let fp_str = get_oexpr_str fp in
+    let fp'_str = get_oexpr_str fp' in
+
+    (*Printf.printf "\n\nel_str: %s\n" el_str;
+    Printf.printf "er_str: %s\n" er_str;
+    Printf.printf "fp_str: %s\n" fp_str;
+    Printf.printf "fp'_str: %s\n\n\n" fp'_str;*)
+
+    let a = 
+      "(" ^ el_str ^ " && " ^ fp_str ^ ") || (" ^
+      "(" ^ er_str ^ " && " ^ fp'_str ^ ") || (" ^
+      "(not (" ^ el_str ^ ") && not (" ^ er_str ^ ")) || (" ^
+      "(" ^ el_str ^ " && " ^ er_str ^ ")" in
+
+    let complete_spec = 
+      match spec with 
+      | None -> a 
+      | Some sp -> sp.text ^ "&& (" ^ a ^ ")" in
+
+    let final_spec_text = "(*@" ^ complete_spec ^ " *)" in
+
+    let final_spec = 
+      Some ({ loc = (Lexing.dummy_pos, Lexing.dummy_pos);
+              text = final_spec_text}) in
+
+    let body_l = List.map (fun e -> bip_to_ml e (Some Left)) body in
+    let body_r = List.map (fun e -> bip_to_ml e (Some Right)) body in
+    let body_both = List.map (fun e -> bip_to_ml e None) body in
+
+    (* TODO: 
+      Generate only left and neutral instructions for body_l, 
+      similar for body_r and normal generation for body_both.
+
+      Why is assert for Oif being generated?
+      Because the ifs are not the ifs below, but a separate Eif -> Oif translation,
+      which translates all the body for both sides.
+      The ifs below are correctly translated and printed.
+        
+      Solution: 
+      Add a gen_side parameter to bip_to_ml function that says which side to generate
+      instructions when a pipe or a floor appear.
+      *)
+
+    Owhile (Obinop (Bor, el, er), Onone, final_spec,
+      [Oif (Obinop (Band, el, fp), Onone, body_l, 
+        [Oif (Obinop (Band, er, fp'), Onone, body_r, body_both)])])
+
+  | Eassign (ident, Efloor e) ->
+    let ident_l = { ident with id = ident.id ^ "_l"} in
+    let ident_r = { ident with id = ident.id ^ "_r"} in
+    Oassign (ident_l, ident_r, bip_to_ml e (Some Left), bip_to_ml e (Some Right))
+
+  | Eassign (ident, Epipe (e1, e2)) -> 
+    let ident_l = { ident with id = ident.id ^ "_l"} in
+    let ident_r = { ident with id = ident.id ^ "_r"} in
+    Oassign (ident_l, ident_r, bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right)) 
+
+  | Eassign (ident, e) ->
+    ( match id_side with 
+      | None -> Oassign (ident, ident, bip_to_ml e id_side, Onone)
+      | Some Left -> 
+        let ident_l = { ident with id = ident.id ^ "_l"} in
+        Oassign (ident_l, ident_l, bip_to_ml e id_side, Onone)
+      | Some Right -> 
+        let ident_r = { ident with id = ident.id ^ "_r"} in
+        Oassign (ident_r, ident_r, bip_to_ml e id_side, Onone) )
+     
+  | Efloor e -> bip_to_ml (Epipe (e, e)) None 
+
+  | Epipe (e1, e2) -> Oseq(bip_to_ml e1 (Some Left), bip_to_ml e2 (Some Right))
 
 let rec pp_unop fmt unop e =
   let pp_unop_aux fmt s =
@@ -408,13 +610,15 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let len1 = List.length s1 in
     let len2 = List.length s2 in
 
+    Printf.printf "\n\ncnd_r: %b\n" (cnd_r = Onone);
+
     ( match cnd_r with 
-      | Onone -> fprintf fmt "\n%sif %a\n%sthen " 
+      | Onone -> fprintf fmt "\n%sif %a\n%sthen begin " 
                  indentation 
                  (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
                  indentation
 
-      | _ -> fprintf fmt "\n%sassert ( (%a) = (%a) );\n%sif %a\n%sthen "
+      | _ -> fprintf fmt "\n%sassert ( (%a) = (%a) );\n%sif %a\n%sthen begin "
               indentation
               (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
               (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
@@ -426,14 +630,20 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) s1;
 
-    fprintf fmt "\n%selse " indentation;
+    fprintf fmt "\n%send else begin " indentation;
 
     List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
-                              pp_oexpr fmt oe (depth+1) not_last_elem) s2
+                              pp_oexpr fmt oe (depth+1) not_last_elem) s2;
+
+    if not_last_elem
+    then fprintf fmt "\n%send;" indentation
+    else fprintf fmt "\n%send" indentation
 
   | Ofor (id, value, e_to, spec_opt, body) -> 
     let indentation = (indent depth) in
-    let specification = if (pp_spec_opt spec_opt) = "" then "" else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
+    let specification = 
+      if (pp_spec_opt spec_opt) = "" then "" 
+      else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
 
     fprintf fmt "\n\n%sfor %s = %a to %a do%s"
       indentation
@@ -452,7 +662,9 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
-    let specification = if (pp_spec_opt spec_opt) = "" then "" else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
+    let specification = 
+      if (pp_spec_opt spec_opt) = "" then "" 
+      else "\n" ^ (indent_spec depth (pp_spec_opt spec_opt)) in
 
     ( match cnd_r with
       | Onone -> fprintf fmt "\n\n%swhile %a do%s" 
