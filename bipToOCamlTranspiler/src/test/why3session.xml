@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"https://www.why3.org/why3session.dtd">
+<why3session shape_version="6">
+<prover id="0" name="Alt-Ergo" version="2.5.4" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="1" name="CVC5" version="1.0.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="2" name="Z3" version="4.13.0" timelimit="1" steplimit="0" memlimit="1000"/>
+<file format="ocaml">
+<path name=".."/><path name="test.ml"/>
+<theory name="Test">
+ <goal name="cond_align_loops&#39;vc" expl="VC for cond_align_loops">
+ <transf name="split_vc" >
+  <goal name="cond_align_loops&#39;vc.0" expl="loop invariant init" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.0.0" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.033244" steps="22820"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.0.1" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.030162" steps="22822"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.0.2" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.051343" steps="23444"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.0.3" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.045343" steps="22834"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.0.4" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.034712" steps="22836"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.0.5" expl="loop invariant init" proved="true">
+   <proof prover="1"><result status="valid" time="0.047795" steps="24739"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.1" expl="precondition" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.1.0" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.054841" steps="24857"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.1.1" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.036849" steps="24150"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.2" expl="precondition" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.2.0" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.054721" steps="24905"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.2.1" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.025378" steps="24155"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.3" expl="loop variant decrease" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.3.0" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.048424" steps="24280"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.3.1" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.039756" steps="24264"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.4" expl="loop invariant preservation" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.4.0" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.047241" steps="25088"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.4.1" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.052535" steps="25116"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.4.2" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.031423" steps="24283"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.4.3" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.034075" steps="24328"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.4.4" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.034540" steps="24298"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.4.5" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.043112" steps="24406"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.5" expl="loop variant decrease">
+  <transf name="split_vc" >
+   <goal name="cond_align_loops&#39;vc.5.0" expl="loop variant decrease">
+   <proof prover="0"><result status="timeout" time="1.000000" steps="12259"/></proof>
+   <proof prover="1"><result status="timeout" time="1.000000" steps="185874"/></proof>
+   <proof prover="2"><result status="unknown" time="0.000300"/></proof>
+   <transf name="split_vc" >
+    <goal name="cond_align_loops&#39;vc.5.0.0" expl="loop variant decrease">
+    <proof prover="0"><result status="timeout" time="1.000000" steps="13186"/></proof>
+    <proof prover="1"><result status="timeout" time="1.000000" steps="199192"/></proof>
+    <proof prover="2"><result status="unknown" time="0.000001"/></proof>
+    </goal>
+    <goal name="cond_align_loops&#39;vc.5.0.1" expl="loop variant decrease" proved="true">
+    <proof prover="1"><result status="valid" time="0.032770" steps="24198"/></proof>
+    </goal>
+   </transf>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.5.1" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.042327" steps="24188"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.6" expl="loop invariant preservation" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.6.0" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.046648" steps="24211"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.6.1" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.047204" steps="24215"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.6.2" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.040386" steps="24216"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.6.3" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.036383" steps="24216"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.6.4" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.044973" steps="24220"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.6.5" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.044018" steps="25072"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.7" expl="precondition" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.7.0" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.047842" steps="24948"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.7.1" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.032554" steps="24874"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.8" expl="precondition" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.8.0" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.057955" steps="24983"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.8.1" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.050850" steps="24216"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.9" expl="loop variant decrease" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.9.0" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.033648" steps="24333"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.9.1" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.037123" steps="24319"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.10" expl="loop invariant preservation" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.10.0" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.046588" steps="25173"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.10.1" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.043202" steps="25186"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.10.2" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.046490" steps="24394"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.10.3" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.044317" steps="24347"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.10.4" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.038593" steps="24411"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.10.5" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.039533" steps="24487"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.11" expl="loop variant decrease">
+  <transf name="split_vc" >
+   <goal name="cond_align_loops&#39;vc.11.0" expl="loop variant decrease">
+   <proof prover="0"><result status="timeout" time="1.000000" steps="10962"/></proof>
+   <proof prover="1"><result status="timeout" time="1.000000" steps="186796"/></proof>
+   <proof prover="2"><result status="unknown" time="0.000583"/></proof>
+   <transf name="split_vc" >
+    <goal name="cond_align_loops&#39;vc.11.0.0" expl="loop variant decrease">
+    <transf name="split_vc" >
+     <goal name="cond_align_loops&#39;vc.11.0.0.0" expl="loop variant decrease">
+     <proof prover="0"><result status="timeout" time="1.000000" steps="10971"/></proof>
+     <proof prover="1"><result status="timeout" time="1.000000" steps="193414"/></proof>
+     <proof prover="2"><result status="unknown" time="0.000303"/></proof>
+     </goal>
+     <goal name="cond_align_loops&#39;vc.11.0.0.1" expl="loop variant decrease" proved="true">
+     <proof prover="1"><result status="valid" time="0.039107" steps="24233"/></proof>
+     </goal>
+    </transf>
+    </goal>
+    <goal name="cond_align_loops&#39;vc.11.0.1" expl="loop variant decrease" proved="true">
+    <transf name="split_vc" proved="true" >
+     <goal name="cond_align_loops&#39;vc.11.0.1.0" expl="loop variant decrease" proved="true">
+     <proof prover="1"><result status="valid" time="0.043722" steps="24201"/></proof>
+     </goal>
+     <goal name="cond_align_loops&#39;vc.11.0.1.1" expl="loop variant decrease" proved="true">
+     <proof prover="1"><result status="valid" time="0.061812" steps="24920"/></proof>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.11.1" expl="loop variant decrease" proved="true">
+   <proof prover="1"><result status="valid" time="0.040441" steps="24249"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.12" expl="loop invariant preservation" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.12.0" expl="loop invariant preservation" proved="true">
+   <transf name="split_vc" proved="true" >
+    <goal name="cond_align_loops&#39;vc.12.0.0" expl="loop invariant preservation" proved="true">
+    <transf name="split_vc" proved="true" >
+     <goal name="cond_align_loops&#39;vc.12.0.0.0" expl="loop invariant preservation" proved="true">
+     <transf name="split_vc" proved="true" >
+      <goal name="cond_align_loops&#39;vc.12.0.0.0.0" expl="loop invariant preservation" proved="true">
+      <proof prover="1"><result status="valid" time="0.035073" steps="24216"/></proof>
+      </goal>
+      <goal name="cond_align_loops&#39;vc.12.0.0.0.1" expl="loop invariant preservation" proved="true">
+      <proof prover="1"><result status="valid" time="0.033659" steps="24216"/></proof>
+      </goal>
+     </transf>
+     </goal>
+     <goal name="cond_align_loops&#39;vc.12.0.0.1" expl="loop invariant preservation" proved="true">
+     <proof prover="1"><result status="valid" time="0.035707" steps="24190"/></proof>
+     </goal>
+    </transf>
+    </goal>
+    <goal name="cond_align_loops&#39;vc.12.0.1" expl="loop invariant preservation" proved="true">
+    <proof prover="1"><result status="valid" time="0.035017" steps="24232"/></proof>
+    </goal>
+   </transf>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.12.1" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.044416" steps="24274"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.12.2" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.048855" steps="24275"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.12.3" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.056241" steps="24275"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.12.4" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.057388" steps="24279"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.12.5" expl="loop invariant preservation" proved="true">
+   <proof prover="1"><result status="valid" time="0.053067" steps="25152"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.13" expl="assertion" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.13.0" expl="assertion" proved="true">
+   <proof prover="1"><result status="valid" time="0.038684" steps="25043"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.13.1" expl="assertion" proved="true">
+   <proof prover="1"><result status="valid" time="0.036270" steps="25043"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.14" expl="precondition" proved="true">
+  <transf name="split_vc" proved="true" >
+   <goal name="cond_align_loops&#39;vc.14.0" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.036243" steps="25057"/></proof>
+   </goal>
+   <goal name="cond_align_loops&#39;vc.14.1" expl="precondition" proved="true">
+   <proof prover="1"><result status="valid" time="0.038603" steps="24990"/></proof>
+   </goal>
+  </transf>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.15" expl="loop variant decrease" proved="true">
+  <proof prover="1"><result status="valid" time="0.058413" steps="25390"/></proof>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.16" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.037276" steps="296"/></proof>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.17" expl="loop variant decrease" proved="true">
+  <proof prover="1"><result status="valid" time="0.066111" steps="25122"/></proof>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.18" expl="loop invariant preservation" proved="true">
+  <proof prover="1"><result status="valid" time="0.047958" steps="25244"/></proof>
+  </goal>
+  <goal name="cond_align_loops&#39;vc.19" expl="postcondition" proved="true">
+  <proof prover="1"><result status="valid" time="0.042614" steps="24169"/></proof>
+  </goal>
+ </transf>
+ </goal>
+</theory>
+</file>
+</why3session>

@@ -32,13 +32,17 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 end
 (*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) *)
 
+(*@ axiom forall a:int, b:int, c:int, d:int.
+   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *)
+   
 let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
 	let z = ref 24 | ref 16 in 
 	let w = |_ ref 0 _| in
 
 	while !y > 4 | !y > 4 . (!w mod n <> 0) | (!w mod n <> 0) do
-        (*@ invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 *)
+        (*@ variant   !y_l + !y_r
+            invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
 
 		if ((!w mod n == 0) | (!w mod n == 0)) then begin
 			z := (!z * !y | !z * 2);
@@ -50,7 +54,9 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 
 	|_ !z _|
 end
-(*@ requires x_l = x_r && n_l = n_r *) 
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4 *) 
+
+
 
 
 (*let bip_short (b : int | b : int) : int | int = begin
