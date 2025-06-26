@@ -15,5 +15,6 @@
 
 (executable
  (name biplang)
+ (libraries str)
  (promote (until-clean))
  (flags ()))

@@ -1,16 +1,18 @@
-(*let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
+let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
 	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
 	let y2 = x2 + 1 | x2 = y2 - 1 in
 	|_ x2 + y2 _|
 end
-(*@ requires x1_l = x1_r && y1_l = y1_r *)
+(*@ requires x1_l = x1_r && y1_l = y1_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *)
 
 let bilateral_conditional (|_c : bool _|) : |_int_| = begin
 	if |_c_| 
 	then begin |_1_| end
 	else begin |_0_| end
 end
-(*@ requires c_l <-> c_r *)
+(*@ requires c_l <-> c_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *)
 (* requires c =:= c *)
 
 let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
@@ -30,9 +32,10 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 
 	|_ !x _|
 end
-(*@ requires b_l = b_r && c_l = c_r && n_l = n_r *) *)
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *) 
 
-(*@ axiom forall a:int, b:int, c:int, d:int.
+(*@ axiom mult: forall a:int, b:int, c:int, d:int.
    0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *)
    
 let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
@@ -54,9 +57,8 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 
 	|_ !z _|
 end
-(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4 *) 
-
-
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
 
 
 (*let bip_short (b : int | b : int) : int | int = begin
