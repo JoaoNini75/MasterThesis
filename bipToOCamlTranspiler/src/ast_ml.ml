@@ -9,7 +9,7 @@ type oexpr =
   | Onone
   | Oident of   ident
   | Ocst of     constant
-  | Ounop of    unop * oexpr
+  | Ounop of    unop  * oexpr
   | Obinop of   binop * oexpr * oexpr
   | Olet of     ident * oexpr * oexpr
   | Ofun of     odef

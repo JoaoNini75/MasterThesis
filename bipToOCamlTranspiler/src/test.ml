@@ -56,8 +56,9 @@ let cond_align_loops (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int
   let w_r = ref (0) in
 
   while !y_l > 4 || !y_r > 4 do
-        (*@ variant   !y_l + !y_r
-        invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 && ((!y_l > 4 && mod !w_l n_l <> 0) || (!y_r > 4 && mod !w_r n_r <> 0) || (not (!y_l > 4) && not (!y_r > 4)) || (!y_l > 4 && !y_r > 4)) *)
+    (*@ variant   !y_l + !y_r
+        invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 
+        invariant (!y_l > 4 && mod !w_l n_l <> 0) || (!y_r > 4 && mod !w_r n_r <> 0) || (not (!y_l > 4) && not (!y_r > 4)) || (!y_l > 4 && !y_r > 4) *)
     if !y_l > 4 && !w_l mod n_l <> 0
     then begin 
       if !w_l mod n_l = 0

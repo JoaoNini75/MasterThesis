@@ -130,15 +130,21 @@ let trim_leading s =
   if i = 0 then s 
   else String.sub s i (len - i)
 
-let indent_spec depth (spec_str : string) = 
-  if spec_str = "" then "" 
+let indent_spec depth spec_str first_line_diff =
+  if spec_str = "" then ""
   else
     let lines = String.split_on_char '\n' spec_str in
     match lines with
     | [] -> spec_str
-    | _ -> 
-      let prefix_str = indent (depth + 3) in
-      String.concat "\n" (List.map (fun line -> prefix_str ^ trim_leading line) lines)
+    | first :: rest ->
+      let prefix_first = 
+        if first_line_diff then indent (depth + 3)
+        else indent (depth + 5) in
+      let prefix_rest  = indent (depth + 5) in
+      let head = prefix_first ^ trim_leading first in
+      let tail = List.map (fun line -> prefix_rest ^ trim_leading line) rest in
+      String.concat "\n" (head :: tail)
+
 
 (* There will be problems with mod in specs because of Cameleer needing it prefix! 
    This does not cover more complex cases where the expressions before or after
@@ -517,7 +523,7 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     let complete_spec = 
       match spec with 
       | None -> a 
-      | Some sp -> sp.text ^ "&& (" ^ a ^ ")" in
+      | Some sp -> Printf.printf "spec:%s" sp.text; sp.text ^ "\n invariant " ^ a in
 
     let final_spec_text = "(*@" ^ complete_spec ^ " *)" in
 
@@ -770,7 +776,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let indentation = (indent depth) in
     let specification = 
       if (pp_spec_opt spec_opt) = "" then "" 
-      else "\n" ^ (swap_mod_order (indent_spec depth (pp_spec_opt spec_opt))) in
+      else "\n" ^ (swap_mod_order (indent_spec depth (pp_spec_opt spec_opt) true)) in
 
     fprintf fmt "\n\n%sfor %s = %a to %a do%s"
       indentation
@@ -789,9 +795,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
+    let first_line_diff = cnd_r = Onone in
+    let indented_spec = indent_spec (depth-2) (pp_spec_opt spec_opt) first_line_diff in
     let specification = 
       if (pp_spec_opt spec_opt) = "" then "" 
-      else "\n" ^ (swap_mod_order (indent_spec depth (pp_spec_opt spec_opt))) in
+      else "\n" ^ (swap_mod_order indented_spec) in
 
     ( match cnd_r with
       | Onone -> 
