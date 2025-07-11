@@ -30,7 +30,9 @@
         "mod", MOD;
         "int", INT;
         "bool", BOOL;
-        "None", NONE;];
+        "None", NONE;
+        "rec", REC;
+        "assert", ASSERT;];
     fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -207,6 +209,8 @@ and string = parse
     | ASSIGN -> fprintf fmt ":="
     | NONE -> fprintf fmt "none"
     | SPEC s -> fprintf fmt "%s (specification)" s
+    | REC -> fprintf fmt "rec"
+    | ASSERT -> fprintf fmt "assert"
 
   let () =
     let fname = Sys.argv.(1) in

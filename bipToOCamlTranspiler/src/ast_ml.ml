@@ -9,7 +9,7 @@ type oexpr =
   | Onone
   | Oident of   ident
   | Ocst of     constant
-  | Ounop of    unop  * oexpr
+  | Ounop of    unop * oexpr
   | Obinop of   binop * oexpr * oexpr
   | Olet of     ident * oexpr * oexpr
   | Ofun of     odef
@@ -18,9 +18,10 @@ type oexpr =
   | Ofor of     ident * oexpr * oexpr * spec option * oexpr list  
   | Owhile of   oexpr * oexpr * spec option * oexpr list
   | Oassign of  ident * ident * oexpr * oexpr (* x := 3 *)
+  | Oassert of  oexpr
   | Oseq of     oexpr * oexpr
 
-and odef = ident * parameter list * bip_type option
+and odef = ident * bool (* rec *) * parameter list * bip_type option
            * bool (* return pair *) * oexpr list * spec
 
 and odecl = 

@@ -19,10 +19,11 @@ type expr =
   | Ewhile of     expr * spec option * expr list 
   | Ewhilecnd of  expr * expr * expr * expr * spec option * expr list 
   | Eassign of    ident * expr (* x := 3 *)
+  | Eassert of    expr
   | Efloor of     expr (* |_ expr _| *)
   | Epipe of      expr * expr (* expr | expr *)
 
-and def = ident * parameter list * bip_type option
+and def = ident * bool (* rec *) * parameter list * bip_type option
           * special_op option * expr list * spec
 
 and decl = 

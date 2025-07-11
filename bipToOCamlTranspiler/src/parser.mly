@@ -10,7 +10,7 @@
 %token <Ast_core.binop> CMP
 %token <string> IDENT
 %token <string> SPEC
-%token LET IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET REC ASSERT IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -41,11 +41,11 @@ file:
 decl:
 | sp = spec
     { Espec sp }
-| LET f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
+| is_rec = fun_rec f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
     { 
       match fr with
-      | None -> Edef (f, x, None, None, b, sp)
-      | Some (tp, spop) -> Edef (f, x, Some tp, spop, b, sp)
+      | None -> Edef (f, is_rec, x, None, None, b, sp)
+      | Some (tp, spop) -> Edef (f, is_rec, x, Some tp, spop, b, sp)
     }
 ;
 
@@ -98,6 +98,8 @@ expr:
     { Epipe (e1, e2) }
 | id = ident LP args = separated_list(COMMA, expr) RP
     { Eapp (id, args) }
+| ASSERT LP e = expr RP
+    { Eassert (e) }
 ;
 
 parameter_core:
@@ -121,6 +123,11 @@ fun_ret:
     { tp, Some SOfloor }
 | COLON tp1 = bip_type PIPE tp2 = bip_type
     { tp1, Some SOpipe }
+;
+
+fun_rec:
+| LET REC { true }
+| LET { false }
 ;
 
 bip_type:

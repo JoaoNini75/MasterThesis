@@ -1,3 +1,14 @@
+let app_fun (x : int, b : bool) = begin
+    x
+end
+(*@ ensures true *)
+
+let assert_and_app_test (x : int, b : bool) = begin
+    let app_res = app_fun (1, true) in
+    assert (1 == app_res)
+end
+(*@ ensures true *)
+
 let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
 	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
 	let y2 = x2 + 1 | x2 = y2 - 1 in
@@ -38,7 +49,7 @@ end
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
    0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *)
    
-let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+(* let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
 	let z = ref 24 | ref 16 in 
 	let w = |_ ref 0 _| in
@@ -58,10 +69,11 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	|_ !z _|
 end
 (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
-    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) *)
 
 
-(*let bip_short (b : int | b : int) : int | int = begin
+
+(*let rec bip_short (b : int | b : int) : int | int = begin
     let x = ref 0 | ref 1 in
     !x | !x 
 end
@@ -73,7 +85,6 @@ let bip (|_b : int_|) : |_int_| = begin
     let x = |_ ref 0 _| in
     |_ !x _|
 end
-
 
 
 let bip_if_long (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
