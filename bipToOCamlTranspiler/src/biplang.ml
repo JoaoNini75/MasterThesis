@@ -77,6 +77,7 @@ let get_type_str (bip_type_opt : Ast_core.bip_type option) =
     match bt with
     | INT -> "int"
     | BOOL -> "bool"
+    | STRING -> "string"
     | NONE -> ""
 
 
@@ -95,6 +96,7 @@ let pp_type fmt bip_type =
   match bip_type with
   | INT -> fprintf fmt "int"
   | BOOL -> fprintf fmt "bool"
+  | STRING -> fprintf fmt "string"
   | NONE -> fprintf fmt "None"
 
 let pp_type_option fmt bip_type_opt =
@@ -182,6 +184,12 @@ let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
   let (ident, is_rec, param_list, bto, special_op_opt, body, spec_op) = def in
     (ident, is_rec, param_list, bto, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op)
+
+(* not allowing pipes or floors for now*)
+and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase = 
+  let (ptrn, e) = case in
+  (ptrn, bip_to_ml e None None)
+
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
   match e with  
@@ -465,6 +473,9 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     Oassign (ident_final, ident_final, bip_to_ml e id_side gen_side, Onone)
 
   | Eassert e -> Oassert (bip_to_ml e id_side gen_side)
+
+  | Ematch (id, cases) ->
+    Omatch (id, List.map (fun case -> bip_to_ml_case case) cases)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   
@@ -547,6 +558,8 @@ and pp_expr fmt expr =
     fprintf fmt "not_implemented"
   | Eassert (e) ->
     fprintf fmt "not_implemented"
+  | Ematch (e, cases) ->
+    fprintf fmt "not_implemented"  
   | Eassign (id, e) -> 
     fprintf fmt "\n(assign) %s := " id.id;
     pp_expr fmt e
@@ -747,6 +760,9 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       indentation
       (fun fmt _ -> pp_oexpr fmt oe depth true) oe
       semicolon_str
+
+  | Omatch (oe, cases) ->
+    fprintf fmt "\n\nTODO_MATCH\n\n"
 
   | Oseq (e1, e2) -> 
     ( match e1 with 

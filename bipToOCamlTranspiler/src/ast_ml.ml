@@ -19,7 +19,10 @@ type oexpr =
   | Owhile of   oexpr * oexpr * spec option * oexpr list
   | Oassign of  ident * ident * oexpr * oexpr (* x := 3 *)
   | Oassert of  oexpr
+  | Omatch of   ident * ocase list
   | Oseq of     oexpr * oexpr
+
+and ocase = pattern * oexpr 
 
 and odef = ident * bool (* rec *) * parameter list * bip_type option
            * bool (* return pair *) * oexpr list * spec

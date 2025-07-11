@@ -8,7 +8,7 @@ type location = Lexing.position * Lexing.position
 type ident = { loc: location; id: string; }
 type spec = { loc: location; text: string; } (* Gospel specifications *)
 
-type bip_type = BOOL | INT | NONE
+type bip_type = BOOL | INT | STRING | NONE
 type special_op = SOfloor | SOpipe  
 type parameter = ident * bip_type option * special_op option
   
@@ -29,3 +29,8 @@ type constant =
   | Cint of     int
   | Cbool of    bool
   | Cstring of  string
+
+type pattern = (* only allowing some patterns for now *)
+  | Pwildcard
+  | Pconst of   constant
+  | Pident of   ident

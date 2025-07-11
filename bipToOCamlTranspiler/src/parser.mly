@@ -10,12 +10,13 @@
 %token <Ast_core.binop> CMP
 %token <string> IDENT
 %token <string> SPEC
-%token LET REC ASSERT IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
 
 /* priorities and associativities */
+%nonassoc MATCH WITH
 %nonassoc IN
 %left PIPE
 %nonassoc ASSIGN
@@ -62,8 +63,6 @@ block_core:
 ;
 
 expr:
-| LP e = expr RP
-    { e }
 | c = CST
     { Ecst c }
 | id = ident
@@ -100,6 +99,15 @@ expr:
     { Eapp (id, args) }
 | ASSERT LP e = expr RP
     { Eassert (e) }
+| LP MATCH id = ident WITH PIPE cases = separated_list(PIPE, case) RP
+    { Ematch (id, cases) }
+| LP e = expr RP
+    { e }
+;
+
+case:
+| LP ptrn = pattern ARROW e = expr RP
+    { (ptrn, e) }
 ;
 
 parameter_core:
@@ -109,7 +117,7 @@ parameter_core:
 
 parameter:
 | pc = parameter_core
-    { let (id, tp) = pc in(id, tp, None) }
+    { let (id, tp) = pc in (id, tp, None) }
 | LFLOOR pc = parameter_core RFLOOR
     { let (id, tp) = pc in (id, tp, Some SOfloor) }
 | pc1 = parameter_core PIPE pc2 = parameter_core
@@ -130,10 +138,17 @@ fun_rec:
 | LET { false }
 ;
 
+pattern:
+| WILDCARD   { Pwildcard }
+| c = CST    { Pconst (c) }
+| id = ident { Pident (id) }
+;
+
 bip_type:
-| INT  { INT }
-| BOOL { BOOL }
-| NONE { NONE }
+| INT       { INT }
+| BOOL      { BOOL }
+| STRING    { STRING }
+| NONE      { NONE }
 ;
 
 %inline binop:

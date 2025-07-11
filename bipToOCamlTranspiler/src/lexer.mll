@@ -30,9 +30,12 @@
         "mod", MOD;
         "int", INT;
         "bool", BOOL;
+        "string", STRING;
         "None", NONE;
         "rec", REC;
-        "assert", ASSERT;];
+        "assert", ASSERT;
+        "match", MATCH;
+        "with", WITH];
     fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -96,6 +99,8 @@ rule next_tokens = parse
   | "_|"    { RFLOOR }      
   | "."     { DOT }
   | "<->"   { SPEC_EQUAL }  
+  | "->"    { ARROW }
+  | "_"     { WILDCARD }
 
   | eof     { EOF }
   | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
@@ -163,6 +168,7 @@ and string = parse
     | LFLOOR -> fprintf fmt "|_"
     | LET -> fprintf fmt "let"
     | INT -> fprintf fmt "int"
+    | STRING -> fprintf fmt "string"
     | IN -> fprintf fmt "in"
     | IF -> fprintf fmt "if"
     | IDENT s -> fprintf fmt "%s (identifier)" s
@@ -211,6 +217,10 @@ and string = parse
     | SPEC s -> fprintf fmt "%s (specification)" s
     | REC -> fprintf fmt "rec"
     | ASSERT -> fprintf fmt "assert"
+    | MATCH -> fprintf fmt "match"
+    | WITH -> fprintf fmt "with"
+    | ARROW -> fprintf fmt "->"
+    | WILDCARD -> fprintf fmt "_"
 
   let () =
     let fname = Sys.argv.(1) in
@@ -218,7 +228,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        (*eprintf "@[%a@]@." pp_token token;*)
+        eprintf "@[%a@]@." pp_token token;
       if token <> EOF then loop () in
     loop ()
 

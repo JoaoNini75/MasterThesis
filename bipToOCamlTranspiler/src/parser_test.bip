@@ -1,4 +1,14 @@
-let app_fun (x : int, b : bool) = begin
+let match_test (x : int) : string = begin
+    ( match x with
+    | (0 -> "zero")
+    | (1 -> "one")
+    | ( _ -> "other" )
+    )
+end
+(*@ ensures true *) 
+
+
+(*let app_fun (x : int, b : bool) = begin
     x
 end
 (*@ ensures true *)
@@ -8,6 +18,7 @@ let assert_and_app_test (x : int, b : bool) = begin
     assert (1 == app_res)
 end
 (*@ ensures true *)
+
 
 let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
 	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
@@ -47,7 +58,7 @@ end
     ensures  match result with (l_res, r_res) -> l_res = r_res *) 
 
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
-   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *)
+   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) *)
    
 (* let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
