@@ -30,7 +30,8 @@ type constant =
   | Cbool of    bool
   | Cstring of  string
 
-type pattern = (* only allowing some patterns for now *)
+type pattern = 
   | Pwildcard
   | Pconst of   constant
   | Pident of   ident
+(* only allowing some patterns for now *)

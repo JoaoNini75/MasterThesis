@@ -1,12 +1,59 @@
-let match_test (x : int) : string = begin
-    ( match x with
-    | (0 -> "zero")
-    | (1 -> "one")
-    | ( _ -> "other" )
-    )
+let funs_nested (x : int) : int = begin
+  let fun2 (i: int) : int = begin
+    i * 2
+  end;
+
+  fun2 (x)
 end
 (*@ ensures true *) 
 
+let match_test (x : int) : string = begin
+  ( match x with 
+	| (0 -> "zero")
+	| (1 -> "one")
+	| ( _ -> "other")) 
+end
+(*@ ensures true *) 
+
+let match_test2 (x : int) : |_ string _| = begin
+  let res = |_ ( match x with
+		| (0 -> "zero")
+		| (1 -> "one")
+		| ( _ -> "other" )
+		) _| in
+	|_ res _|
+end
+(*@ ensures true *) 
+
+(*
+let match_test (x : int) : |_ int _| = begin
+    let a = 1 | 1 in
+
+    let b = ( 
+			match x with
+			| (0 -> 10)
+			| (1 -> 11)
+			| ( _ -> -1 ) 
+		) in
+
+    a + b | a + b
+end
+(*@ ensures true *) 
+
+let match_test (x : int) : |_ int _| = begin
+    let a = 1 <|> 1 in
+
+    let b = ( 
+			match x with
+			| 0 -> 10
+			| 1 -> 11
+			| _ -> -1 
+		) in
+
+    a + b <|> a + b
+end
+(*@ ensures true *)
+*)
 
 (*let app_fun (x : int, b : bool) = begin
     x
@@ -58,22 +105,47 @@ end
     ensures  match result with (l_res, r_res) -> l_res = r_res *) 
 
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
-   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) *)
+   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
    
-(* let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
 	let z = ref 24 | ref 16 in 
 	let w = |_ ref 0 _| in
 
-	while !y > 4 | !y > 4 . (!w mod n <> 0) | (!w mod n <> 0) do
-        (*@ variant   !y_l + !y_r
-            invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+	while !y > 4 | !y > 4 . (!w mod 2 <> 0) | (!w mod 2 <> 0) do
+		(*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
 
 		if ((!w mod n == 0) | (!w mod n == 0)) then begin
 			z := (!z * !y | !z * 2);
 			y := |_ !y - 1 _|
 		end else begin () end;
 
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
+end
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+
+let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 | ref 16 in 
+	let w = |_ ref 0 _| in
+	let t = ref 0 | ref 1 in
+
+	while !y > 4 | !y > 4 . (!w mod 2 <> 0) | (!w mod 2 <> 0) do
+		(*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+
+		while !t < 4 | !t < 4 . (!t mod 2 <> 0) | (!t mod 2 <> 0) do
+			(*@ variant   !t_l + !t_r 
+					invariant !t_l >= 0 && !t_r >= 1 *)
+			t := |_ !t + 1 _|
+		done;
+
+		y := |_ !y - 1 _|;
 		w := |_ !w + 1 _|
 	done; 
 

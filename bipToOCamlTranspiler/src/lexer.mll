@@ -69,7 +69,6 @@ rule next_tokens = parse
   | '-'     { MINUS }
   | '*'     { TIMES }
   | "/"     { DIV }
-  | '%'     { MOD }
   | '='     { EQUAL }
   | "=="    { CMP Beq }
   | "<>"    { CMP Bneq }

@@ -42,7 +42,7 @@ let get_const_str (const : Ast_core.constant) =
   match const with
   | Cint  i -> string_of_int i
   | Cbool b -> string_of_bool b
-  | Cstring str -> str
+  | Cstring str -> "\"" ^ str ^ "\""
   | Cnone -> "Cnone"
   | Cunit -> "()"
 
@@ -114,6 +114,12 @@ let pp_constant fmt constant =
     | Cunit -> "Cunit"
   in 
     fprintf fmt "%s (constant) " s
+
+let get_pattern_str (ptrn: pattern) : string =
+  match ptrn with
+  | Pwildcard -> "_"
+  | Pconst c -> get_const_str c
+  | Pident ident -> ident.id
 
 let indent depth =
   String.make (depth * indent_spaces) ' '
@@ -482,6 +488,7 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Epipe (e1, e2) -> 
     Oseq (bip_to_ml e1 (Some Left) gen_side, bip_to_ml e2 (Some Right) gen_side) 
 
+
 let rec pp_unop fmt unop e =
   let pp_unop_aux fmt s =
     match unop with
@@ -743,12 +750,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     *)
 
     fprintf fmt "\n%s%s" indentation id.id;
-    List.iter 
-      (fun oe -> 
-        fprintf fmt " (%a)" 
-        (fun fmt _ -> pp_oexpr fmt oe depth true)
-        oe )
-      oexpr_list;
+
+    List.iter (fun oe -> 
+      fprintf fmt " (%a)" 
+      (fun fmt _ -> pp_oexpr fmt oe depth true)
+      oe) oexpr_list;
     
     fprintf fmt "%s" semicolon_str
 
@@ -761,8 +767,25 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       (fun fmt _ -> pp_oexpr fmt oe depth true) oe
       semicolon_str
 
-  | Omatch (oe, cases) ->
-    fprintf fmt "\n\nTODO_MATCH\n\n"
+  | Omatch (id, cases) -> 
+    let depth = if not_last_elem then (depth + 1) else depth in
+    let indentation = (indent depth) in
+    let not_last_elem_str = if not_last_elem then "( " else "" in
+
+    fprintf fmt "\n%s%smatch %s with" 
+      indentation 
+      not_last_elem_str 
+      id.id;
+
+    List.iter (fun case -> 
+      let (ptrn, oe) = case in
+      fprintf fmt "\n%s| %s -> %a"
+        indentation
+        (get_pattern_str ptrn)
+        (fun fmt _ -> pp_oexpr fmt oe (depth + 1) true) oe
+    ) cases;
+    
+     if not_last_elem then fprintf fmt " )" else ();
 
   | Oseq (e1, e2) -> 
     ( match e1 with 
