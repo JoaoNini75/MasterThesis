@@ -205,7 +205,7 @@ and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase =
 
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
-                                
+
   match e with  
 
   | Eident ident -> Oident (add_side_to_id ident id_side)
@@ -481,7 +481,9 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Ematch (ident, cases) ->
     let ident_final = add_side_to_id ident id_side in
-    Omatch (ident_final, List.map (fun case -> bip_to_ml_case case) cases)
+    (* rev because of the way it is collected in the parser (case_list rule) *)
+    let ocases = List.rev (List.map (fun case -> bip_to_ml_case case) cases) in
+    Omatch (ident_final, ocases)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   

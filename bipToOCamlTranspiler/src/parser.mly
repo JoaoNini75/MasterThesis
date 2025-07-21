@@ -120,7 +120,7 @@ expr:
 case_list:
 | c = case
     { [c] }
-| c = case cl = case_list
+| cl = case_list c = case
     { c :: cl }
 ;
 

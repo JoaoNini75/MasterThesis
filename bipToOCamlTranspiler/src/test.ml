@@ -1,3 +1,11 @@
+let funs_nested (x : int) : int =let fun2 (i : int) : int =
+  i * 2
+(*@ ensures true *)
+
+
+  fun2 (x)
+(*@ ensures true *)
+
 let match_test (x : int) : string =
   match x with
   | 0 -> "zero"

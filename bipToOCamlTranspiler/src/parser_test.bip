@@ -1,13 +1,25 @@
-(* let funs_nested (x : int) : int = begin
-  let fun2 (i: int) : int = begin
+let funs_nested (x) = begin
+  let fun2 (i) = begin
     i * 2
-  end;
+  end
+	(* current correct parsing *)
+	; 
 
+  fun2 (x)
+end
+(*@ ensures true *) 
+
+(* let funs_nested (x) = begin
+  let fun2 (i) =
+    i * 2
+	(* target correct parsing. being and end? *)
+	in 
   fun2 (x)
 end
 (*@ ensures true *) *)
 
-let match_test (x : int) : string = begin
+
+(*let match_test (x : int) : string = begin
   match x with 
 	| 0 -> "zero"
 	| 1 -> "one"
@@ -30,7 +42,7 @@ end
 (*@ ensures true *)
 
 
-(*let app_fun (x : int, b : bool) = begin
+let app_fun (x : int, b : bool) = begin
     x
 end
 (*@ ensures true *)
