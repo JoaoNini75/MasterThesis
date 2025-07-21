@@ -186,6 +186,13 @@ let rec get_oexpr_str (oexpr : Ast_ml.oexpr) : string =
   | _ -> "\nREST_NEED_TO_COMPLETE\n"
 
 
+let add_side_to_id ident side = 
+  match side with 
+  | None -> ident
+  | Some Left -> { ident with id = ident.id ^ "_l"}
+  | Some Right -> { ident with id = ident.id ^ "_r"}
+
+
 let rec bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
   let (ident, is_rec, param_list, bto, special_op_opt, body, spec_op) = def in
     (ident, is_rec, param_list, bto, special_op_opt <> None,
@@ -198,13 +205,10 @@ and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase =
 
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
+                                
   match e with  
 
-  | Eident ident -> (
-    match id_side with
-    | None -> Oident ident
-    | Some Left -> Oident ({ ident with id = ident.id ^ "_l" })
-    | Some Right -> Oident ({ ident with id = ident.id ^ "_r" }))
+  | Eident ident -> Oident (add_side_to_id ident id_side)
 
   | Ecst c -> Ocst c
 
@@ -470,18 +474,14 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     )
 
   | Eassign (ident, e) ->
-    let ident_final = 
-      match id_side with 
-      | None -> ident
-      | Some Left -> { ident with id = ident.id ^ "_l"}
-      | Some Right -> { ident with id = ident.id ^ "_r"}
-    in 
+    let ident_final = add_side_to_id ident id_side in
     Oassign (ident_final, ident_final, bip_to_ml e id_side gen_side, Onone)
 
   | Eassert e -> Oassert (bip_to_ml e id_side gen_side)
 
-  | Ematch (id, cases) ->
-    Omatch (id, List.map (fun case -> bip_to_ml_case case) cases)
+  | Ematch (ident, cases) ->
+    let ident_final = add_side_to_id ident id_side in
+    Omatch (ident_final, List.map (fun case -> bip_to_ml_case case) cases)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   

@@ -93,7 +93,8 @@ rule next_tokens = parse
   | "!"     { DEREF }
   | "()"    { CST Cunit }
 
-  | '|'     { PIPE }       
+  | '|'     { CASE }  
+  | "<|>"   { PIPE }     
   | "|_"    { LFLOOR }      
   | "_|"    { RFLOOR }      
   | "."     { DOT }
@@ -156,7 +157,8 @@ and string = parse
     | RFLOOR -> fprintf fmt "_|"
     | REF -> fprintf fmt "ref"
     | PLUS -> fprintf fmt "+"
-    | PIPE -> fprintf fmt "|"
+    | CASE -> fprintf fmt "|"
+    | PIPE -> fprintf fmt "<|>" 
     | NOT -> fprintf fmt "not"
     | LOGICAND -> fprintf fmt "&&"
     | LOGICOR -> fprintf fmt "||"
@@ -227,7 +229,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        eprintf "@[%a@]@." pp_token token;
+        (* eprintf "@[%a@]@." pp_token token; *)
       if token <> EOF then loop () in
     loop ()
 

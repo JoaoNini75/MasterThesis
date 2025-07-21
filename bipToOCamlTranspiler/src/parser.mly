@@ -10,12 +10,14 @@
 %token <Ast_core.binop> CMP
 %token <string> IDENT
 %token <string> SPEC
+%token CASE
 %token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
 %token EOF
 %token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
 
 /* priorities and associativities */
+%nonassoc ARROW
 %nonassoc MATCH WITH
 %nonassoc IN
 %left PIPE
@@ -25,6 +27,7 @@
 %nonassoc CMP
 %left PLUS MINUS
 %left TIMES DIV MOD
+%nonassoc CASE
 %nonassoc unary_minus
 %nonassoc REF DEREF
 
@@ -42,12 +45,19 @@ file:
 decl:
 | sp = spec
     { Espec sp }
-| is_rec = fun_rec f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
-    { 
-      match fr with
-      | None -> Edef (f, is_rec, x, None, None, b, sp)
-      | Some (tp, spop) -> Edef (f, is_rec, x, Some tp, spop, b, sp)
-    }
+| edef = def
+    { Edef edef }
+;
+
+def:
+| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, true, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
+| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, false, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
 ;
 
 block:
@@ -99,14 +109,23 @@ expr:
     { Eapp (id, args) }
 | ASSERT LP e = expr RP
     { Eassert (e) }
-| LP MATCH id = ident WITH PIPE cases = separated_list(PIPE, case) RP
+| MATCH id = ident WITH cases = case_list
     { Ematch (id, cases) }
+| efun = def
+    { Efun efun }
 | LP e = expr RP
     { e }
 ;
 
+case_list:
+| c = case
+    { [c] }
+| c = case cl = case_list
+    { c :: cl }
+;
+
 case:
-| LP ptrn = pattern ARROW e = expr RP
+| CASE ptrn = pattern ARROW e = expr %prec ARROW
     { (ptrn, e) }
 ;
 
@@ -131,11 +150,6 @@ fun_ret:
     { tp, Some SOfloor }
 | COLON tp1 = bip_type PIPE tp2 = bip_type
     { tp1, Some SOpipe }
-;
-
-fun_rec:
-| LET REC { true }
-| LET { false }
 ;
 
 pattern:
