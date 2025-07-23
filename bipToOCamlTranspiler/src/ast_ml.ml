@@ -12,7 +12,8 @@ type oexpr =
   | Ounop of    unop * oexpr
   | Obinop of   binop * oexpr * oexpr
   | Olet of     ident * oexpr * oexpr
-  | Ofun of     odef
+  | Ofun of     ident * bool (* rec *) * parameter list * bip_type option
+                * bool (* return pair *) * oexpr list * spec * oexpr
   | Oapp of     ident * oexpr list
   | Oif of      oexpr * oexpr * oexpr list * oexpr list
   | Ofor of     ident * oexpr * oexpr * spec option * oexpr list  

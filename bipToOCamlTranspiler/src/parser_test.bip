@@ -1,25 +1,21 @@
 let funs_nested (x) = begin
-  let fun2 (i) = begin
-    i * 2
+  let fun_inner (i) = begin
+		let i = ref 0 in
+		while !i < 3 do
+			i := !i + 2;
+			i := !i - 1
+		done;
+		!i
   end
-	(* current correct parsing *)
-	; 
+	(*@ ensures true *)
+	in
 
-  fun2 (x)
+  fun_inner (x)
 end
 (*@ ensures true *) 
 
-(* let funs_nested (x) = begin
-  let fun2 (i) =
-    i * 2
-	(* target correct parsing. being and end? *)
-	in 
-  fun2 (x)
-end
-(*@ ensures true *) *)
 
-
-(*let match_test (x : int) : string = begin
+let match_test (x : int) : string = begin
   match x with 
 	| 0 -> "zero"
 	| 1 -> "one"
@@ -27,17 +23,17 @@ end
 end
 (*@ ensures true *) 
 
-let match_test (|_ x : int _|) : |_ int _| = begin
-    let a = 1 <|> 1 in
+let match_test2 (|_ x : int _|) : |_ int _| = begin
+	let a = 1 <|> 1 in
 
-    let b = |_ (
-			match x with
-			| 0 -> 10
-			| 1 -> 11
-			| _ -> -1 
-			) _| in
+	let b = |_ (
+		match x with
+		| 0 -> 10
+		| 1 -> 11
+		| _ -> -1 
+	) _| in
 
-    a + b <|> a + b
+	a + b <|> a + b
 end
 (*@ ensures true *)
 
@@ -55,8 +51,8 @@ end
 
 
 let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
-	let x2 = y1 * 2 | y2 = y1 * 2 + 1 in
-	let y2 = x2 + 1 | x2 = y2 - 1 in
+	let x2 = y1 * 2 <|> y2 = y1 * 2 + 1 in
+	let y2 = x2 + 1 <|> x2 = y2 - 1 in
 	|_ x2 + y2 _|
 end
 (*@ requires x1_l = x1_r && y1_l = y1_r
@@ -69,11 +65,10 @@ let bilateral_conditional (|_c : bool _|) : |_int_| = begin
 end
 (*@ requires c_l <-> c_r
     ensures  match result with (l_res, r_res) -> l_res = r_res *)
-(* requires c =:= c *)
 
 let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
 	let i = |_ ref 0 _| in
-	let j = ref 0 | ref c in
+	let j = ref 0 <|> ref c in
 	let x = |_ ref 0 _| in
 
 	while |_ !i < n _| do
@@ -81,8 +76,8 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
             invariant !j_r = !i_r * b_r + c_r
             invariant !x_l = !x_r 
             variant n_l - !i_l *)
-		j := !i * b + c | x := !x + !j;
-		x := !x + !j    | j := !j + b;
+		j := !i * b + c <|> x := !x + !j;
+		x := !x + !j    <|> j := !j + b;
 		i := |_ !i + 1 _|
 	done;
 
@@ -91,6 +86,7 @@ end
 (*@ requires b_l = b_r && c_l = c_r && n_l = n_r
     ensures  match result with (l_res, r_res) -> l_res = r_res *) 
 
+(*
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
    0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
    
@@ -139,8 +135,8 @@ let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
 	|_ !z _|
 end
 (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
-    ensures  match result with (l_res, r_res) -> l_res > r_res *) *)
-
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+*)
 
 
 (*let rec bip_short (b : int | b : int) : int | int = begin

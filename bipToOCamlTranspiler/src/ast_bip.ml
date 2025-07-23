@@ -12,7 +12,8 @@ type expr =
   | Ebinop of     binop * expr * expr
   | Elet of       ident * expr * expr
   | Eletpipe of   ident * expr * ident * expr * expr
-  | Efun of       def
+  | Efun of       ident * bool (* rec *) * parameter list * bip_type option
+                  * special_op option * expr list * spec * expr
   | Eapp of       ident * expr list
   | Eif of        expr * expr list * expr list
   | Efor of       ident * expr * expr * spec option * expr list  

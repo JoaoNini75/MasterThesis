@@ -45,19 +45,8 @@ file:
 decl:
 | sp = spec
     { Espec sp }
-| edef = def
+| edef = def_outer
     { Edef edef }
-;
-
-def:
-| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, true, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
-| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, false, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
 ;
 
 block:
@@ -111,8 +100,8 @@ expr:
     { Eassert (e) }
 | MATCH id = ident WITH cases = case_list
     { Ematch (id, cases) }
-| efun = def
-    { Efun efun }
+| efun = def_inner
+    { efun }
 | LP e = expr RP
     { e }
 ;
@@ -127,6 +116,28 @@ case_list:
 case:
 | CASE ptrn = pattern ARROW e = expr %prec ARROW
     { (ptrn, e) }
+;
+
+def_outer:
+| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, true, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
+| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, false, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
+;
+
+def_inner:
+| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL body = block sp = spec IN after = expr
+    { match fr with
+      | None -> Efun (f, true, x, None, None, body, sp, after)
+      | Some (tp, spop) -> Efun (f, true, x, Some tp, spop, body, sp, after) }
+| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL body = block sp = spec IN after = expr
+    { match fr with
+      | None -> Efun (f, false, x, None, None, body, sp, after)
+      | Some (tp, spop) -> Efun (f, false, x, Some tp, spop, body, sp, after) }
 ;
 
 parameter_core:
