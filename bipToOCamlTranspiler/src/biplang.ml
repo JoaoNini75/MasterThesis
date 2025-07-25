@@ -302,7 +302,7 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     Oapp (ident, (List.map (fun e -> bip_to_ml e None gen_side) expr_list))
 
   | Eif (Efloor e_cnd, el_then, el_else) ->
-    ( match gen_side with
+    ( match gen_side with 
       | None ->
         let oe_cnd_l = bip_to_ml e_cnd (Some Left) gen_side
         and oe_cnd_r = bip_to_ml e_cnd (Some Right) gen_side
@@ -498,7 +498,15 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     Oseq (bip_to_ml e1 (Some Left) gen_side, bip_to_ml e2 (Some Right) gen_side) 
 
 
-let rec pp_unop fmt unop e =
+let rec pp_oapp_core fmt oapp depth =
+  let (id, oexpr_list) = oapp in
+  fprintf fmt "%s" id.id;
+  List.iter (fun oe -> 
+    fprintf fmt " (%a)" 
+    (fun fmt _ -> pp_oexpr fmt oe depth true)
+    oe) oexpr_list
+
+and pp_unop fmt unop e =
   let pp_unop_aux fmt s =
     match unop with
       | Uneg -> fprintf fmt "-"
@@ -630,7 +638,12 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Olet (id, value, body) -> 
     fprintf fmt "\n%slet %s = " (indent depth) id.id;
-    pp_oexpr fmt value depth true;
+
+    ( match value with 
+      | Oapp (id, oexpr_list) -> pp_oapp_core fmt (id, oexpr_list) depth
+      | _ -> pp_oexpr fmt value depth true
+    );
+    
     fprintf fmt " in";
     pp_oexpr fmt body depth not_last_elem
 
@@ -749,24 +762,12 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Oapp (id, oexpr_list) -> 
     let indentation = (indent depth) in
     let semicolon_str = if not_last_elem then ";" else "" in
+    let oapp = (id, oexpr_list) in
 
-    (* TODO: adapt printing when app comes after a let, ex: let res = app (x, y, z) 
-      There are 3 cases: 
-      as value in let: no indentation, no semicolon
-      mid of function: ye indentation, ye semicolon
-      end of function: ye indentation, no semicolon
-
-      right now, only mid of fun is correct
-    *)
-
-    fprintf fmt "\n%s%s" indentation id.id;
-
-    List.iter (fun oe -> 
-      fprintf fmt " (%a)" 
-      (fun fmt _ -> pp_oexpr fmt oe depth true)
-      oe) oexpr_list;
-    
-    fprintf fmt "%s" semicolon_str
+    fprintf fmt "\n%s%a%s" 
+      indentation 
+      (fun fmt _ -> pp_oapp_core fmt oapp depth) oapp
+      semicolon_str
 
   | Oassert (oe) ->
     let indentation = (indent depth) in
