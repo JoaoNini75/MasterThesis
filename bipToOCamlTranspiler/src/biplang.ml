@@ -81,39 +81,10 @@ let get_type_str (bip_type_opt : Ast_core.bip_type option) =
     | NONE -> ""
 
 
-let pp_special_op fmt special_op_opt =
-  match special_op_opt with 
-  | None -> fprintf fmt "normal"
-  | Some SOfloor -> fprintf fmt "floored"
-  | Some SOpipe -> fprintf fmt "piped"
-
 let pp_spec_opt spec_opt =
   match spec_opt with 
   | None -> ""
   | Some spec -> spec.text 
-
-let pp_type fmt bip_type =
-  match bip_type with
-  | INT -> fprintf fmt "int"
-  | BOOL -> fprintf fmt "bool"
-  | STRING -> fprintf fmt "string"
-  | NONE -> fprintf fmt "None"
-
-let pp_type_option fmt bip_type_opt =
-  match bip_type_opt with
-  | None -> fprintf fmt "implicit"
-  | Some bt -> pp_type fmt bt
-
-let pp_constant fmt constant =
-  let s =
-    match constant with
-    | Cint  i -> string_of_int i
-    | Cbool b -> string_of_bool b
-    | Cstring str -> str
-    | Cnone -> "Cnone"
-    | Cunit -> "Cunit"
-  in 
-    fprintf fmt "%s (constant) " s
 
 let get_pattern_str (ptrn: pattern) : string =
   match ptrn with
@@ -202,7 +173,6 @@ and bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
     (ident, is_rec, param_list, bto, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op)
 
-(* not allowing pipes or floors for now*)
 and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase = 
   let (ptrn, e) = case in
   (ptrn, bip_to_ml e None None)
@@ -506,110 +476,6 @@ let rec pp_oapp_core fmt oapp depth =
     (fun fmt _ -> pp_oexpr fmt oe depth true)
     oe) oexpr_list
 
-and pp_unop fmt unop e =
-  let pp_unop_aux fmt s =
-    match unop with
-      | Uneg -> fprintf fmt "-"
-      | Unot -> fprintf fmt "not"
-      | Uref -> fprintf fmt "ref"
-      | Uderef -> fprintf fmt "!" 
-  in
-  fprintf fmt "(unop %a) " pp_unop_aux unop;
-  pp_expr fmt e
-and pp_binop fmt binop e1 e2 =
-  let s =
-    match binop with
-      | Badd -> "add"
-      | Bsub -> "sub"
-      | Bmul -> "mul" 
-      | Bdiv -> "div" 
-      | Bmod -> "mod"   
-      | Beq -> "eq" 
-      | Bneq -> "neq" 
-      | Blt -> "<" 
-      | Ble -> "<=" 
-      | Bgt -> ">" 
-      | Bge -> ">="  
-      | Band -> "and" 
-      | Bor -> "or" 
-      | Bspeq -> "<->"
-  in
-    fprintf fmt "(binop %s) " s;
-    pp_expr fmt e1;
-    pp_expr fmt e2
-and pp_expr fmt expr = 
-  match expr with
-  | Eident id -> fprintf fmt "%s (expr.id) " id.id
-  | Ecst c -> pp_constant fmt c
-  | Eunop (op, e) -> pp_unop fmt op e
-  | Ebinop (op, e1, e2) -> pp_binop fmt op e1 e2
-  | Elet (id, value, body) -> 
-    fprintf fmt "\n(let) %s = " id.id;
-    pp_expr fmt value;
-    fprintf fmt "in";
-    pp_expr fmt body
-  | Eletpipe (id1, value1, id2, value2, body) -> 
-    fprintf fmt "not_implemented" 
-  | Efun (id, is_rec, param_list, fun_type, special_op_opt, expr_list, spec_opt, after) ->
-    fprintf fmt "not_implemented" 
-  | Eapp (id, expr_list) -> 
-    fprintf fmt "\n(app) id = %s, expr_list: " id.id;
-    List.iter (fun expr -> pp_expr fmt expr) expr_list
-  | Eif (cnd, s1, s2) -> 
-    fprintf fmt "\n(if) "; 
-    pp_expr fmt cnd; 
-    fprintf fmt "\n(then) ";
-    List.iter (fun expr -> pp_expr fmt expr) s1;
-    fprintf fmt "\n(else) ";
-    List.iter (fun expr -> pp_expr fmt expr) s2
-  | Efor (id, value, e_to, spec_opt, body) -> 
-    fprintf fmt "\n(for) id = %s, val = " id.id; 
-    pp_expr fmt value;     
-    fprintf fmt "to ";         
-    pp_expr fmt e_to; 
-    fprintf fmt "do"; 
-    fprintf fmt "%s" (pp_spec_opt spec_opt);
-    List.iter (fun expr -> pp_expr fmt expr) body;
-    fprintf fmt "done";
-  | Ewhile (cnd, spec_opt, body) -> 
-    fprintf fmt "\n(while) "; 
-    pp_expr fmt cnd; 
-    fprintf fmt "do"; 
-    fprintf fmt "%s" (pp_spec_opt spec_opt);
-    List.iter (fun expr -> pp_expr fmt expr) body;
-    fprintf fmt "done";
-  | Ewhilecnd (cnd1, cnd2, ag1, ag2, spec, body) ->
-    fprintf fmt "not_implemented"
-  | Eassert (e) ->
-    fprintf fmt "not_implemented"
-  | Ematch (e, cases) ->
-    fprintf fmt "not_implemented"  
-  | Eassign (id, e) -> 
-    fprintf fmt "\n(assign) %s := " id.id;
-    pp_expr fmt e
-  | Efloor e -> 
-    fprintf fmt "\n(floor) |_ ";
-    pp_expr fmt e;
-    fprintf fmt "_| "
-  | Epipe (e1, e2) -> 
-    fprintf fmt "\n(pipe) ";
-    pp_expr fmt e1;
-    fprintf fmt " | ";
-    pp_expr fmt e2
-and pp_def fmt def =
-  let (id, is_rec, param_list, fun_type, special_op_opt, expr_list, spec) = def in
-  fprintf fmt "\n\n(fun) id: %s, type: %a, %a (def.id_list): " 
-  id.id pp_type_option fun_type pp_special_op special_op_opt;
-  
-  List.iter (
-    fun (ident, bip_type_opt, special_op_opt) ->
-      fprintf fmt "%s (%a, %a), " 
-      ident.id pp_type_option bip_type_opt pp_special_op special_op_opt
-  ) param_list;
-
-  List.iter (fun expr -> pp_expr fmt expr) expr_list;
-  fprintf fmt "%s" spec.text
-
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
   
@@ -626,9 +492,12 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
     ( if not_last_elem 
       then pp_oexpr fmt e depth not_last_elem
-      else pp_oexpr fmt e depth true );
+      else pp_oexpr fmt e depth true 
+    );
 
-    if operator_str = "ref (" || operator_str = "not (" then fprintf fmt ")" else ()
+    if operator_str = "ref (" || operator_str = "not (" 
+    then fprintf fmt ")"
+    else ()
 
   | Obinop (op, e1, e2) -> 
     fprintf fmt "%s" last_elem_str;
@@ -650,7 +519,6 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Ofun (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after) ->
     let ofun = Ofun (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after) in
     pp_fun_ml fmt ofun depth not_last_elem
-    (* TODO add depth *)
   
   | Oif (cnd_l, cnd_r, s1, s2) -> 
     let indentation = (indent depth) in
@@ -880,14 +748,6 @@ and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth not_last_elem =
 let pp_spec_ml fmt (sp: spec) =
   fprintf fmt "(*@%s*)\n\n" sp.text
 
-let pp_file fmt (file : Ast_bip.file) =
-  fprintf fmt "" (*"\n\nParser output:";
-  List.iter (pp_def fmt) file*)
-
-let pp_ast ast =
-  eprintf "@[%a@]@." pp_file ast
-
-
 let pp_file_ml fmt (file : Ast_ml.ofile) =
   (*fprintf fmt "\n\nOCaml code:\n\n";*)
   List.iter (fun odecl ->
@@ -920,8 +780,6 @@ let () =
   try
     let f = Parser.file Lexer.next_token lb in
     close_in c;
-
-    pp_ast f; (* print ast *)
 
     let ofile = bip_to_ml_file f in
     pp_ml ofile; (* print OCaml code to terminal *)
