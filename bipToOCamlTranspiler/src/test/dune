@@ -1,7 +1,7 @@
 ;; test/dune
 
 ;; For each test, we declare a rule that:
-;;  1. Depends on the .bip input, the .expected output, and your exe
+;;  1. Depends on the .bip input and the .expected output
 ;;  2. Runs biplang.exe on the .bip, capturing stdout to .actual
 ;;  3. Diffs .expected vs .actual under the @runtest alias
 ;; If they differ, the rule fails; if they’re the same, the rule succeeds quietly.
@@ -12,18 +12,11 @@
   arith_and_fun_sig.bip
   arith_and_fun_sig.expected)
  (action
-	(progn
+		(progn
 
-		(chdir .. (progn 
-			;; 1) clean
-			(run dune clean)
+			;; exec
+			(with-stdout-to arith_and_fun_sig.actual
+				(run dune exec .././biplang.exe arith_and_fun_sig.bip))
 
-			;; 2) build
-			(run dune build)))
-
-    ;; 3) exec
-		(with-stdout-to arith_and_fun_sig.actual
-			(run dune exec .././biplang.exe arith_and_fun_sig.bip))
-
-    ;; 4) diff expected vs actual
-    (diff arith_and_fun_sig.expected arith_and_fun_sig.actual))))
+			;; diff 
+			(run diff arith_and_fun_sig.expected arith_and_fun_sig.actual))))
