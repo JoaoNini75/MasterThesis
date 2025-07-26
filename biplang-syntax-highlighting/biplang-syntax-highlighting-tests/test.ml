@@ -1,7 +1,7 @@
-let x = ref 2 in 
-| <-> |_ _|
+let bip (a: int <|> a: int) =
 
-let bip (a: int | a: int) =
+    let x = |_ ref 2 _| in
+    
     match a with
     | 1 -> "1"
     | 2 -> "3"

@@ -429,9 +429,9 @@
     "operators": {
       "patterns": [
         {
-          "comment": "special equals",
+          "comment": "bip pipe",
           "name": "keyword.other.ocaml",
-          "match": "<->"
+          "match": "<\\|>"
         },
         {
           "comment": "biplang custom pipes (|_ and _|)",

@@ -2,7 +2,7 @@
   "name": "biplang-syntax-highlighting",
   "displayName": "BipLang Syntax Highligthing",
   "description": "A syntax highlighter for the biprograms language (BipLang).",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.100.0"
   },
