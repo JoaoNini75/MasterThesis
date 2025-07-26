@@ -9,10 +9,19 @@ open Ast_core
 
 type side = Left | Right
 
-let usage = "usage: biplang [options] file.bip"
-(* manual use:
-  dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip *)
-(* run tests: dune test *)
+let usage = "
+  manual use:
+    dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip 
+
+  run tests: 
+    dune test
+
+    (if lock error):
+    dune clean
+    dune build biplang.exe
+    rm -f _build/.lock
+    dune test 
+  "
 
 let indent_spaces = 2
 let parse_only = ref false
