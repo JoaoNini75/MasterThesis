@@ -10,8 +10,12 @@ type spec = { loc: location; text: string; } (* Gospel specifications *)
 
 type bip_type = BOOL | INT | STRING | NONE
 type special_op = SOfloor | SOpipe  
-type parameter = ident * bip_type option * special_op option
-  
+
+type parameter = 
+  | Punit
+  | Param of  ident * bip_type option 
+              * special_op option
+
 type unop =
   | Uneg    (* -e *)
   | Unot    (* not e *)
@@ -25,7 +29,6 @@ type binop =
 
 type constant =
   | Cnone
-  | Cunit
   | Cint of     int
   | Cbool of    bool
   | Cstring of  string

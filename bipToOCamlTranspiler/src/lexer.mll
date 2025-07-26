@@ -80,8 +80,6 @@ rule next_tokens = parse
   | "||"    { LOGICOR }
   | '('     { LP }
   | ')'     { RP }
-  | '['     { LSQ }
-  | ']'     { RSQ }
   | ','     { COMMA }
   | ':'     { COLON }
   | ';'     { SEMICOLON }
@@ -91,14 +89,13 @@ rule next_tokens = parse
   | '"'     { CST (Cstring (string lexbuf)) }
   | ":="    { ASSIGN }
   | "!"     { DEREF }
-  | "()"    { CST Cunit }
+  | "()"    { UNIT }
 
   | '|'     { CASE }  
   | "<|>"   { PIPE }     
   | "|_"    { LFLOOR }      
   | "_|"    { RFLOOR }      
   | "."     { DOT }
-  | "<->"   { SPEC_EQUAL }  
   | "->"    { ARROW }
   | "_"     { WILDCARD }
 
@@ -151,8 +148,6 @@ and string = parse
     | WHILE -> fprintf fmt "while"
     | TIMES -> fprintf fmt "times"
     | THEN -> fprintf fmt "then"
-    | SPEC_EQUAL -> fprintf fmt "<->"
-    | RSQ -> fprintf fmt "]"
     | RP -> fprintf fmt ")"
     | RFLOOR -> fprintf fmt "_|"
     | REF -> fprintf fmt "ref"
@@ -164,7 +159,6 @@ and string = parse
     | LOGICOR -> fprintf fmt "||"
     | MOD -> fprintf fmt "mod"
     | MINUS -> fprintf fmt "-"
-    | LSQ -> fprintf fmt "["
     | LP -> fprintf fmt "("
     | LFLOOR -> fprintf fmt "|_"
     | LET -> fprintf fmt "let"
@@ -190,10 +184,10 @@ and string = parse
         | Cbool b -> string_of_bool b
         | Cstring str -> str
         | Cnone -> "Cnone"
-        | Cunit -> "Cunit"
       in
       fprintf fmt "%s (const)" s
 
+    | UNIT -> fprintf fmt "unit"
     | COMMA -> fprintf fmt ","
     | COLON -> fprintf fmt ":"
     | SEMICOLON -> fprintf fmt ";"
@@ -229,7 +223,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        (* eprintf "@[%a@]@." pp_token token; *)
+         eprintf "@[%a@]@." pp_token token; 
       if token <> EOF then loop () in
     loop ()
 

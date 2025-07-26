@@ -6,6 +6,7 @@
 open Ast_core
 
 type expr =
+  | Eunit 
   | Eident of     ident
   | Ecst of       constant
   | Eunop of      unop * expr

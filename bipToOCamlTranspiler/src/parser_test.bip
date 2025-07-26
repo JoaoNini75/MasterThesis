@@ -1,9 +1,14 @@
 let empty_args_test () = begin
-	4 + 4
+	8 * 7
 end
 (*@ ensures true *)
 
-(*
+let empty_args_apply_test (x) = begin
+	empty_args_test ()
+end
+(*@ ensures true *)
+
+
 let app_fun (x : int) = begin
 	x
 end
@@ -49,11 +54,11 @@ let funs_nested (x) = begin
 end
 (*@ ensures true *) 
 
-
-let match_test (x : int) : string = begin
+(*
+let match_test (x : int, y : int) : string = begin
   match x with 
 	| 0 -> "zero"
-	| 1 -> "one"
+	| y -> "y"
 	| _ -> "other"
 end
 (*@ ensures true *) 

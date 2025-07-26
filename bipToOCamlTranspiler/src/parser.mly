@@ -11,9 +11,9 @@
 %token <string> IDENT
 %token <string> SPEC
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR SPEC_EQUAL
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR
 %token EOF
-%token LP RP LSQ RSQ COMMA EQUAL COLON SEMICOLON DOT BEGIN END
+%token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
 
 /* priorities and associativities */
@@ -49,6 +49,35 @@ decl:
     { Edef edef }
 ;
 
+def_outer:
+| LET REC f = ident x = param_list fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, true, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
+| LET     f = ident x = param_list fr = fun_ret? EQUAL b = block sp = spec
+    { match fr with
+      | None -> (f, false, x, None, None, b, sp)
+      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
+;
+
+def_inner:
+| LET REC f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec IN after = expr
+    { match fr with
+      | None -> Efun (f, true, x, None, None, body, sp, after)
+      | Some (tp, spop) -> Efun (f, true, x, Some tp, spop, body, sp, after) }
+| LET     f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec IN after = expr
+    { match fr with
+      | None -> Efun (f, false, x, None, None, body, sp, after)
+      | Some (tp, spop) -> Efun (f, false, x, Some tp, spop, body, sp, after) }
+;
+
+param_list:
+| UNIT
+    { [Punit] }
+| LP params = separated_list(COMMA, parameter) RP
+    { params }
+;
+
 block:
 | BEGIN b = block_core END
     { b }
@@ -62,6 +91,8 @@ block_core:
 ;
 
 expr:
+| UNIT 
+    { Eunit }
 | c = CST
     { Ecst c }
 | id = ident
@@ -94,7 +125,7 @@ expr:
     { Efloor (e) }
 | e1 = expr PIPE e2 = expr
     { Epipe (e1, e2) }
-| id = ident LP args = separated_list(COMMA, expr) RP
+| id = ident args = app_body 
     { Eapp (id, args) }
 | ASSERT LP e = expr RP
     { Eassert (e) }
@@ -104,6 +135,13 @@ expr:
     { efun }
 | LP e = expr RP
     { e }
+;
+
+app_body:
+| UNIT
+    { [Eunit] }
+| LP args = separated_list(COMMA, expr) RP
+    { args }
 ;
 
 case_list:
@@ -118,28 +156,6 @@ case:
     { (ptrn, e) }
 ;
 
-def_outer:
-| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, true, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
-| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, false, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
-;
-
-def_inner:
-| LET REC f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL body = block sp = spec IN after = expr
-    { match fr with
-      | None -> Efun (f, true, x, None, None, body, sp, after)
-      | Some (tp, spop) -> Efun (f, true, x, Some tp, spop, body, sp, after) }
-| LET     f = ident LP x = separated_list(COMMA, parameter) RP fr = fun_ret? EQUAL body = block sp = spec IN after = expr
-    { match fr with
-      | None -> Efun (f, false, x, None, None, body, sp, after)
-      | Some (tp, spop) -> Efun (f, false, x, Some tp, spop, body, sp, after) }
-;
-
 parameter_core:
 | id = ident COLON? tp = bip_type?
     { id, tp }
@@ -147,11 +163,11 @@ parameter_core:
 
 parameter:
 | pc = parameter_core
-    { let (id, tp) = pc in (id, tp, None) }
+    { let (id, tp) = pc in Param (id, tp, None) }
 | LFLOOR pc = parameter_core RFLOOR
-    { let (id, tp) = pc in (id, tp, Some SOfloor) }
+    { let (id, tp) = pc in Param (id, tp, Some SOfloor) }
 | pc1 = parameter_core PIPE pc2 = parameter_core
-    { let (id, tp) = pc1 in (id, tp, Some SOpipe) }
+    { let (id, tp) = pc1 in Param (id, tp, Some SOpipe) }
 ;
 
 fun_ret:

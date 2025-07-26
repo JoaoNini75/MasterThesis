@@ -44,7 +44,6 @@ let get_const_str (const : Ast_core.constant) =
   | Cbool b -> string_of_bool b
   | Cstring str -> "\"" ^ str ^ "\""
   | Cnone -> "Cnone"
-  | Cunit -> "()"
 
 let get_unop_str (unop : Ast_core.unop) =
   match unop with
@@ -181,6 +180,8 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
                                 (gen_side : side option) : Ast_ml.oexpr =
 
   match e with  
+
+  | Eunit -> Ounit
 
   | Eident ident -> Oident (add_side_to_id ident id_side)
 
@@ -471,16 +472,23 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 let rec pp_oapp_core fmt oapp depth =
   let (id, oexpr_list) = oapp in
   fprintf fmt "%s" id.id;
-  List.iter (fun oe -> 
-    fprintf fmt " (%a)" 
-    (fun fmt _ -> pp_oexpr fmt oe depth true)
-    oe) oexpr_list
+
+  if List.nth oexpr_list 0 = Ounit then (
+    fprintf fmt " ()"
+  ) else (
+    List.iter (fun oe -> 
+      fprintf fmt " (%a)" 
+      (fun fmt _ -> pp_oexpr fmt oe depth true)
+      oe) oexpr_list
+  )
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
   
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
+
+  | Ounit -> fprintf fmt "()"
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
@@ -688,25 +696,30 @@ and pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec de
 
   fprintf fmt "%s%slet %s%s" inner_fun indentation is_rec_str id.id;
 
-  if param_list = [] then fprintf fmt " ()" 
-  else
+  if List.nth param_list 0 = Punit then (
+    fprintf fmt " ()"
+  ) else (
     List.iter (
-      fun (ident, param_type, special_op_opt) ->
-        let param_type_str = get_type_str param_type in
+      fun (param) ->
+        match param with
+        | Punit -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
+        | Param (ident, param_type, special_op_opt) -> 
+          let param_type_str = get_type_str param_type in
 
-        match special_op_opt with 
-        | None -> (
-          if param_type_str = "" 
-          then fprintf fmt " (%s)" ident.id
-          else fprintf fmt " (%s : %s)" ident.id param_type_str )
-        | _ -> (
-          let id1 = ident.id ^ "_l" in
-          let id2 = ident.id ^ "_r" in
+          match special_op_opt with 
+          | None -> (
+            if param_type_str = "" 
+            then fprintf fmt " (%s)" ident.id
+            else fprintf fmt " (%s : %s)" ident.id param_type_str )
+          | _ -> (
+            let id1 = ident.id ^ "_l" in
+            let id2 = ident.id ^ "_r" in
 
-          if param_type_str = "" 
-          then fprintf fmt " (%s, %s)" id1 id2
-          else fprintf fmt " (%s : %s) (%s : %s)" id1 param_type_str id2 param_type_str ) 
+            if param_type_str = "" 
+            then fprintf fmt " (%s, %s)" id1 id2
+            else fprintf fmt " (%s : %s) (%s : %s)" id1 param_type_str id2 param_type_str ) 
     ) param_list;
+  );
 
   if fun_type_str = "" then (
     fprintf fmt " ="
