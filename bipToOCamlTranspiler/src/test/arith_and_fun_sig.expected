@@ -1,0 +1,20 @@
+let app (int1 : int) (int2 : int) : int =
+  int1 + int2
+(*@ ensures true *)
+
+let app2 (int1) (int2 : int) =
+  int1 * int2
+(*@ ensures true *)
+
+let app3 (int1 : int) (int2) =
+  int1 - int2
+(*@ ensures true *)
+
+let app4 (int1 : int) (int2 : int) : int =
+  int1 / int2
+(*@ ensures true *)
+
+let app5 (int1) (int2) =
+  int1 mod int2
+(*@ ensures true *)
+

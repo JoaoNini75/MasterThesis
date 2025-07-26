@@ -54,7 +54,7 @@ let funs_nested (x) = begin
 end
 (*@ ensures true *) 
 
-(*
+
 let match_test (x : int, y : int) : string = begin
   match x with 
 	| 0 -> "zero"
@@ -114,9 +114,9 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 end
 (*@ requires b_l = b_r && c_l = c_r && n_l = n_r
     ensures  match result with (l_res, r_res) -> l_res = r_res *) 
-*)
 
-(*
+
+
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
    0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
    
@@ -166,13 +166,14 @@ let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
 end
 (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
     ensures  match result with (l_res, r_res) -> l_res > r_res *) 
-*)
 
 
-(*let rec bip_short (b : int <|> b : int) : int <|> int = begin
+
+let rec bip_short (b : int <|> b : int) : int <|> int = begin
     let x = ref 0 <|> ref 1 in
     !x <|> !x 
 end
+(*@ ensures true *)
 
 let bip (|_b : int_|) : |_int_| = begin
     (* comment1 *)
@@ -181,7 +182,7 @@ let bip (|_b : int_|) : |_int_| = begin
     let x = |_ ref 0 _| in
     |_ !x _|
 end
-
+(*@ ensures true *)
 
 let bip_if_long (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
     let x2 = |_ x1 * 2 _| in
@@ -192,7 +193,7 @@ let bip_if_long (|_ x1 : int _|, |_ y1 : bool _|) : |_ int _| = begin
       |_ x2 - y2 _|
     end
 end
-
+(*@ ensures true *)
 
 let semicolon_assign () = begin
     let a = ref 0 in
@@ -200,6 +201,7 @@ let semicolon_assign () = begin
     a := !a + 1;
     !a
 end
+(*@ ensures true *)
 
 let bip2 (x, y) = begin
     let z = |_ ref -1 _| in
@@ -207,6 +209,7 @@ let bip2 (x, y) = begin
     z := |_ !z + 1 _|;
     b
 end
+(*@ ensures true *)
 
 let bip3 (x : int, y) = begin
     let z = ref x in
@@ -215,6 +218,7 @@ let bip3 (x : int, y) = begin
     done;
     !z
 end
+(*@ ensures true *)
 
 let fact_iter (n) = begin
 	if n <= 1 
@@ -229,13 +233,14 @@ let fact_iter (n) = begin
             !res
 		end
 end
+(*@ ensures true *)
 
 let bip_if2 (|_c : bool _|) : |_int_| = begin
     if |_c_| 
     then begin |_1_| end
     else begin |_0_| end
 end
-
+(*@ ensures true *)
 
 let semicolon_test () = begin
     let x = ref 0 in
@@ -243,6 +248,7 @@ let semicolon_test () = begin
     x := 2;
     x
 end
+(*@ ensures true *)
 
 let gcd_iter (a0, b0) = begin 
     let b = ref b0 in
@@ -254,6 +260,7 @@ let gcd_iter (a0, b0) = begin
     done;
     !a
 end
+(*@ ensures true *)
 
 let p2 () = begin
     let x = |_ ref 1 _| in
@@ -262,13 +269,16 @@ let p2 () = begin
     let z = ref 22 in
     !z
 end
+(*@ ensures true *)
 
 let app2 (arg1 : int, arg2 : int) : int = begin
 	arg1 * arg2
 end
+(*@ ensures true *)
 
 let app () = begin
 	let a = ref 4 in
 	let res = fact_iter (!a * 5) in
 	app2 (1 * !a, 2 * !a)
-end*)
+end
+(*@ ensures true *)

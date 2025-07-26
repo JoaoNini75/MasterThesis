@@ -10,7 +10,7 @@ open Ast_core
 type side = Left | Right
 
 let usage = "usage: biplang [options] file.bip"
-(* dune build && dune exec ./biplang.exe parser_test.bip *)
+(* dune build && dune exec ./biplang.exe manual_test.bip *)
 
 let indent_spaces = 2
 let parse_only = ref false
@@ -796,7 +796,7 @@ let () =
 
     let ofile = bip_to_ml_file f in
     pp_ml ofile; (* print OCaml code to terminal *)
-    write_ml_to_file "test.ml" ofile; (* print OCaml code to file *)
+    write_ml_to_file "manual_test_output.ml" ofile; (* print OCaml code to file *)
 
     if !parse_only then exit 0
   with
