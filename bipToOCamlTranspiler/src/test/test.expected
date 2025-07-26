@@ -1,0 +1,5 @@
+let app2 (arg1 : int) (arg2 : int) : int =
+  arg1 * arg2
+(*@ ensures true *)
+
+

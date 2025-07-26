@@ -1,12 +1,3 @@
-;(ocamllex
-;(modules lexer))
-;(menhir
-;(modules parser))
-;(executable
-;(name lexer)
-; (promote (until-clean))
-; (flags ()))
-
 (ocamllex
  (modules lexer))
 
@@ -18,5 +9,3 @@
  (libraries str)
  (promote (until-clean))
  (flags ()))
-
-

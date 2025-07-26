@@ -13,10 +13,17 @@
   arith_and_fun_sig.expected)
  (action
 		(progn
-
-			;; exec
 			(with-stdout-to arith_and_fun_sig.actual
 				(run dune exec .././biplang.exe arith_and_fun_sig.bip))
-
-			;; diff 
 			(run diff arith_and_fun_sig.expected arith_and_fun_sig.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  test.bip
+  test.expected)
+ (action
+		(progn
+			(with-stdout-to test.actual
+				(run dune exec .././biplang.exe test.bip))
+			(run diff test.expected test.actual))))

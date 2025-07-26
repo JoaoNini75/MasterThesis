@@ -10,7 +10,9 @@ open Ast_core
 type side = Left | Right
 
 let usage = "usage: biplang [options] file.bip"
-(* dune build && dune exec ./biplang.exe manual_test.bip *)
+(* manual use:
+  dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip *)
+(* run tests: dune test *)
 
 let indent_spaces = 2
 let parse_only = ref false
@@ -784,7 +786,7 @@ let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
   ) file
 
 let pp_ml (ofile : Ast_ml.ofile) =
-  eprintf "@[%a@]@." pp_file_ml ofile
+  printf "@[%a@]@." pp_file_ml ofile
 
 
 let () =
