@@ -27,3 +27,14 @@
 			(with-stdout-to test.actual
 				(run dune exec .././biplang.exe test.bip))
 			(run diff test.expected test.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  test2.bip
+  test2.expected)
+ (action
+		(progn
+			(with-stdout-to test2.actual
+				(run dune exec .././biplang.exe test2.bip))
+			(run diff test2.expected test2.actual))))
