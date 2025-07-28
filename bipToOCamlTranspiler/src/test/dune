@@ -4,37 +4,95 @@
 ;;  1. Depends on the .bip input and the .expected output
 ;;  2. Runs biplang.exe on the .bip, capturing stdout to .actual
 ;;  3. Diffs .expected vs .actual under the @runtest alias
-;; If they differ, the rule fails; if they’re the same, the rule succeeds quietly.
+
+;; If they differ, the rule fails;
+;; if they're the same, the rule succeeds quietly.
+
 
 (rule
  (alias runtest)
  (deps
-  arith_and_fun_sig.bip
-  arith_and_fun_sig.expected)
+  000_important.bip
+  000_important.expected)
  (action
 		(progn
-			(with-stdout-to arith_and_fun_sig.actual
-				(run dune exec .././biplang.exe arith_and_fun_sig.bip))
-			(run diff arith_and_fun_sig.expected arith_and_fun_sig.actual))))
+	 	(with-stdout-to 000_important.actual
+				(run dune exec .././biplang.exe 000_important.bip))
+	 	(run diff 000_important.expected 000_important.actual))))
 
 (rule
  (alias runtest)
  (deps
-  test.bip
-  test.expected)
+  001_arith_and_fun_sig.bip
+  001_arith_and_fun_sig.expected)
  (action
 		(progn
-			(with-stdout-to test.actual
-				(run dune exec .././biplang.exe test.bip))
-			(run diff test.expected test.actual))))
+	 	(with-stdout-to 001_arith_and_fun_sig.actual
+				(run dune exec .././biplang.exe 001_arith_and_fun_sig.bip))
+	 	(run diff 001_arith_and_fun_sig.expected 001_arith_and_fun_sig.actual))))
 
 (rule
  (alias runtest)
  (deps
-  test2.bip
-  test2.expected)
+  002_logic_and_comments.bip
+  002_logic_and_comments.expected)
  (action
 		(progn
-			(with-stdout-to test2.actual
-				(run dune exec .././biplang.exe test2.bip))
-			(run diff test2.expected test2.actual))))
+	 	(with-stdout-to 002_logic_and_comments.actual
+				(run dune exec .././biplang.exe 002_logic_and_comments.bip))
+	 	(run diff 002_logic_and_comments.expected 002_logic_and_comments.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  003_let_and_if.bip
+  003_let_and_if.expected)
+ (action
+		(progn
+	 	(with-stdout-to 003_let_and_if.actual
+				(run dune exec .././biplang.exe 003_let_and_if.bip))
+	 	(run diff 003_let_and_if.expected 003_let_and_if.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  004_cycles_and_assert.bip
+  004_cycles_and_assert.expected)
+ (action
+		(progn
+	 	(with-stdout-to 004_cycles_and_assert.actual
+				(run dune exec .././biplang.exe 004_cycles_and_assert.bip))
+	 	(run diff 004_cycles_and_assert.expected 004_cycles_and_assert.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  005_match_and_app.bip
+  005_match_and_app.expected)
+ (action
+		(progn
+	 	(with-stdout-to 005_match_and_app.actual
+				(run dune exec .././biplang.exe 005_match_and_app.bip))
+	 	(run diff 005_match_and_app.expected 005_match_and_app.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  006_nested_funs.bip
+  006_nested_funs.expected)
+ (action
+		(progn
+	 	(with-stdout-to 006_nested_funs.actual
+				(run dune exec .././biplang.exe 006_nested_funs.bip))
+	 	(run diff 006_nested_funs.expected 006_nested_funs.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  007_pipe_and_floor.bip
+  007_pipe_and_floor.expected)
+ (action
+		(progn
+	 	(with-stdout-to 007_pipe_and_floor.actual
+				(run dune exec .././biplang.exe 007_pipe_and_floor.bip))
+	 	(run diff 007_pipe_and_floor.expected 007_pipe_and_floor.actual))))

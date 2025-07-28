@@ -19,10 +19,10 @@ let app5 (int1) (int2) =
 (*@ ensures true *)
 
 let empty_args_test () =
-	8 * 7
+  8 * 7
 (*@ ensures true *)
 
 let empty_args_apply_test (x) =
-	empty_args_test ()
+  empty_args_test ()
 (*@ ensures true *)
 
