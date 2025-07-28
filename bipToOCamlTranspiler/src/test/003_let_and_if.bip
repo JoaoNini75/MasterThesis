@@ -30,6 +30,7 @@ end
 let p2 (arg) = begin
     let x = ref 1 in
     let y = ref arg in
+	x := 0;
     x := !x * !y;
 
     if !y > 0

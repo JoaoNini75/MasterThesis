@@ -1,0 +1,20 @@
+let nonneg (arg1) : bool =
+  arg1 > -1
+(*@ ensures true *)
+
+let cmp1 () : bool =
+  not true = true
+(*@ ensures true *)
+
+let cmp2 (x, y) = 
+  not (true && false)
+(*@ ensures true *)
+
+let cmp3 (b1) (b2) : bool =
+  (b1 && b2) = (b1 || b2)
+(*@ ensures true *)
+
+let cmp4 (b1) (b2) =
+	b1 && (b2 && b1) || b2
+(*@ ensures true *)
+

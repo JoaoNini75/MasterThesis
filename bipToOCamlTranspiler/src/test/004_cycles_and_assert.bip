@@ -1,0 +1,48 @@
+let simple_for (x : int, y) = begin
+	let z = ref x in
+	for i = 0 to y do
+		z := !z * 3
+	done;
+	!z
+end
+(*@ ensures true *)
+
+let fact_iter (n) = begin
+	if n <= 1 
+    then begin 1 end
+	else
+		begin 
+			let res = ref 1 in
+			for i = 2 to n do
+				res := !res * i
+			done;
+      !res
+		end
+end
+(*@ ensures true *)
+
+let gcd_iter (a0, b0) = begin 
+	let b = ref b0 in
+	let a = ref a0 in
+	while !b <> 0 do
+		let tmp = !a in
+		a := !b;
+		b := tmp mod !b
+	done;
+	!a
+end
+(*@ ensures true *)
+
+let nested () = begin
+	let a = ref 0 in
+	let b = ref 100 in
+
+	for i = 0 to !b / 10 do
+		while !a mod 10 <> 0 do
+			a := !a + 1
+		done
+	done;
+	
+	!a
+end
+(*@ ensures true *)

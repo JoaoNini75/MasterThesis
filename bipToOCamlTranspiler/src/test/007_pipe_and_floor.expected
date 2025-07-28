@@ -1,0 +1,75 @@
+let p2 () =
+  let x_l = ref (1) in
+  let x_r = ref (1) in
+  let y_l = ref (2) in
+  let y_r = ref (2) in
+  x_l := !x_l + 1;
+  y_r := !y_r + 2;
+  let z = ref (22) in
+  !z
+(*@ ensures true *)
+
+let rec bip_short (b_l : int) (b_r : int) : int * int =
+  let x_l = ref (0) in
+  let x_r = ref (1) in
+  (!x_l, !x_r)
+(*@ ensures true *)
+
+let bip (b_l : int) (b_r : int) : int * int =
+  let i = ref (0) in
+  let j_l = ref (0) in
+  let j_r = ref (b_r) in
+  let x_l = ref (0) in
+  let x_r = ref (0) in
+  (!x_l, !x_r)
+(*@ ensures true *)
+
+let bip2 (x) (y) =
+  let z_l = ref (-1) in
+  let z_r = ref (-1) in
+  let b = not (true && false) in
+  z_l := !z_l + 1;
+  z_r := !z_r + 1;
+  b
+(*@ ensures true *)
+
+let bip_if2 (c_l : bool) (c_r : bool) : int * int =
+  assert ( (c_l) = (c_r) );
+  if c_l
+  then begin 
+    (1, 1)
+  end else begin 
+    (0, 0)
+  end
+(*@ ensures true *)
+
+let bip_if_long (x1_l : int) (x1_r : int) (y1_l : bool) (y1_r : bool) : int * int =
+  let x2_l = x1_l * 2 in
+  let x2_r = x1_r * 2 in
+  let y2_l = 34 in
+  let y2_r = 34 in
+  assert ( (y2_l > x2_l) = (y2_r > x2_r) );
+  if y2_l > x2_l
+  then begin 
+    (x2_l + y2_l, x2_r + y2_r)
+  end else begin 
+    (x2_l - y2_l, x2_r - y2_r)
+  end
+(*@ ensures true *)
+
+let match_test2 (x_l : int) (x_r : int) : int * int =
+  let a_l = 1 in
+  let a_r = 1 in
+  let b_l = 
+    ( match x_l with
+    | 0 -> 10
+    | 1 -> 11
+    | _ -> -1 ) in
+  let b_r = 
+    ( match x_r with
+    | 0 -> 10
+    | 1 -> 11
+    | _ -> -1 ) in
+  (a_l + b_l, a_r + b_r)
+(*@ ensures true *)
+
