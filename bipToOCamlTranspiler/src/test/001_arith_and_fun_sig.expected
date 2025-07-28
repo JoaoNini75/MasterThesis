@@ -26,3 +26,4 @@ let empty_args_apply_test (x) =
   empty_args_test ()
 (*@ ensures true *)
 
+

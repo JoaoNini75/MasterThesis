@@ -12,23 +12,12 @@
 (rule
  (alias runtest)
  (deps
-  000_important.bip
-  000_important.expected)
- (action
-		(progn
-	 	(with-stdout-to 000_important.actual
-				(run dune exec .././biplang.exe 000_important.bip))
-	 	(run diff 000_important.expected 000_important.actual))))
-
-(rule
- (alias runtest)
- (deps
   001_arith_and_fun_sig.bip
   001_arith_and_fun_sig.expected)
  (action
 		(progn
 	 	(with-stdout-to 001_arith_and_fun_sig.actual
-				(run dune exec .././biplang.exe 001_arith_and_fun_sig.bip))
+				(run ../biplang.exe 001_arith_and_fun_sig.bip))
 	 	(run diff 001_arith_and_fun_sig.expected 001_arith_and_fun_sig.actual))))
 
 (rule
@@ -39,7 +28,7 @@
  (action
 		(progn
 	 	(with-stdout-to 002_logic_and_comments.actual
-				(run dune exec .././biplang.exe 002_logic_and_comments.bip))
+				(run ../biplang.exe 002_logic_and_comments.bip))
 	 	(run diff 002_logic_and_comments.expected 002_logic_and_comments.actual))))
 
 (rule
@@ -50,7 +39,7 @@
  (action
 		(progn
 	 	(with-stdout-to 003_let_and_if.actual
-				(run dune exec .././biplang.exe 003_let_and_if.bip))
+				(run ../biplang.exe 003_let_and_if.bip))
 	 	(run diff 003_let_and_if.expected 003_let_and_if.actual))))
 
 (rule
@@ -61,7 +50,7 @@
  (action
 		(progn
 	 	(with-stdout-to 004_cycles_and_assert.actual
-				(run dune exec .././biplang.exe 004_cycles_and_assert.bip))
+				(run ../biplang.exe 004_cycles_and_assert.bip))
 	 	(run diff 004_cycles_and_assert.expected 004_cycles_and_assert.actual))))
 
 (rule
@@ -72,7 +61,7 @@
  (action
 		(progn
 	 	(with-stdout-to 005_match_and_app.actual
-				(run dune exec .././biplang.exe 005_match_and_app.bip))
+				(run ../biplang.exe 005_match_and_app.bip))
 	 	(run diff 005_match_and_app.expected 005_match_and_app.actual))))
 
 (rule
@@ -83,7 +72,7 @@
  (action
 		(progn
 	 	(with-stdout-to 006_nested_funs.actual
-				(run dune exec .././biplang.exe 006_nested_funs.bip))
+				(run ../biplang.exe 006_nested_funs.bip))
 	 	(run diff 006_nested_funs.expected 006_nested_funs.actual))))
 
 (rule
@@ -94,5 +83,5 @@
  (action
 		(progn
 	 	(with-stdout-to 007_pipe_and_floor.actual
-				(run dune exec .././biplang.exe 007_pipe_and_floor.bip))
+				(run ../biplang.exe 007_pipe_and_floor.bip))
 	 	(run diff 007_pipe_and_floor.expected 007_pipe_and_floor.actual))))

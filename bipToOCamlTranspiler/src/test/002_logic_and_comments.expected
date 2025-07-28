@@ -18,3 +18,4 @@ let cmp4 (b1) (b2) =
 	b1 && (b2 && b1) || b2
 (*@ ensures true *)
 
+

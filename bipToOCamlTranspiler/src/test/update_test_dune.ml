@@ -25,7 +25,7 @@ let rule_base_text : (string -> string -> string -> string -> string
  (action
 		(progn
 	 	(with-stdout-to %s.actual
-				(run dune exec .././biplang.exe %s.bip))
+				(run ../biplang.exe %s.bip))
 	 	(run diff %s.expected %s.actual))))
 |}
 
@@ -45,34 +45,25 @@ let () =
   for i = 0 to Array.length dir_files - 1 do
 		let filename = get dir_files i in
 
-		if List.mem filename exclude_files then (
-			(*Printf.printf "Excluded: %s\n" filename;*)
+		if (List.mem filename exclude_files) ||
+			 (String.ends_with ~suffix:".expected" filename) then
 			set dir_files i ""
-		) else if (String.ends_with ~suffix:".expected" filename) then (
-			set dir_files i "";
-			(*Printf.printf "Expected: %s\n" filename;*)
-		) else (
-			set dir_files i (String.sub filename 0 (String.length filename - 4));
-			(*Printf.printf "Bip: %s\n" filename*)
-		)
-
+		else 
+			set dir_files i 
+				(String.sub filename 0 (String.length filename - 4))
   done;
 
 	let final_text = ref header_text in
-	(*Printf.printf "\n\n";*)
 	Array.sort String.compare dir_files;
 
 	for i = 0 to Array.length dir_files - 1 do
 		let filename = get dir_files i in
 		if String.equal filename "" then ()
-		else (
-			(*Printf.printf "%s\n" filename;*) 
+		else 
 			let rule_text = Printf.sprintf rule_base_text 
 				filename filename filename filename filename filename in
 			final_text := !final_text ^ rule_text
-		)
 	done;
 
-	(*Printf.printf "\n\n%s" !final_text; *)
 	Printf.printf "test/dune updated.\n";
 	write_string_to_file ~filename:"dune" !final_text

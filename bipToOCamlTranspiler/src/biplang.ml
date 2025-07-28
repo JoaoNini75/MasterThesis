@@ -13,6 +13,10 @@ let usage = "
   manual use:
     dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip 
 
+  update test/dune when tests are changed:
+    cd test
+    ocaml update_test_dune.ml
+
   run tests: 
     dune test
 
@@ -21,7 +25,7 @@ let usage = "
     dune build biplang.exe
     rm -f _build/.lock
     dune test 
-  "
+"
 
 let indent_spaces = 2
 let parse_only = ref false
