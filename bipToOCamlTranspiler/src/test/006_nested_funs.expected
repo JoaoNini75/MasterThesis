@@ -1,6 +1,6 @@
 let test1_outer () : int =
   let x = 10 in
-	
+
   let test1_inner (i : int) : int =
     x * i
   (*@ ensures true *)

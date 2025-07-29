@@ -15,7 +15,7 @@ let fun2 (arg1, arg2) = begin
 		else begin arg2 end
 	in
 
-	(a mod c) * !b
+	a mod c * !b
 end
 (*@ ensures true *)
 

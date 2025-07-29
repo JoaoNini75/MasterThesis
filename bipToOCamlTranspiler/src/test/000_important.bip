@@ -21,9 +21,9 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 
 	while |_ !i < n _| do
 		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-            invariant !j_r = !i_r * b_r + c_r
-            invariant !x_l = !x_r 
-            variant n_l - !i_l *)
+        invariant !j_r = !i_r * b_r + c_r
+        invariant !x_l = !x_r 
+        variant n_l - !i_l *)
 		j := !i * b + c <|> x := !x + !j;
 		x := !x + !j    <|> j := !j + b;
 		i := |_ !i + 1 _|
@@ -33,7 +33,6 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 end
 (*@ requires b_l = b_r && c_l = c_r && n_l = n_r
     ensures  match result with (l_res, r_res) -> l_res = r_res *) 
-
 
 
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
