@@ -1,10 +1,10 @@
 let assert1 () =
-  assert (1 <> 3)
+  assert ((1 <> 3))
 (*@ ensures true *)
 
 let assert2 (x : int) : int =
-  assert (x + 4 = 5);
-  x - 1
+  assert (((x + 4) = 5));
+  (x - 1)
 (*@ ensures true *)
 
 let app_fun (x : int) =
@@ -16,12 +16,12 @@ let app_fun2 () =
 (*@ ensures true *)
 
 let app_fun3 (x) (y) : int =
-  x + y
+  (x + y)
 (*@ ensures true *)
 
 let app_mid_test (x : int) (b : bool) =
   app_fun2 ();
-  2 + 2
+  (2 + 2)
 (*@ ensures true *)
 
 let app_let_test (x : int) (b : bool) =
@@ -35,7 +35,7 @@ let app_end_test (x : int) (b : bool) =
 
 let apptestfinal () : int =
   let a = ref (4) in
-  app_fun3 (1 * !a) (2 * !a)
+  app_fun3 ((1 * !a)) ((2 * !a))
 (*@ ensures true *)
 
 let match1 (x : int) (y : int) : string =
@@ -50,7 +50,7 @@ let match2 (x : int) =
     | 0 -> 10
     | 1 -> 20
     | _ -> 0 ) in
-  assert (res >= 0);
+  assert ((res >= 0));
   res
 (*@ ensures true *)
 

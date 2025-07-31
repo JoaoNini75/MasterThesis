@@ -18,7 +18,7 @@
 
 /* priorities and associativities */
 %nonassoc ARROW
-%nonassoc (*MATCH*) WITH
+%nonassoc WITH
 %nonassoc IN
 %left PIPE
 %nonassoc ASSIGN

@@ -474,7 +474,7 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Ematch (ident, cases) ->
     let ident_final = add_side_to_id ident id_side in
-    (* rev because of the way it is collected in the parser (case_list rule) *)
+    (* rev because of the way cases are collected in the parser *)
     let ocases = List.rev (List.map (fun case -> bip_to_ml_case case) cases) in
     Omatch (ident_final, ocases)
      
@@ -523,10 +523,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     else ()
 
   | Obinop (op, e1, e2) -> 
-    fprintf fmt "%s" last_elem_str;
-    pp_oexpr fmt e1 depth true;
-    fprintf fmt " %s " (get_binop_str op);
-    pp_oexpr fmt e2 depth true
+    fprintf fmt "%s(%a %s %a)" 
+      last_elem_str
+      (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+      (get_binop_str op)
+      (fun fmt _ -> pp_oexpr fmt e2 depth true) e2;
 
   | Olet (id, value, body) -> 
     fprintf fmt "\n%slet %s = " (indent depth) id.id;

@@ -27,3 +27,8 @@ let cmp4 (b1, b2) = begin
 	b1 && (b2 && b1) || b2
 end
 (*@ ensures true *)
+
+let cmp5 (b1, b2) = begin
+	((not b1) && ((not b2) && b1) || b2) == b2
+end
+(*@ ensures true *)

@@ -2,21 +2,21 @@ let simple_for (x : int) (y) =
   let z = ref (x) in
 
   for i = 0 to y do
-    z := !z * 3
+    z := (!z * 3)
   done;
 
   !z
 (*@ ensures true *)
 
 let fact_iter (n) =
-  if n <= 1
+  if (n <= 1)
   then begin 
     1
   end else begin 
     let res = ref (1) in
 
     for i = 2 to n do
-      res := !res * i
+      res := (!res * i)
     done;
 
     !res
@@ -27,10 +27,10 @@ let gcd_iter (a0) (b0) =
   let b = ref (b0) in
   let a = ref (a0) in
 
-  while !b <> 0 do
+  while (!b <> 0) do
     let tmp = !a in
     a := !b;
-    b := tmp mod !b
+    b := (tmp mod !b)
   done;
 
   !a
@@ -40,10 +40,10 @@ let nested () =
   let a = ref (0) in
   let b = ref (100) in
 
-  for i = 0 to !b / 10 do
+  for i = 0 to (!b / 10) do
 
-    while !a mod 10 <> 0 do
-      a := !a + 1
+    while ((!a mod 10) <> 0) do
+      a := (!a + 1)
     done
 
   done;
