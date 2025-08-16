@@ -1,0 +1,34 @@
+%!TEX root = ../template.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% abstract-en.tex
+%% NOVA thesis document file
+%%
+%% Abstract in English([^%]*)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\typeout{NT FILE abstract-en.tex}
+
+Ensuring that a program functions as intended is a complex issue that has been approached many times and in various ways throughout history.
+Human-assisted software verification is the most complete and reliable method, despite its inherent additional effort.
+
+The objective of this work is to ease proofs of complex programs by taking advantage of a relation to an equivalent program that is easier to prove.
+If it is possible to establish that two different programs are equivalent, it is also very likely that reusing the simplest specification will lead to a faster and easier proof of the more sophisticated program.
+Relational Hoare Logic paved the way to the development of several techniques to reason about the similarities of two different programs.
+In this work, we will base our approach on the concept of \emph{product programs} to reduce relational verification into standard verification.
+
+Furthermore, there will be a description of the relevant background in order to effectively comprehend the approach we chose, as well as a presentation of the other possible methods to achieve what we propose.
+Finally, we will demonstrate a few good initial results obtained by coding and specifying two different implementations of the same algorithm, using different paradigms.
+
+
+% Palavras-chave do resumo em Inglês
+% \begin{keywords}
+% Keyword 1, Keyword 2, Keyword 3, Keyword 4, Keyword 5, Keyword 6, Keyword 7, Keyword 8, Keyword 9
+% \end{keywords}
+\keywords{
+  Deductive verification \and
+  Program equivalence \and
+  OCaml \and
+  Cameleer \and
+  Relational Hoare logic \and
+  Product programs
+}

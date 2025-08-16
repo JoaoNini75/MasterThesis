@@ -1,0 +1,69 @@
+%!TEX root = ../template.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% chapter1.tex
+%% NOVA thesis document file
+%%
+%% Chapter with introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\typeout{NT FILE chapter1.tex}%
+
+\chapter{Introduction}
+\label{cha:introduction}
+
+\section{Motivation} 
+
+The impact of errors in programs can vary greatly.
+Sometimes it can make you lose a match of a game you play to relax after a long, stressful day.
+But sometimes it can make commercial airplanes with hundreds of people catastrophically crash.
+However, there are other situations as dangerous as a plane crash: medical equipment failure, nuclear accidents, defense systems errors... the list is not short.
+Clearly, the approach to ensure the correctness of some software has to be extremely thorough and methodical.
+
+Deductive verification has proven to be the most accurate way to prove that a given program outputs what is intended given its inputs.
+Although this is the most effective way, it is also the one that requires the most investment: professionals that can write the specifications for the programs and then help theorem solver discard verification conditions.
+As the reader can imagine, most companies prefer to resort to the cheaper, faster methods of testing.
+Therefore, there has to be a simpler way of proving, still using deductive verification, that a program is correct.
+That way is program equivalence and product programs.
+
+
+\section{Problem Definition}
+
+The question that this work focus its attention on is:
+
+\begin{quote}
+    \centering
+    \emph{Can we automatically prove that two programs P$_1$ and P$_2$ are correct and equivalent?}
+\end{quote}
+
+Despite looking like a simple question, there is no simple answer.
+This is an issue that people have tried to address for decades, yet we did not find a definitive solution.
+There are several schools of software verification~\cite{DBLP:conf/fm/BrainP24} but, as expected, all of them have advantages and disadvantages.
+However, we believe that human-assisted is the way, since it leaves many less bugs behind, compared to under-approximate methods and, at the same time, does not alert the programmer to errors that are not actually errors.
+Of course that this carries an extra human effort, in developing the specification for the programs and sometimes in discharging verification conditions.
+
+In the context of human-assisted verification and programs P$_1$ and P$_2$, we need to first prove that the simpler program is correct, using already existent methods and then establish a connection between them to prove that the more complex is also correct.
+Product programs appear as a promising solution that came to light from the combination of two other methods called self-composition and cross-products.
+This solution takes the best of both worlds in order to overcome their limitations, which will be explained later, in chapter \hyperref[cha:state_of_the_art]{3}.
+Our work will, therefore, adapt product programs to be applied in the OCaml programming language, which could then be verified using Cameleer.
+
+
+\section{Goals and Expected Contributions}
+
+This work aims to bring to OCaml the concept of \emph{product programs}, facilitating the task of proving that two different programs are behaviorally equivalent.
+This is especially relevant in cases where proving a simpler program and the relation between that and a more complex version is more peaceful than proving the correctness of both versions separately.
+
+
+\section{Report Structure}
+
+\begin{itemize}
+    \setlength\itemsep{0.1em}
+    \item Chapter \hyperref[cha:background]{2} contains a series of concepts, like relational Hoare logic, and tools, such as Cameleer, that are essential to understand the foundations of our work.
+
+    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will enumerate and explain the most relevant developments regarding the subject of program equivalence proof.
+
+    \item Chapter \hyperref[cha:preliminary_results]{4} contains the current state of our practical results, more specifically, two proofs of equivalence of simple OCaml programs, using Cameleer.
+
+    \item Finally, chapter \hyperref[cha:work_plan]{5} describes what will be our tasks, when they will start and how long they will take.
+
+\end{itemize}
+
