@@ -78,6 +78,10 @@ literate={'a}{$\alpha$}{1}%
 }
  } {\addtocounter{lst}{1}}
 
+\lstnewenvironment{biplangenv}[1][none]{
+  \lstset{language=gospel,numbers=#1,caption={BipLang + GOSPEL\vspace*{-2em}},aboveskip=-1em}
+ } {\addtocounter{lst}{1}}
+
 \lstnewenvironment{ocamlenv}[1][none]{
   \lstset{language=gospel,numbers=#1,caption={\ocaml\vspace*{-2em}},aboveskip=-1em}
  } {\addtocounter{lst}{1}}

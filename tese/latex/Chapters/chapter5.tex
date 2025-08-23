@@ -19,23 +19,123 @@
 \chapter{Case Studies}
 \label{cha:case_studies}
 
+In this chapter, we showcase several case studies that we used to explore the capabilities of the transpiler developed in this thesis.
+We start by analyzing case studies in which BipLang has no significant difference from other programming languages other than syntax.
+Then, we present some examples of what BipLang adds that OCaml cannot do.
+Finally, we focus on case studies that are more complex and, therefore, demonstrate the real potential of our tool.
+
 
 \section{The Foundations}
 \label{sec:foundations}
 
-exemplos de programas que poderiam ser escritos apenas em ocaml 
+This section lists some simple programs that could be written in any other programming language, but shows how it is done in BipLang.
+
+%Multiplies two non-negative numbers using nested loops.
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let mult (n : int, m : int) = begin
+    let result = ref 0 in
+    let j = ref 0 in
+
+    for i = 0 to n-1 do
+      while !j < m do
+        result := !result + 1;
+        j := !j + 1
+      done;
+      j := 0;
+    done;
+    
+    !result
+  end
+  (*@ ensures true *)
+\end{biplangenv}
+\end{minipage}
+\caption{Using nested loops to multiply two (non-negative) numbers.}
+\end{figure}
+% TODO: put more space
+
+%Demonstrating the use of the match and assert constructions.
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let match_assert (x : int) = begin
+    let res = 
+      match x with 
+      | 0 -> 10
+      | 1 -> 20
+      | _ -> 0
+    in
+    assert (res >= 0);
+    res
+  end
+  (*@ ensures true *) 
+\end{biplangenv}
+\end{minipage}
+\caption{The match and assert constructions.}
+\end{figure}
+% TODO: put more space
+
+%Showcasing the presence of nested functions through the use of function applying.
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let nested_fun_apply () : int = begin
+    let x = 10 in
+
+    let inner_fun (i : int) : int = begin
+      x * i 
+    end
+    (*@ ensures true *)
+    in
+
+    let i = ref 2 in
+    inner_fun (!i * 5)
+  end
+  (*@ ensures true *) 
+  (* Result: inner_fun(!i * 5) -> inner_fun(2 * 5) -> *)
+  (*         inner_fun(10) -> x * i -> 10 * 10 -> 100 *)
+\end{biplangenv}
+\end{minipage}
+\caption{Nested functions and function applying.}
+\end{figure}
+% TODO: put more space
 
 
 \section{Incremeting OCaml}
 \label{sec:incrementing}
 
-exemplos de programas que necessitam das features da biplang (pipe, floor, (mais?))
+% TODO: put textbf working in this 2nd line
+In this section, we present examples of programs that showcase the functionalities and constructions that BipLang adds on top of OCaml.
+That is accomplished by the introduction of the pipe (\textbf{$\langle|\rangle$}) and floor (\textbf{$\lfloor$} (left floor), \textbf{$\rfloor$} (right floor)) symbols.
+We also present our tool outputs so we can compare the differences between writing each of these programs using BipLang versus OCaml.
+
+%Multiplies two non-negative numbers using nested loops.
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  CODE TODO
+\end{biplangenv}
+\end{minipage}
+\caption{CAPTION TODO}
+\end{figure}
 
 
-\section{Demonstrating the Applicability}
+
+\section{Demonstrating the Usefulness}
 \label{sec:applicability}
 
-os exemplos mais dificeis e complexos
+This section illustrates the true capabilities of the transpiler through some more complex examples.
+As we did in the previous section, we present these programs written in BipLang versus OCaml.
+Now this really puts in evidence the applicability of our tool.
+
+
+
+
+
+
+
+
 
 
 \iffalse
