@@ -693,7 +693,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       (* case where there are assigns on both sides of a pipe
          but the left-hand identifiers are different *)
       | Oassign (id1, id2, oe1, oe2) -> 
-        pp_oexpr fmt e1 depth not_last_elem;
+        pp_oexpr fmt e1 depth true;
         pp_oexpr fmt e2 depth not_last_elem
 
       | _ -> fprintf fmt "\n%s(%a, %a)"

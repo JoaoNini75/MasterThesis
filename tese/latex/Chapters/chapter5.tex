@@ -23,6 +23,7 @@ In this chapter, we showcase several case studies that we used to explore the ca
 We start by analyzing case studies in which BipLang has no significant difference from other programming languages other than syntax.
 Then, we present some examples of what BipLang adds that OCaml cannot do.
 Finally, we focus on case studies that are more complex and, therefore, demonstrate the real potential of our tool.
+TODO: WRITE PROOF AND ADD ITS BENCHMARK FOR ALL OF THE CODE EXAMPLES. 
 
 
 \section{The Foundations}
@@ -105,19 +106,72 @@ This section lists some simple programs that could be written in any other progr
 \section{Incremeting OCaml}
 \label{sec:incrementing}
 
-% TODO: put textbf working in this 2nd line
 In this section, we present examples of programs that showcase the functionalities and constructions that BipLang adds on top of OCaml.
-That is accomplished by the introduction of the pipe (\textbf{$\langle|\rangle$}) and floor (\textbf{$\lfloor$} (left floor), \textbf{$\rfloor$} (right floor)) symbols.
+That is accomplished by the introduction of the \bm{$\langle|\rangle$} (pipe), \bm{$\lfloor$} (left floor) and \bm{$\rfloor$} (right floor) symbols.
 We also present our tool outputs so we can compare the differences between writing each of these programs using BipLang versus OCaml.
 
-%Multiplies two non-negative numbers using nested loops.
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let floors_biplang (|_ arg1 : int _|, |_ arg2 : int _|)
+    : |_ int _| = begin
+
+    let x = |_ arg1 * 2 _| in
+    let y = |_ arg2 _| in
+
+    if |_ y > x _| then begin
+      |_ x + y _|
+    end else begin
+      |_ x - y _|
+    end
+  end
+  (*@ ensures true *)
+\end{biplangenv}
+\end{minipage}
+\caption{Showcasing the use of the floor symbols (BipLang)}
+\end{figure}
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let floors_ocaml (arg1_l : int) (arg1_r : int)
+    (arg2_l : int) (arg2_r : int) : int * int =
+    
+    let x_l = (arg1_l * 2) in
+    let x_r = (arg1_r * 2) in
+    let y_l = arg2_l in
+    let y_r = arg2_r in
+    assert ( ((y_l > x_l)) = ((y_r > x_r)) );
+    if (y_l > x_l)
+    then begin 
+      ((x_l + y_l), (x_r + y_r))
+    end else begin 
+      ((x_l - y_l), (x_r - y_r))
+    end
+  (*@ ensures true *)
+\end{biplangenv}
+\end{minipage}
+\caption{Showcasing the use of the floor symbols (OCaml)}
+\end{figure}
+
+
 \begin{figure}
 \begin{minipage}{\linewidth}
 \begin{biplangenv}
   CODE TODO
 \end{biplangenv}
 \end{minipage}
-\caption{CAPTION TODO}
+\caption{Showcasing the use of the pipe symbol (BipLang)}
+\end{figure}
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  CODE TODO
+\end{biplangenv}
+\end{minipage}
+\caption{Showcasing the use of the pipe symbol (OCaml)}
 \end{figure}
 
 
@@ -128,6 +182,11 @@ We also present our tool outputs so we can compare the differences between writi
 This section illustrates the true capabilities of the transpiler through some more complex examples.
 As we did in the previous section, we present these programs written in BipLang versus OCaml.
 Now this really puts in evidence the applicability of our tool.
+
+LIST: factiter, gcditer, inducvarstrengthred, condalignloops, condalignloopsnested
+
+
+
 
 
 
