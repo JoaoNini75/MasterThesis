@@ -35,7 +35,9 @@
         "rec", REC;
         "assert", ASSERT;
         "match", MATCH;
-        "with", WITH];
+        "with", WITH;
+        "type", TYPE;
+        "of", OF];
     fun s -> try Hashtbl.find h s with Not_found -> IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -43,8 +45,11 @@
 }
 
 let letter = ['a'-'z' 'A'-'Z']
+let letter_lc = ['a'-'z']
+let letter_uc = ['A'-'Z']
 let digit = ['0'-'9']
-let ident = letter | ((letter | '_') (letter | digit | '_')* (letter | digit))
+let ident = letter(*_lc*) | ((letter | '_') (letter | digit | '_')* (letter | digit))
+(*let cons_name = letter_uc | ((letter | '_') (letter | digit | '_')* (letter | digit))*)
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
@@ -65,6 +70,7 @@ rule next_tokens = parse
     }
   
   | ident as id { id_or_kwd id }
+  (*| cons_name as id { id_or_kwd id } *)
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }
@@ -216,6 +222,8 @@ and string = parse
     | WITH -> fprintf fmt "with"
     | ARROW -> fprintf fmt "->"
     | WILDCARD -> fprintf fmt "_"
+    | TYPE -> fprintf fmt "type"
+    | OF -> fprintf fmt "of"
 
   let () =
     let fname = Sys.argv.(1) in

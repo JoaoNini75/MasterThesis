@@ -35,6 +35,20 @@ type constant =
 
 type pattern = 
   | Pwildcard
-  | Pconst of   constant
-  | Pident of   ident
+  | Pconst of       constant
+  | Pident of       ident
+  (* TODO ADD: | Pconstructor of ident *)
 (* only allowing some patterns for now *)
+
+type payload_elem =
+  | PLexisting of bip_type
+  | PLnew of      ident
+
+type payload = payload_elem list
+
+type constructor = ident * payload option
+
+type typedef = 
+  | TDsimple of ident * payload (* type ex = int * string *)
+  | TDcons of   ident * constructor list (* type cons = | Cons1 | Cons2 of bool *)
+  

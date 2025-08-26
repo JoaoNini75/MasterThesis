@@ -32,6 +32,7 @@ and odef = ident * bool (* rec *) * parameter list * bip_type option
 and odecl = 
   | Odef of   odef
   | Ospec of  spec
+  | Otypedef of typedef
   
 and ofile = odecl list
    

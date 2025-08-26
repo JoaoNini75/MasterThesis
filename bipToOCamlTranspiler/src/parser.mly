@@ -11,7 +11,7 @@
 %token <string> IDENT
 %token <string> SPEC
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -43,10 +43,14 @@ file:
 ;
 
 decl:
-| sp = spec
-    { Espec sp }
 | edef = def_outer
     { Edef edef }
+| sp = spec
+    { Espec sp }
+| TYPE typename = ident EQUAL pl = payload
+    { Etypedef (TDsimple(typename, pl)) }    
+| TYPE typename = ident EQUAL CASE constructors = separated_nonempty_list(CASE, constructor)
+    { Etypedef (TDcons(typename, constructors)) }
 ;
 
 def_outer:
@@ -177,6 +181,25 @@ fun_ret:
     { tp, Some SOfloor }
 | COLON tp1 = bip_type PIPE tp2 = bip_type
     { tp1, Some SOpipe }
+;
+
+constructor:
+| cons_name = ident OF pl = payload
+    { cons_name, Some pl }
+| cons_name = ident
+    { cons_name, None }    
+;
+
+payload:
+| pl = separated_nonempty_list(TIMES, payload_elem)
+    { pl }
+;
+
+payload_elem:
+| plel = bip_type
+    { PLexisting plel }
+| plel = ident
+    { PLnew plel }
 ;
 
 pattern:

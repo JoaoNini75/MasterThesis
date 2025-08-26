@@ -32,8 +32,9 @@ and def = ident * bool (* rec *) * parameter list * bip_type option
           * special_op option * expr list * spec
 
 and decl = 
-  | Edef of   def
-  | Espec of  spec
+  | Edef of     def
+  | Espec of    spec
+  | Etypedef of typedef
   
 and file = decl list
    

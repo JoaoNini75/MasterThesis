@@ -84,15 +84,17 @@ let get_binop_str (binop : Ast_core.binop) =
   | Bor -> "||" 
   | Bspeq -> "<->"
 
-let get_type_str (bip_type_opt : Ast_core.bip_type option) =
+let get_type_str bt =
+  match bt with
+  | INT -> "int"
+  | BOOL -> "bool"
+  | STRING -> "string"
+  | NONE -> ""
+
+let get_type_str_opt (bip_type_opt : Ast_core.bip_type option) =
   match bip_type_opt with
   | None -> ""
-  | Some bt -> 
-    match bt with
-    | INT -> "int"
-    | BOOL -> "bool"
-    | STRING -> "string"
-    | NONE -> ""
+  | Some bt -> get_type_str bt
 
 
 let pp_spec_opt spec_opt =
@@ -703,7 +705,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     )
 
 and pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec depth = 
-  let fun_type_str = get_type_str fun_type in
+  let fun_type_str = get_type_str_opt fun_type in
   let is_rec_str = if is_rec then "rec " else "" in
   let inner_fun = if depth = 0 then "" else "\n\n" in
   let indentation = indent depth in
@@ -718,7 +720,7 @@ and pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec de
         match param with
         | Punit -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
         | Param (ident, param_type, special_op_opt) -> 
-          let param_type_str = get_type_str param_type in
+          let param_type_str = get_type_str_opt param_type in
 
           match special_op_opt with 
           | None -> (
@@ -775,12 +777,55 @@ and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth not_last_elem =
 let pp_spec_ml fmt (sp: spec) =
   fprintf fmt "(*@%s*)\n\n" sp.text
 
+let pp_payload fmt (pl : payload) =
+  List.iteri (fun idx pl_elem -> 
+    let pl_elem_str =
+      match pl_elem with 
+      | PLexisting bt -> 
+        let tp_str = get_type_str bt in
+        if idx = 0 then tp_str
+        else " * " ^ tp_str
+
+      | PLnew ident ->
+        if idx = 0 then ident.id
+        else " * " ^ ident.id 
+    in
+    fprintf fmt "%s" pl_elem_str
+  ) pl
+
+let pp_typedef_ml fmt (td: typedef) =
+  ( match td with 
+    | TDsimple (typename, payload) ->
+      fprintf fmt "type %s = %a" typename.id pp_payload payload
+
+    | TDcons (typename, cons_list) ->
+      fprintf fmt "type %s =" typename.id;
+      let indentation = indent 1 in
+
+      List.iter (fun cons -> 
+        let (cons_name, payload_opt) = cons in
+
+        fprintf fmt "\n%s| %s" 
+          indentation
+          cons_name.id;
+
+        match payload_opt with
+        | None -> ()
+        | Some payload -> 
+          fprintf fmt " of %a" pp_payload payload
+
+      ) cons_list
+  );
+
+  fprintf fmt "\n\n"
+
 let pp_file_ml fmt (file : Ast_ml.ofile) =
   (*fprintf fmt "\n\nOCaml code:\n\n";*)
   List.iter (fun odecl ->
     match odecl with 
     | Odef odef -> pp_def_ml fmt odef
     | Ospec ospec -> pp_spec_ml fmt ospec
+    | Otypedef otypedef -> pp_typedef_ml fmt otypedef
   ) file
 
 let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
@@ -795,6 +840,7 @@ let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
     match decl with 
     | Edef def -> Odef (bip_to_ml_def def)
     | Espec spec -> (Ospec spec)
+    | Etypedef typedef -> (Otypedef typedef)
   ) file
 
 let pp_ml (ofile : Ast_ml.ofile) =

@@ -1,12 +1,7 @@
-let nested_fun_apply (arg) : int = begin
-	let x = 10 in
+type number = | Neg of int | Pos | Zero
+type simple = int * bool
 
-	let inner_fun (i : int) : int = begin
-		x * i 
-	end
-	(*@ ensures result = x * i *)
-	in
-
-	inner_fun (arg * 5) 
+let match_assert () = begin
+	5
 end
-(*@ ensures result = 50 * arg *) 
+(*@ ensures true *)
