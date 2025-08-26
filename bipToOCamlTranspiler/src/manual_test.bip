@@ -1,12 +1,12 @@
-let counting (limit : int <|> limit : int) = begin
-	let acc = ref 0 <|> ref 0 in
-	let i = 0 in
+let nested_fun_apply (arg) : int = begin
+	let x = 10 in
 
-	while i < limit <|> i < limit do
-		acc := !acc + 1 <|> acc := !acc + 2
-	done;
+	let inner_fun (i : int) : int = begin
+		x * i 
+	end
+	(*@ ensures result = x * i *)
+	in
 
-	acc := !acc * 2 <|> acc := !acc * 1;
-	!acc <|> !acc
+	inner_fun (arg * 5) 
 end
-(*@ ensures true *)
+(*@ ensures result = 50 * arg *) 

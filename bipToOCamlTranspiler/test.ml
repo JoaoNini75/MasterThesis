@@ -1,18 +1,21 @@
-let mult (n : int) (m : int) = begin
-  let result = ref 0 in
-  let j = ref 0 in
+type number = Neg | Pos | Zero
 
-  for i = 0 to n-1 do
-    while !j < m do
-      result := !result + 1;
-      j := !j + 1
-    done;
-    j := 0;
-  done;
+let match_assert (x : int) =
+  let y = 
+    if x = 0 then Neg
+    else if x = 1 then Pos
+    else Zero
+  in  
+
+  let res = 
+    ( match y with
+    | Neg -> 10
+    | Pos -> 20
+    | Zero -> 0 ) 
+  in
   
-  !result
-end
-
-let () =
-  let res = string_of_int (mult 0 0) in
-  Printf.printf "%s\n" res
+  assert ((res >= 0));
+  res
+(*@ ensures x = 0 -> result = 10
+    ensures x = 1 -> result = 20
+    ensures x <> 0 && x <> 1 -> result = 0 *)

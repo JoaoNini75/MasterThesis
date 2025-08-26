@@ -1,16 +1,21 @@
-let counting (limit_l : int) (limit_r : int) =
-  let acc_l = ref (0) in
-  let acc_r = ref (0) in
-  let i = 0 in
+let floors_ocaml (arg1_l : int) (arg1_r : int)
+  (arg2_l : int) (arg2_r : int) : int * int =
+    
+  let x_l = (arg1_l * 2) in
+  let x_r = (arg1_r * 2) in
+  let y_l = arg2_l in
+  let y_r = arg2_r in
+  assert ( ((y_l > x_l)) = ((y_r > x_r)) );
 
-  while (i_l < limit_l) do
-    (*@ invariant ((i_l < limit_l)) <-> ((i_r < limit_r))*)
-    acc_l := (!acc_l + 1);
-    acc_r := (!acc_r + 2)
-  done;
-
-  acc_l := (!acc_l * 2);
-  acc_r := (!acc_r * 1);
-  (!acc_l, !acc_r)
-(*@ ensures true *)
-
+  if (y_l > x_l)
+  then begin 
+    ((x_l + y_l), (x_r + y_r))
+  end else begin 
+    ((x_l - y_l), (x_r - y_r))
+  end
+(*@ requires arg1_l = arg1_r && arg2_l = arg2_r
+    ensures  match result with (l_res, r_res) -> 
+              (l_res = r_res && l_res = (
+                if arg2_l > arg1_l * 2
+                then arg1_l * 2 + arg2_l
+                else arg1_l * 2 - arg2_l)) *)
