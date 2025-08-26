@@ -10,6 +10,7 @@
 %token <Ast_core.binop> CMP
 %token <string> IDENT
 %token <string> SPEC
+%token <string> CONS_NAME
 %token CASE
 %token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF
 %token EOF
@@ -48,7 +49,7 @@ decl:
 | sp = spec
     { Espec sp }
 | TYPE typename = ident EQUAL pl = payload
-    { Etypedef (TDsimple(typename, pl)) }    
+    { Etypedef (TDsimple(typename, pl)) }
 | TYPE typename = ident EQUAL CASE constructors = separated_nonempty_list(CASE, constructor)
     { Etypedef (TDcons(typename, constructors)) }
 ;
@@ -100,19 +101,21 @@ expr:
 | c = CST
     { Ecst c }
 | id = ident
-    { Eident id }  
+    { Eident id }
+| cn = cons_name
+    { Econs cn }
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
     { Eunop (Unot, e1) }
 | REF e1 = expr
-    { Eunop (Uref, e1) } 
+    { Eunop (Uref, e1) }
 | DEREF e1 = expr
     { Eunop (Uderef, e1) }
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
 | LET id = ident EQUAL value = expr IN body = expr
-    { Elet (id, value, body) } 
+    { Elet (id, value, body) }
 | LET id1 = ident EQUAL value1 = expr PIPE id2 = ident EQUAL value2 = expr IN body = expr
     { Eletpipe (id1, value1, id2, value2, body) } 
 | IF c = expr THEN s1 = block ELSE s2 = block
@@ -175,19 +178,26 @@ parameter:
 ;
 
 fun_ret:
-| COLON tp = bip_type
+| COLON rt = ret_type
     { tp, None }
-| COLON LFLOOR tp = bip_type RFLOOR
-    { tp, Some SOfloor }
-| COLON tp1 = bip_type PIPE tp2 = bip_type
-    { tp1, Some SOpipe }
+| COLON LFLOOR rt = ret_type RFLOOR
+    { rt, Some SOfloor }
+| COLON rt1 = ret_type PIPE rt2 = ret_type
+    { rt1, Some SOpipe }
+;
+
+ret_type:
+| bt = bip_type 
+    { bt }
+| cn = cons_name
+    { cn }
 ;
 
 constructor:
-| cons_name = ident OF pl = payload
-    { cons_name, Some pl }
-| cons_name = ident
-    { cons_name, None }    
+| cn = cons_name OF pl = payload
+    { cn, Some pl }
+| cn = cons_name
+    { cn, None }    
 ;
 
 payload:
@@ -196,16 +206,17 @@ payload:
 ;
 
 payload_elem:
-| plel = bip_type
-    { PLexisting plel }
-| plel = ident
-    { PLnew plel }
+| bt = bip_type
+    { PLexisting bt }
+| cn = cons_name
+    { PLnew cn }
 ;
 
 pattern:
-| WILDCARD   { Pwildcard }
-| c = CST    { Pconst (c) }
-| id = ident { Pident (id) }
+| WILDCARD          { Pwildcard }
+| c = CST           { Pconst c }
+| id = ident        { Pident id }
+| cn = cons_name    { Pconstructor cn }
 ;
 
 bip_type:
@@ -232,4 +243,8 @@ ident:
 
 spec:
   text = SPEC { { loc = ($startpos, $endpos); text } }
+;
+
+cons_name:
+  cn = CONS_NAME { cn }
 ;

@@ -8,12 +8,13 @@ open Ast_core
 type expr =
   | Eunit 
   | Eident of     ident
+  | Econs of      cons_name
   | Ecst of       constant
   | Eunop of      unop * expr
   | Ebinop of     binop * expr * expr
   | Elet of       ident * expr * expr
   | Eletpipe of   ident * expr * ident * expr * expr
-  | Efun of       ident * bool (* rec *) * parameter list * bip_type option
+  | Efun of       ident * bool (* rec *) * parameter list * ret_type
                   * special_op option * expr list * spec * expr
   | Eapp of       ident * expr list
   | Eif of        expr * expr list * expr list
@@ -28,7 +29,7 @@ type expr =
 
 and case = pattern * expr  
 
-and def = ident * bool (* rec *) * parameter list * bip_type option
+and def = ident * bool (* rec *) * parameter list * ret_type
           * special_op option * expr list * spec
 
 and decl = 

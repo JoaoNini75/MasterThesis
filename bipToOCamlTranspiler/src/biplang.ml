@@ -107,6 +107,7 @@ let get_pattern_str (ptrn: pattern) : string =
   | Pwildcard -> "_"
   | Pconst c -> get_const_str c
   | Pident ident -> ident.id
+  | Pconstructor cn -> cn
 
 let indent depth =
   String.make (depth * indent_spaces) ' '
@@ -201,6 +202,8 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Eunit -> Ounit
 
   | Eident ident -> Oident (add_side_to_id ident id_side)
+
+  | Econs cn -> Ocons cn
 
   | Ecst c -> Ocst c
 
@@ -509,6 +512,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
+  | Ocons cn -> fprintf fmt "%s%s" last_elem_str cn
+
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
 
   | Ounop (op, e) -> 
@@ -786,9 +791,9 @@ let pp_payload fmt (pl : payload) =
         if idx = 0 then tp_str
         else " * " ^ tp_str
 
-      | PLnew ident ->
-        if idx = 0 then ident.id
-        else " * " ^ ident.id 
+      | PLnew cons_name ->
+        if idx = 0 then cons_name
+        else " * " ^ cons_name 
     in
     fprintf fmt "%s" pl_elem_str
   ) pl
@@ -800,14 +805,13 @@ let pp_typedef_ml fmt (td: typedef) =
 
     | TDcons (typename, cons_list) ->
       fprintf fmt "type %s =" typename.id;
-      let indentation = indent 1 in
 
       List.iter (fun cons -> 
         let (cons_name, payload_opt) = cons in
 
         fprintf fmt "\n%s| %s" 
-          indentation
-          cons_name.id;
+          (indent 1)
+          cons_name;
 
         match payload_opt with
         | None -> ()

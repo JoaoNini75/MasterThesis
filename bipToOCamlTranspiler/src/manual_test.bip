@@ -1,7 +1,8 @@
 type number = | Neg of int | Pos | Zero
 type simple = int * bool
 
-let match_assert () = begin
-	5
+let match_assert () : number = begin
+	let x = Pos in
+	x
 end
 (*@ ensures true *)

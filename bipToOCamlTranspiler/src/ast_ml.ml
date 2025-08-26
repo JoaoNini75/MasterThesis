@@ -9,11 +9,12 @@ type oexpr =
   | Onone
   | Ounit
   | Oident of   ident
+  | Ocons of    cons_name
   | Ocst of     constant
   | Ounop of    unop * oexpr
   | Obinop of   binop * oexpr * oexpr
   | Olet of     ident * oexpr * oexpr
-  | Ofun of     ident * bool (* rec *) * parameter list * bip_type option
+  | Ofun of     ident * bool (* rec *) * parameter list * ret_type
                 * bool (* return pair *) * oexpr list * spec * oexpr
   | Oapp of     ident * oexpr list
   | Oif of      oexpr * oexpr * oexpr list * oexpr list
@@ -26,7 +27,7 @@ type oexpr =
 
 and ocase = pattern * oexpr 
 
-and odef = ident * bool (* rec *) * parameter list * bip_type option
+and odef = ident * bool (* rec *) * parameter list * ret_type
            * bool (* return pair *) * oexpr list * spec
 
 and odecl = 

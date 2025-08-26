@@ -8,6 +8,11 @@
 
   exception Lexing_error of string
 
+  let is_first_uppercase_ascii s =
+    match s.[0] with
+    | 'A' .. 'Z' -> true
+    | _ -> false
+
   let id_or_kwd =
     let h = Hashtbl.create 32 in
     List.iter (fun (s, tok) -> Hashtbl.add h s tok)
@@ -38,7 +43,10 @@
         "with", WITH;
         "type", TYPE;
         "of", OF];
-    fun s -> try Hashtbl.find h s with Not_found -> IDENT s
+    fun s -> try Hashtbl.find h s with Not_found -> 
+      if is_first_uppercase_ascii s
+      then CONS_NAME s
+      else IDENT s
 
   let string_buffer = Buffer.create 1024
   let spec_buf = Buffer.create 1024
@@ -48,8 +56,8 @@ let letter = ['a'-'z' 'A'-'Z']
 let letter_lc = ['a'-'z']
 let letter_uc = ['A'-'Z']
 let digit = ['0'-'9']
-let ident = letter(*_lc*) | ((letter | '_') (letter | digit | '_')* (letter | digit))
-(*let cons_name = letter_uc | ((letter | '_') (letter | digit | '_')* (letter | digit))*)
+let ident = letter_lc | ((letter | '_') (letter | digit | '_')* (letter | digit))
+let cons_name = letter_uc | ((letter | '_') (letter | digit | '_')* (letter | digit))
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
@@ -70,7 +78,7 @@ rule next_tokens = parse
     }
   
   | ident as id { id_or_kwd id }
-  (*| cons_name as id { id_or_kwd id } *)
+  | cons_name as id { id_or_kwd id }
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }
@@ -173,6 +181,7 @@ and string = parse
     | IN -> fprintf fmt "in"
     | IF -> fprintf fmt "if"
     | IDENT s -> fprintf fmt "%s (identifier)" s
+    | CONS_NAME s -> fprintf fmt "%s (cons_name)" s
     | FOR -> fprintf fmt "for"
     | EQUAL -> fprintf fmt "="
     | EOF -> fprintf fmt "eof"
@@ -231,7 +240,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        (* eprintf "@[%a@]@." pp_token token; *)
+        eprintf "@[%a@]@." pp_token token; 
       if token <> EOF then loop () in
     loop ()
 

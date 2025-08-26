@@ -5,7 +5,8 @@ type number =
 
 type simple = int * bool
 
-let match_assert () =
-  5
+let match_assert () : number =
+  let x = Pos in
+  x
 (*@ ensures true *)
 
