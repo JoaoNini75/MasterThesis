@@ -181,13 +181,23 @@ let add_side_to_id ident side =
   | Some Right -> { ident with id = ident.id ^ "_r"}
 
 
-let rec bip_to_ml_fun (ident, is_rec, param_list, bto, special_op_opt, body, spec_op, after) =
-    (ident, is_rec, param_list, bto, special_op_opt <> None,
+let rec bip_to_ml_fun (ident, is_rec, param_list, fun_ret, body, spec_op, after) =
+  let (ret_type_opt, special_op_opt) = 
+    match fun_ret with 
+    | None -> None, None
+    | Some (rto, soo) -> rto, soo
+  in
+  (ident, is_rec, param_list, ret_type_opt, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op, bip_to_ml after None None)
 
 and bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
-  let (ident, is_rec, param_list, bto, special_op_opt, body, spec_op) = def in
-    (ident, is_rec, param_list, bto, special_op_opt <> None,
+  let (ident, is_rec, param_list, fun_ret, body, spec_op) = def in
+  let (ret_type_opt, special_op_opt) = 
+    match fun_ret with 
+    | None -> None, None
+    | Some (rto, soo) -> rto, soo
+  in
+  (ident, is_rec, param_list, ret_type_opt, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op)
 
 and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase = 
@@ -284,9 +294,9 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
         Olet (ident_r, oe2, oe_body)
     )
 
-  | Efun (id, is_rec, param_list, fun_type, special_op_opt, expr_list, spec_opt, after) ->
+  | Efun (id, is_rec, param_list, fun_ret, expr_list, spec_opt, after) ->
     let (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after) =
-      (bip_to_ml_fun (id, is_rec, param_list, fun_type, special_op_opt, expr_list, spec_opt, after)) in
+      (bip_to_ml_fun (id, is_rec, param_list, fun_ret, expr_list, spec_opt, after)) in
     Ofun (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after)
 
   | Eapp (ident, expr_list) -> 
@@ -709,8 +719,13 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
               (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
     )
 
-and pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec depth = 
-  let fun_type_str = get_type_str_opt fun_type in
+and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth = 
+  let fun_type_str = 
+    match ret_type_opt with
+    | None -> ""
+    | Some (Retbt bt) -> get_type_str bt
+    | Some (Retcn ident) -> ident.id
+  in
   let is_rec_str = if is_rec then "rec " else "" in
   let inner_fun = if depth = 0 then "" else "\n\n" in
   let indentation = indent depth in
@@ -761,14 +776,14 @@ and pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec de
   specification
 
 and pp_def_ml fmt (odef: Ast_ml.odef) =
-  let (id, is_rec, param_list, fun_type, ret_pair, oexpr_list, spec) = odef in 
-  let specification = (pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec 0) in
+  let (id, is_rec, param_list, ret_type_opt, ret_pair, oexpr_list, spec) = odef in 
+  let specification = (pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec 0) in
   fprintf fmt "\n%s\n\n" specification
   
 and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth not_last_elem = 
   match oe with
-  | Ofun (id, is_rec, param_list, fun_type, ret_pair, oexpr_list, spec, after) ->
-    let specification = (pp_def_ml_core fmt id is_rec param_list fun_type ret_pair oexpr_list spec depth) in
+  | Ofun (id, is_rec, param_list, ret_type_opt, ret_pair, oexpr_list, spec, after) ->
+    let specification = (pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth) in
     fprintf fmt "\n%s%s\n%sin\n%s%a" 
       (indent depth)
       specification

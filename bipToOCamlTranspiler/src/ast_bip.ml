@@ -14,8 +14,7 @@ type expr =
   | Ebinop of     binop * expr * expr
   | Elet of       ident * expr * expr
   | Eletpipe of   ident * expr * ident * expr * expr
-  | Efun of       ident * bool (* rec *) * parameter list * ret_type
-                  * special_op option * expr list * spec * expr
+  | Efun of       ident * bool (* rec *) * parameter list * fun_ret * expr list * spec * expr
   | Eapp of       ident * expr list
   | Eif of        expr * expr list * expr list
   | Efor of       ident * expr * expr * spec option * expr list  
@@ -29,8 +28,7 @@ type expr =
 
 and case = pattern * expr  
 
-and def = ident * bool (* rec *) * parameter list * ret_type
-          * special_op option * expr list * spec
+and def = ident * bool (* rec *) * parameter list * fun_ret * expr list * spec
 
 and decl = 
   | Edef of     def

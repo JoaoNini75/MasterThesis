@@ -48,32 +48,24 @@ decl:
     { Edef edef }
 | sp = spec
     { Espec sp }
-| TYPE typename = ident EQUAL pl = payload
-    { Etypedef (TDsimple(typename, pl)) }
-| TYPE typename = ident EQUAL CASE constructors = separated_nonempty_list(CASE, constructor)
-    { Etypedef (TDcons(typename, constructors)) }
+| TYPE name = ident EQUAL pl = payload
+    { Etypedef (TDsimple(name, pl)) }
+| TYPE name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor)
+    { Etypedef (TDcons(name, cons)) }
 ;
 
 def_outer:
-| LET REC f = ident x = param_list fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, true, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, true, x, Some tp, spop, b, sp) }
-| LET     f = ident x = param_list fr = fun_ret? EQUAL b = block sp = spec
-    { match fr with
-      | None -> (f, false, x, None, None, b, sp)
-      | Some (tp, spop) -> (f, false, x, Some tp, spop, b, sp) }
+| LET REC f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec
+    { (f, true, x, fr, body, sp) }
+| LET     f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec
+    { (f, false, x, fr, body, sp) }
 ;
 
 def_inner:
 | LET REC f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec IN after = expr
-    { match fr with
-      | None -> Efun (f, true, x, None, None, body, sp, after)
-      | Some (tp, spop) -> Efun (f, true, x, Some tp, spop, body, sp, after) }
+    { Efun (f, true, x, fr, body, sp, after) }
 | LET     f = ident x = param_list fr = fun_ret? EQUAL body = block sp = spec IN after = expr
-    { match fr with
-      | None -> Efun (f, false, x, None, None, body, sp, after)
-      | Some (tp, spop) -> Efun (f, false, x, Some tp, spop, body, sp, after) }
+    { Efun (f, false, x, fr, body, sp, after) }
 ;
 
 param_list:
@@ -179,18 +171,18 @@ parameter:
 
 fun_ret:
 | COLON rt = ret_type
-    { tp, None }
+    { (rt, None) }
 | COLON LFLOOR rt = ret_type RFLOOR
-    { rt, Some SOfloor }
+    { (rt, Some SOfloor) }
 | COLON rt1 = ret_type PIPE rt2 = ret_type
-    { rt1, Some SOpipe }
+    { (rt1, Some SOpipe) }
 ;
 
 ret_type:
 | bt = bip_type 
-    { bt }
-| cn = cons_name
-    { cn }
+    { Some (Retbt (bt)) }
+| id = ident
+    { Some (Retcn (id)) }
 ;
 
 constructor:

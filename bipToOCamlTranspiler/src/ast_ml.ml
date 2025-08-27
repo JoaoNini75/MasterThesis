@@ -14,7 +14,7 @@ type oexpr =
   | Ounop of    unop * oexpr
   | Obinop of   binop * oexpr * oexpr
   | Olet of     ident * oexpr * oexpr
-  | Ofun of     ident * bool (* rec *) * parameter list * ret_type
+  | Ofun of     ident * bool (* rec *) * parameter list * ret_type option
                 * bool (* return pair *) * oexpr list * spec * oexpr
   | Oapp of     ident * oexpr list
   | Oif of      oexpr * oexpr * oexpr list * oexpr list
@@ -27,7 +27,7 @@ type oexpr =
 
 and ocase = pattern * oexpr 
 
-and odef = ident * bool (* rec *) * parameter list * ret_type
+and odef = ident * bool (* rec *) * parameter list * ret_type option
            * bool (* return pair *) * oexpr list * spec
 
 and odecl = 

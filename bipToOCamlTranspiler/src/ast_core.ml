@@ -12,8 +12,10 @@ type cons_name = string
 type bip_type = BOOL | INT | STRING | NONE
 type special_op = SOfloor | SOpipe  
 type ret_type = 
-  | Retbt of bip_type option
-  | Retcn of cons_name
+  | Retbt of bip_type
+  | Retcn of ident
+
+type fun_ret = (ret_type option * special_op option) option
 
 type parameter = 
   | Punit
