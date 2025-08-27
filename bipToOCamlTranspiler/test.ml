@@ -1,4 +1,7 @@
-type number = | Pos of int * int | Neg | Zero
+type number = 
+  | Pos of int * int 
+  | Neg 
+  | Zero
 
 let match_assert (x : int) =
   let y = 

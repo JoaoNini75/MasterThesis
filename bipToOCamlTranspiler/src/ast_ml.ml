@@ -9,6 +9,7 @@ type oexpr =
   | Onone
   | Ounit
   | Oident of   ident
+  | Otuple of   oexpr list
   | Ocons of    cons_name * oexpr list
   | Ocst of     constant
   | Ounop of    unop * oexpr

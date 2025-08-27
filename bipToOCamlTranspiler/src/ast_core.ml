@@ -47,7 +47,7 @@ type pattern =
 
 type payload_elem =
   | PLexisting of bip_type
-  | PLnew of      cons_name
+  | PLnew of      ident
 
 type payload = payload_elem list
 
@@ -55,6 +55,6 @@ type constructor = cons_name * payload option
 
 type typedef = 
   (* type ex1 = int * string *)
-  | TDsimple of ident * payload
+  | TDsimple of ident * payload * typedef option
   (* type ex2 = | Cons1 | Cons2 of bool *)
-  | TDcons of   ident * constructor list 
+  | TDcons of   ident * constructor list * typedef option 

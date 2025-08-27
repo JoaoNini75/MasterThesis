@@ -12,7 +12,7 @@
 %token <string> SPEC
 %token <string> CONS_NAME
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -48,10 +48,22 @@ decl:
     { Edef edef }
 | sp = spec
     { Espec sp }
-| TYPE name = ident EQUAL pl = payload
-    { Etypedef (TDsimple(name, pl)) }
-| TYPE name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor)
-    { Etypedef (TDcons(name, cons)) }
+| td = type_def
+    { Etypedef td }
+;
+
+type_def:
+| TYPE name = ident EQUAL pl = payload atd = and_type_def?
+    { TDsimple(name, pl, atd) }
+| TYPE name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor) atd = and_type_def?
+    { TDcons(name, cons, atd) }
+;
+(* make the rule type_def_core *)
+and_type_def:
+| AND name = ident EQUAL pl = payload atd = and_type_def?
+    { TDsimple(name, pl, atd) }
+| AND name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor) atd = and_type_def?
+    { TDcons(name, cons, atd) }
 ;
 
 def_outer:
@@ -94,8 +106,10 @@ expr:
     { Ecst c }
 | id = ident
     { Eident id }
-| cn = cons_name args = cons_init 
-    { Econs (cn, args) }
+| net = non_empty_tuple
+    { Etuple net }
+| cn = cons_name t = tuple 
+    { Econs (cn, t) }
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -136,11 +150,16 @@ expr:
     { e }
 ;
 
-cons_init:
+tuple:
 |
     { [] }
-| LP args = separated_list(COMMA, expr) RP
-    { args }
+| net = non_empty_tuple
+    { net }
+;
+
+non_empty_tuple:
+| LP first = expr COMMA rest = separated_list(COMMA, expr) RP
+    { first :: rest }
 ;
 
 app_body:
@@ -207,15 +226,16 @@ payload:
 payload_elem:
 | bt = bip_type
     { PLexisting bt }
-| cn = cons_name
-    { PLnew cn }
+| id = ident
+    { PLnew id }
 ;
 
 pattern:
 | WILDCARD          { Pwildcard }
 | c = CST           { Pconst c }
 | id = ident        { Pident id }
-| cn = cons_name    { Pconstructor cn }
+(* TODO: change here to deconstruct *)
+| cn = cons_name    { Pconstructor cn } 
 ;
 
 bip_type:

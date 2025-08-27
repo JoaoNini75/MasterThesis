@@ -42,7 +42,8 @@
         "match", MATCH;
         "with", WITH;
         "type", TYPE;
-        "of", OF];
+        "of", OF;
+        "and", AND];
     fun s -> try Hashtbl.find h s with Not_found -> 
       if is_first_uppercase_ascii s
       then CONS_NAME s
@@ -233,6 +234,7 @@ and string = parse
     | WILDCARD -> fprintf fmt "_"
     | TYPE -> fprintf fmt "type"
     | OF -> fprintf fmt "of"
+    | AND -> fprintf fmt "and"
 
   let () =
     let fname = Sys.argv.(1) in
@@ -240,7 +242,7 @@ and string = parse
     let lb = Lexing.from_channel cin in
     let rec loop () =
       let token : Parser.token = next_token lb in
-        eprintf "@[%a@]@." pp_token token; 
+        (* eprintf "@[%a@]@." pp_token token; *)
       if token <> EOF then loop () in
     loop ()
 

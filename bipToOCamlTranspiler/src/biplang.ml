@@ -213,8 +213,10 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Eident ident -> Oident (add_side_to_id ident id_side)
 
+  | Etuple el -> Otuple (List.map (fun e -> bip_to_ml e id_side gen_side) el)
+
   | Econs (cn, expr_list) -> 
-    Ocons (cn, (List.map (fun e -> bip_to_ml e None gen_side) expr_list))
+    Ocons (cn, (List.map (fun e -> bip_to_ml e id_side gen_side) expr_list))
 
   | Ecst c -> Ocst c
 
@@ -513,15 +515,20 @@ let rec pp_oapp_core fmt oapp depth =
       oe) oexpr_list
   )
 
-and pp_cons_core fmt oel depth =
+and pp_tuple_core fmt oel depth is_cons =
   if List.length oel = 0 then ()
   else 
     let first_elem = (List.nth oel 0) in
-    fprintf fmt "%a" (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
+    let is_cons_str = if is_cons then " " else "" in
+    fprintf fmt "%s(%a"
+      is_cons_str
+      (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
 
     List.iteri (fun idx oe -> 
       if idx = 0 then ()
-      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel
+      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel;
+
+    fprintf fmt ")"
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
@@ -533,11 +540,16 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
+  | Otuple oel -> 
+    fprintf fmt "%s%a" 
+      last_elem_str
+      (fun fmt _ -> pp_tuple_core fmt oel depth false) oel
+
   | Ocons (cn, oel) -> 
-    fprintf fmt "%s%s (%a)" 
+    fprintf fmt "%s%s%a" 
       last_elem_str 
       cn 
-      (fun fmt _ -> pp_cons_core fmt oel depth) oel
+      (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
 
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
 
@@ -821,20 +833,23 @@ let pp_payload fmt (pl : payload) =
         if idx = 0 then tp_str
         else " * " ^ tp_str
 
-      | PLnew cons_name ->
-        if idx = 0 then cons_name
-        else " * " ^ cons_name 
+      | PLnew ident ->
+        if idx = 0 then ident.id
+        else " * " ^ ident.id 
     in
     fprintf fmt "%s" pl_elem_str
   ) pl
 
-let pp_typedef_ml fmt (td: typedef) =
+let rec pp_typedef_ml fmt (td: typedef) (is_and : bool) =
+  let keyword = if is_and then "and" else "type" in
+  let and_type_def_opt =
   ( match td with 
-    | TDsimple (typename, payload) ->
-      fprintf fmt "type %s = %a" typename.id pp_payload payload
+    | TDsimple (typename, payload, and_type_def_opt) ->
+      fprintf fmt "%s %s = %a" keyword typename.id pp_payload payload;
+      and_type_def_opt
 
-    | TDcons (typename, cons_list) ->
-      fprintf fmt "type %s =" typename.id;
+    | TDcons (typename, cons_list, and_type_def_opt) ->
+      fprintf fmt "%s %s =" keyword typename.id;
 
       List.iter (fun cons -> 
         let (cons_name, payload_opt) = cons in
@@ -848,10 +863,15 @@ let pp_typedef_ml fmt (td: typedef) =
         | Some payload -> 
           fprintf fmt " of %a" pp_payload payload
 
-      ) cons_list
-  );
+      ) cons_list;
 
-  fprintf fmt "\n\n"
+      and_type_def_opt
+  ) in
+  
+  fprintf fmt "\n\n";
+  match and_type_def_opt with 
+  | None -> ()
+  | Some atd -> pp_typedef_ml fmt atd true
 
 let pp_file_ml fmt (file : Ast_ml.ofile) =
   (*fprintf fmt "\n\nOCaml code:\n\n";*)
@@ -859,7 +879,7 @@ let pp_file_ml fmt (file : Ast_ml.ofile) =
     match odecl with 
     | Odef odef -> pp_def_ml fmt odef
     | Ospec ospec -> pp_spec_ml fmt ospec
-    | Otypedef otypedef -> pp_typedef_ml fmt otypedef
+    | Otypedef otypedef -> pp_typedef_ml fmt otypedef false
   ) file
 
 let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
