@@ -213,7 +213,8 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Eident ident -> Oident (add_side_to_id ident id_side)
 
-  | Econs cn -> Ocons cn
+  | Econs (cn, expr_list) -> 
+    Ocons (cn, (List.map (fun e -> bip_to_ml e None gen_side) expr_list))
 
   | Ecst c -> Ocst c
 
@@ -512,6 +513,16 @@ let rec pp_oapp_core fmt oapp depth =
       oe) oexpr_list
   )
 
+and pp_cons_core fmt oel depth =
+  if List.length oel = 0 then ()
+  else 
+    let first_elem = (List.nth oel 0) in
+    fprintf fmt "%a" (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
+
+    List.iteri (fun idx oe -> 
+      if idx = 0 then ()
+      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel
+
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
   
@@ -522,7 +533,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
 
-  | Ocons cn -> fprintf fmt "%s%s" last_elem_str cn
+  | Ocons (cn, oel) -> 
+    fprintf fmt "%s%s (%a)" 
+      last_elem_str 
+      cn 
+      (fun fmt _ -> pp_cons_core fmt oel depth) oel
 
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
 

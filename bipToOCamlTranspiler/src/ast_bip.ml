@@ -8,7 +8,7 @@ open Ast_core
 type expr =
   | Eunit 
   | Eident of     ident
-  | Econs of      cons_name
+  | Econs of      cons_name * expr list
   | Ecst of       constant
   | Eunop of      unop * expr
   | Ebinop of     binop * expr * expr

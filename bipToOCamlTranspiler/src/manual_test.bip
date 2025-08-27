@@ -1,17 +1,21 @@
-type number = | Neg of int | Pos | Zero of int
+type number = 
+	| Neg of int 
+	| Pos of int * bool
+	| Zero
+
 type simple = int * bool
 
 let test_construction (num) : number = begin
-	let x = Pos (num) in
+	let x = Pos (num, true) in
 	x
 end
 (*@ ensures true *)
 
-let match_destruct () : int = begin
+(*let match_destruct () : int = begin
 	let x = Pos in
 	match x with
 	| Neg n -> n
 	| Zero -> 0
 	| Pos n -> n
 end
-(*@ ensures true *)
+(*@ ensures true *)*)

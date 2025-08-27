@@ -94,8 +94,8 @@ expr:
     { Ecst c }
 | id = ident
     { Eident id }
-| cn = cons_name
-    { Econs cn }
+| cn = cons_name args = cons_init 
+    { Econs (cn, args) }
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
 | NOT e1 = expr
@@ -134,6 +134,13 @@ expr:
     { efun }
 | LP e = expr RP
     { e }
+;
+
+cons_init:
+|
+    { [] }
+| LP args = separated_list(COMMA, expr) RP
+    { args }
 ;
 
 app_body:

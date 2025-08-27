@@ -1,12 +1,12 @@
 type number =
   | Neg of int
-  | Pos
+  | Pos of int * bool
   | Zero
 
 type simple = int * bool
 
-let match_assert () : number =
-  let x = Pos in
+let test_construction (num) : number =
+  let x = Pos (num, true) in
   x
 (*@ ensures true *)
 
