@@ -9,7 +9,7 @@ type pattern =
   | Ewildcard
   | Econst of       constant
   | Eident of       ident
-  | Econstructor of cons_name * destruct_cons
+  | Econstructor of ident_cap * destruct_cons
 (* only allowing some patterns for now *)
 
 and destruct_cons = 
@@ -22,7 +22,7 @@ and expr =
   | Eunit 
   | Eident of     ident
   | Etuple of     expr list
-  | Econs of      cons_name * expr list
+  | Econs of      ident_cap * expr list
   | Ecst of       constant
   | Eunop of      unop * expr
   | Ebinop of     binop * expr * expr
@@ -46,6 +46,8 @@ and decl =
   | Edef of     def
   | Espec of    spec
   | Etypedef of typedef
+  | Eopen of    ident_cap
+  | Einclude of ident_cap
   
 and file = decl list
    

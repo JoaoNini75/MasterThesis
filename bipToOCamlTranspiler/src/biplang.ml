@@ -202,7 +202,7 @@ and bip_to_ml_ptrn (ptrn : Ast_bip.pattern) : Ast_ml.opattern =
   | Ewildcard -> Owildcard
   | Econst c -> Oconst c
   | Eident id -> Oident id
-  | Econstructor (cn, dc) -> Oconstructor (cn, bip_to_ml_destruct_cons dc)
+  | Econstructor (idcap, dc) -> Oconstructor (idcap, bip_to_ml_destruct_cons dc)
 
 and bip_to_ml_destruct_cons dc =
   match dc with 
@@ -220,8 +220,8 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Etuple el -> Otuple (List.map (fun e -> bip_to_ml e id_side gen_side) el)
 
-  | Econs (cn, expr_list) -> 
-    Ocons (cn, (List.map (fun e -> bip_to_ml e id_side gen_side) expr_list))
+  | Econs (idcap, expr_list) -> 
+    Ocons (idcap, (List.map (fun e -> bip_to_ml e id_side gen_side) expr_list))
 
   | Ecst c -> Ocst c
 
@@ -545,9 +545,9 @@ and pp_opattern fmt ptrn depth =
   | Owildcard -> fprintf fmt "_"
   | Oconst c -> fprintf fmt "%s" (get_const_str c)
   | Oident ident -> fprintf fmt "%s" ident.id
-  | Oconstructor (cn, dc) -> 
+  | Oconstructor (idcap, dc) -> 
     fprintf fmt "%s%a" 
-    cn 
+    idcap 
     (fun fmt _ -> pp_odestruct_cons fmt dc depth) dc
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
@@ -565,10 +565,10 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       last_elem_str
       (fun fmt _ -> pp_tuple_core fmt oel depth false) oel
 
-  | Ocons (cn, oel) -> 
+  | Ocons (idcap, oel) -> 
     fprintf fmt "%s%s%a" 
       last_elem_str 
-      cn 
+      idcap 
       (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
 
   | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
@@ -874,11 +874,11 @@ let rec pp_typedef_ml fmt (td: typedef) (is_and : bool) =
       fprintf fmt "%s %s =" keyword typename.id;
 
       List.iter (fun cons -> 
-        let (cons_name, payload_opt) = cons in
+        let (idcap, payload_opt) = cons in
 
         fprintf fmt "\n%s| %s" 
           (indent 1)
-          cons_name;
+          idcap;
 
         match payload_opt with
         | None -> ()
@@ -895,6 +895,12 @@ let rec pp_typedef_ml fmt (td: typedef) (is_and : bool) =
   | None -> ()
   | Some atd -> pp_typedef_ml fmt atd true
 
+let pp_open fmt idcap =
+  fprintf fmt "open %s\n\n" idcap
+
+let pp_include fmt idcap =
+  fprintf fmt "include %s\n\n" idcap
+
 let pp_file_ml fmt (file : Ast_ml.ofile) =
   (*fprintf fmt "\n\nOCaml code:\n\n";*)
   List.iter (fun odecl ->
@@ -902,6 +908,8 @@ let pp_file_ml fmt (file : Ast_ml.ofile) =
     | Odef odef -> pp_def_ml fmt odef
     | Ospec ospec -> pp_spec_ml fmt ospec
     | Otypedef otypedef -> pp_typedef_ml fmt otypedef false
+    | Oopen idcap -> pp_open fmt idcap
+    | Oinclude idcap -> pp_include fmt idcap
   ) file
 
 let write_ml_to_file (filename : string) (file : Ast_ml.ofile) : unit =
@@ -917,6 +925,8 @@ let bip_to_ml_file (file : Ast_bip.file) : Ast_ml.ofile =
     | Edef def -> Odef (bip_to_ml_def def)
     | Espec spec -> (Ospec spec)
     | Etypedef typedef -> (Otypedef typedef)
+    | Eopen open_decl -> (Oopen open_decl)
+    | Einclude include_decl -> (Oinclude include_decl)
   ) file
 
 let pp_ml (ofile : Ast_ml.ofile) =

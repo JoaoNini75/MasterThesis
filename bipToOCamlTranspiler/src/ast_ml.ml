@@ -9,7 +9,7 @@ type opattern =
   | Owildcard
   | Oconst of       constant
   | Oident of       ident
-  | Oconstructor of cons_name * odestruct_cons
+  | Oconstructor of ident_cap * odestruct_cons
 (* only allowing some patterns for now *)
 
 and odestruct_cons = 
@@ -23,7 +23,7 @@ and oexpr =
   | Ounit
   | Oident of   ident
   | Otuple of   oexpr list
-  | Ocons of    cons_name * oexpr list
+  | Ocons of    ident_cap * oexpr list
   | Ocst of     constant
   | Ounop of    unop * oexpr
   | Obinop of   binop * oexpr * oexpr
@@ -46,6 +46,8 @@ and odecl =
   | Odef of   odef
   | Ospec of  spec
   | Otypedef of typedef
+  | Oopen of    ident_cap
+  | Oinclude of ident_cap
   
 and ofile = odecl list
    

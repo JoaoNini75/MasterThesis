@@ -10,9 +10,9 @@
 %token <Ast_core.binop> CMP
 %token <string> IDENT
 %token <string> SPEC
-%token <string> CONS_NAME
+%token <string> IDENT_CAP
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -50,6 +50,10 @@ decl:
     { Espec sp }
 | td = type_def
     { Etypedef td }
+| OPEN m = ident_cap
+    { Eopen m }
+| INCLUDE m = ident_cap
+    { Einclude m }
 ;
 
 type_def:
@@ -111,7 +115,7 @@ expr:
     { Eident id }
 | tpt = two_plus_tuple
     { Etuple tpt }
-| cn = cons_name t = tuple 
+| cn = ident_cap t = tuple 
     { Econs (cn, t) }
 | MINUS e1 = expr %prec unary_minus
     { Eunop (Uneg, e1) }
@@ -215,9 +219,9 @@ ret_type:
 ;
 
 constructor:
-| cn = cons_name OF pl = payload
+| cn = ident_cap OF pl = payload
     { cn, Some pl }
-| cn = cons_name
+| cn = ident_cap
     { cn, None }    
 ;
 
@@ -249,7 +253,7 @@ pattern:
 | WILDCARD      { Ewildcard }
 | c = CST       { Econst c }
 | id = ident    { Eident id }
-| cn = cons_name dc = destruct_cons
+| cn = ident_cap dc = destruct_cons
     { Econstructor (cn, dc) } 
 ;
 
@@ -279,6 +283,6 @@ spec:
   text = SPEC { { loc = ($startpos, $endpos); text } }
 ;
 
-cons_name:
-  cn = CONS_NAME { cn }
+ident_cap:
+  cn = IDENT_CAP { cn }
 ;

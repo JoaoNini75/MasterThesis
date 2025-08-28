@@ -43,10 +43,12 @@
         "with", WITH;
         "type", TYPE;
         "of", OF;
-        "and", AND];
+        "and", AND;
+        "open", OPEN;
+        "include", INCLUDE];
     fun s -> try Hashtbl.find h s with Not_found -> 
       if is_first_uppercase_ascii s
-      then CONS_NAME s
+      then IDENT_CAP s
       else IDENT s
 
   let string_buffer = Buffer.create 1024
@@ -58,7 +60,7 @@ let letter_lc = ['a'-'z']
 let letter_uc = ['A'-'Z']
 let digit = ['0'-'9']
 let ident = letter_lc | ((letter | '_') (letter | digit | '_')* (letter | digit))
-let cons_name = letter_uc | ((letter | '_') (letter | digit | '_')* (letter | digit))
+let ident_cap = letter_uc | ((letter | '_') (letter | digit | '_')* (letter | digit))
 let integer = '0' | ['1'-'9'] digit*
 let space = ' ' | '\t'
 
@@ -79,7 +81,7 @@ rule next_tokens = parse
     }
   
   | ident as id { id_or_kwd id }
-  | cons_name as id { id_or_kwd id }
+  | ident_cap as id { id_or_kwd id }
   | '+'     { PLUS }
   | '-'     { MINUS }
   | '*'     { TIMES }
@@ -182,7 +184,7 @@ and string = parse
     | IN -> fprintf fmt "in"
     | IF -> fprintf fmt "if"
     | IDENT s -> fprintf fmt "%s (identifier)" s
-    | CONS_NAME s -> fprintf fmt "%s (cons_name)" s
+    | IDENT_CAP s -> fprintf fmt "%s (ident_cap)" s
     | FOR -> fprintf fmt "for"
     | EQUAL -> fprintf fmt "="
     | EOF -> fprintf fmt "eof"
@@ -235,6 +237,8 @@ and string = parse
     | TYPE -> fprintf fmt "type"
     | OF -> fprintf fmt "of"
     | AND -> fprintf fmt "and"
+    | OPEN -> fprintf fmt "open"
+    | INCLUDE -> fprintf fmt "include"
 
   let () =
     let fname = Sys.argv.(1) in

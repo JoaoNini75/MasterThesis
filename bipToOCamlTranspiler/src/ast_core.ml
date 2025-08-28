@@ -7,7 +7,7 @@ type location = Lexing.position * Lexing.position
 
 type ident = { loc: location; id: string; }
 type spec = { loc: location; text: string; } (* Gospel specifications *)
-type cons_name = string
+type ident_cap = string
 
 type bip_type = BOOL | INT | STRING | NONE
 type special_op = SOfloor | SOpipe  
@@ -44,7 +44,7 @@ type payload_elem =
 
 type payload = payload_elem list
 
-type constructor = cons_name * payload option
+type constructor = ident_cap * payload option
 
 type typedef = 
   (* type ex1 = int * string *)
