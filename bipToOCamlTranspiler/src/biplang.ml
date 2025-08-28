@@ -28,6 +28,7 @@ let usage = "
 "
 
 let indent_spaces = 2
+let special_cond_align_char = '?'
 let parse_only = ref false
 
 let spec =
@@ -97,7 +98,7 @@ let get_type_str_opt (bip_type_opt : Ast_core.bip_type option) =
   | Some bt -> get_type_str bt
 
 
-let pp_spec_opt spec_opt =
+let pp_spec_opt spec_opt : string =
   match spec_opt with 
   | None -> ""
   | Some spec -> spec.text 
@@ -132,6 +133,14 @@ let indent_spec depth spec_str first_line_diff =
       let head = prefix_first ^ trim_leading first in
       let tail = List.map (fun line -> prefix_rest ^ trim_leading line) rest in
       String.concat "\n" (head :: tail)
+
+let indent_spec_if_cond_align depth spec =
+  if not (String.contains spec special_cond_align_char) 
+  then spec
+  else
+    String.concat 
+    (indent (depth+3)) 
+    (String.split_on_char special_cond_align_char spec)
 
 
 (* There will be problems with mod in specs because of Cameleer needing it prefix. 
@@ -420,14 +429,13 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
       "(" ^ el_str ^ " && " ^ fp_str ^ ") || " ^
       "(" ^ er_str ^ " && " ^ fp'_str ^ ") || " ^
       "(not (" ^ el_str ^ ") && not (" ^ er_str ^ ")) || " ^
-      "(" ^ el_str ^ " && " ^ er_str ^ ")" in
+      "(" ^ el_str ^ " && " ^ er_str ^ ") " in
 
-    let complete_spec = 
+    let final_spec_text = 
       match spec with 
-      | None -> a 
-      | Some sp -> sp.text ^ "\n invariant " ^ a in
-
-    let final_spec_text = "(*@" ^ complete_spec ^ " *)" in
+      | None -> " invariant " ^ a 
+      | Some sp -> sp.text ^ "\n" ^ (String.make 1 special_cond_align_char) ^ "invariant " ^ a 
+    in
 
     let final_spec = 
       Some ({ loc = (Lexing.dummy_pos, Lexing.dummy_pos);
@@ -640,10 +648,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Ofor (id, value, e_to, spec_opt, body) -> 
     let indentation = (indent depth) in
     let specification = 
-      if (pp_spec_opt spec_opt) = "" then "" 
-      else (swap_mod_order (indent_spec (depth-4) (pp_spec_opt spec_opt) true)) in
+      if pp_spec_opt spec_opt = "" then "" 
+      else swap_mod_order (pp_spec_opt spec_opt)
+    in
 
-    fprintf fmt "\n\n%sfor %s = %a to %a do\n%s(*@@ %s*)"
+    fprintf fmt "\n\n%sfor %s = %a to %a do\n%s(*@@%s*)"
       indentation
       id.id
       (fun fmt _ -> pp_oexpr fmt value depth true) value
@@ -662,21 +671,29 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
   | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
     let first_line_diff = cnd_r = Onone in
-    let indented_spec = indent_spec (depth-2) (pp_spec_opt spec_opt) first_line_diff in
-    let specification = 
-      if (pp_spec_opt spec_opt) = "" then "" 
-      else "\n" ^ (swap_mod_order indented_spec) in
 
     ( match cnd_r with
       | Onone -> 
-        fprintf fmt "\n\n%swhile %a do\n%s(*@@ %s*)" 
+        let indented_spec = indent_spec_if_cond_align (depth) (pp_spec_opt spec_opt) in
+        let specification = 
+          if pp_spec_opt spec_opt = "" then "" 
+          else swap_mod_order indented_spec
+        in
+
+        fprintf fmt "\n\n%swhile %a do\n%s(*@@%s*)" 
         indentation
         (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
         (indent (depth+1))
         specification
 
       | _ -> 
-        fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) <-> (%a)%s*)"
+        let indented_spec = indent_spec (depth-2) (pp_spec_opt spec_opt) first_line_diff in
+        let specification = 
+          if pp_spec_opt spec_opt = "" then "" 
+          else swap_mod_order indented_spec
+        in
+        
+        fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) <-> (%a)\n%s*)"
         indentation
         (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
         (indent (depth+1))
