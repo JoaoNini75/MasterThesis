@@ -346,3 +346,7 @@ let test () = begin
 	Neg2
 end
 (*@ ensures true *)
+
+open A 
+
+include B 

@@ -9,12 +9,8 @@ type pattern =
   | Ewildcard
   | Econst of       constant
   | Eident of       ident
-  | Econstructor of ident_cap * destruct_cons
+  | Econstructor of ident_cap * expr list
 (* only allowing some patterns for now *)
-
-and destruct_cons = 
-  | Eident of     ident
-  | Etuple of     expr list
 
 and case = pattern * expr 
 

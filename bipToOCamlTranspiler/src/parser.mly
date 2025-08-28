@@ -157,9 +157,13 @@ expr:
     { e }
 ;
 
-tuple:
+tuple: (* expressions are not allowed in unary tuples for now *)
 |
     { [] }
+| id = ident
+    { [Eident id] }
+| LP id = ident RP
+    { [Eident id] }
 | tpt = two_plus_tuple
     { tpt }
 ;
@@ -237,24 +241,12 @@ payload_elem:
     { PLnew id }
 ;
 
-destruct_cons:
-| t = tuple (* 0, 2+ *)
-    { Etuple t }
-| id = ident (* 1 *)
-    { Eident id }
-(* example:
-    match x with
-    | Zero (* 0 *) -> 0
-    | Neg n (* 1 *) -> n
-    | Pos (n, b) (* 2 *) -> if b then n else n+1 *)
-;
-
 pattern:
 | WILDCARD      { Ewildcard }
 | c = CST       { Econst c }
 | id = ident    { Eident id }
-| cn = ident_cap dc = destruct_cons
-    { Econstructor (cn, dc) } 
+| cn = ident_cap t = tuple
+    { Econstructor (cn, t) } 
 ;
 
 bip_type:

@@ -9,12 +9,8 @@ type opattern =
   | Owildcard
   | Oconst of       constant
   | Oident of       ident
-  | Oconstructor of ident_cap * odestruct_cons
+  | Oconstructor of ident_cap * oexpr list
 (* only allowing some patterns for now *)
-
-and odestruct_cons = 
-  | Oident of   ident
-  | Otuple of   oexpr list
 
 and ocase = opattern * oexpr
 

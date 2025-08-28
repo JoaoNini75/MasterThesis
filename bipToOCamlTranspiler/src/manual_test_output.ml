@@ -1,61 +1,31 @@
-type number =
+type signed_int =
+  | Pos of int
   | Neg of int
-  | Pos of int * bool * int
   | Zero
 
-type simple = number * bool
-
-and complex =
-  | Num1 of simple * int
-  | Num2 of simple * bool
-
-and third = complex * simple
-
-let test_construction (num) : simple =
-  let x = Pos (num, true, 3) in
-  let y = (x, (true || false)) in
-  y
-(*@ ensures true *)
-
-let match_destruct () : int =
-  let x = Zero in
-  match x with
-  | Zero -> 0
-  | Neg n -> n
-  | Pos (n, b, third) -> 
-    if b
-    then begin 
-      third
-    end else begin 
-      (n + 1)
-    end;
-(*@ ensures true *)
-
-type number2 =
-  | Pos2 of int * int
-  | Neg2
-  | Zero2
-
-let match_assert (x : int) =
+let match_assert (x : int) : int =
   let y = 
     if (x > 0)
     then begin 
-      Pos2 (2, 4)
+      Pos (x)
     end else begin 
-      Zero2
-    end in
-  let res = 
-    ( match y with
-    | Pos2 (i, n) -> 10
-    | Neg2 -> -10
-    | Zero2 -> 0 ) in
-  assert ((res >= -10));
+      if (x < 0)
+      then begin 
+        Neg (x)
+      end else begin 
+        Zero
+      end
+    end
+  in
+  let res = (
+    match y with
+    | Pos (n) -> (n * 10)
+    | Neg (n) -> (n * 2)
+    | Zero -> 0
+  ) in
+  assert (((res = (x * 2)) || (res = (x * 10))));
   res
-(*@ ensures x > 0 -> result = 10
+(*@ ensures x > 0 -> result = x * 10
     ensures x = 0 -> result = 0
-    ensures x < 0 -> result = -10 *)
-
-let test () =
-  Neg2
-(*@ ensures true *)
+    ensures x < 0 -> result = x * 2 *)
 
