@@ -53,7 +53,7 @@ let report (b,e) =
 
 
 
-let get_const_str (const : Ast_core.constant) = 
+let get_const_str (const : Ast_core.constant) : string = 
   match const with
   | Cint  i -> string_of_int i
   | Cbool b -> string_of_bool b
@@ -101,14 +101,7 @@ let pp_spec_opt spec_opt =
   match spec_opt with 
   | None -> ""
   | Some spec -> spec.text 
-
-let get_pattern_str (ptrn: pattern) : string =
-  match ptrn with
-  | Pwildcard -> "_"
-  | Pconst c -> get_const_str c
-  | Pident ident -> ident.id
-  | Pconstructor cn -> cn
-
+  
 let indent depth =
   String.make (depth * indent_spaces) ' '
 
@@ -202,7 +195,19 @@ and bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
 
 and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase = 
   let (ptrn, e) = case in
-  (ptrn, bip_to_ml e None None)
+  (bip_to_ml_ptrn ptrn, bip_to_ml e None None)
+
+and bip_to_ml_ptrn (ptrn : Ast_bip.pattern) : Ast_ml.opattern =
+  match ptrn with 
+  | Ewildcard -> Owildcard
+  | Econst c -> Oconst c
+  | Eident id -> Oident id
+  | Econstructor (cn, dc) -> Oconstructor (cn, bip_to_ml_destruct_cons dc)
+
+and bip_to_ml_destruct_cons dc =
+  match dc with 
+  | Eident id -> Oident id
+  | Etuple el -> Otuple (List.map (fun e -> bip_to_ml e None None) el)
 
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
@@ -530,6 +535,21 @@ and pp_tuple_core fmt oel depth is_cons =
 
     fprintf fmt ")"
 
+and pp_odestruct_cons fmt (dc : odestruct_cons) depth =
+  match dc with 
+  | Oident id -> fprintf fmt " %s" id.id
+  | Otuple oel -> fprintf fmt "%a" (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
+
+and pp_opattern fmt ptrn depth =
+  match ptrn with
+  | Owildcard -> fprintf fmt "_"
+  | Oconst c -> fprintf fmt "%s" (get_const_str c)
+  | Oident ident -> fprintf fmt "%s" ident.id
+  | Oconstructor (cn, dc) -> 
+    fprintf fmt "%s%a" 
+    cn 
+    (fun fmt _ -> pp_odestruct_cons fmt dc depth) dc
+
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
   
@@ -622,13 +642,14 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let indentation = (indent depth) in
     let specification = 
       if (pp_spec_opt spec_opt) = "" then "" 
-      else "\n" ^ (swap_mod_order (indent_spec depth (pp_spec_opt spec_opt) true)) in
+      else (swap_mod_order (indent_spec (depth-4) (pp_spec_opt spec_opt) true)) in
 
-    fprintf fmt "\n\n%sfor %s = %a to %a do%s"
+    fprintf fmt "\n\n%sfor %s = %a to %a do\n%s(*@@ %s*)"
       indentation
       id.id
       (fun fmt _ -> pp_oexpr fmt value depth true) value
       (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to
+      (indent (depth+1))
       specification; 
 
     let len = List.length body in
@@ -649,9 +670,10 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
     ( match cnd_r with
       | Onone -> 
-        fprintf fmt "\n\n%swhile %a do%s" 
+        fprintf fmt "\n\n%swhile %a do\n%s(*@@ %s*)" 
         indentation
         (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+        (indent (depth+1))
         specification
 
       | _ -> 
@@ -722,11 +744,11 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       not_last_elem_str 
       id.id;
 
-    List.iter (fun case -> 
+    List.iter (fun case -> (* TODO: adapt print to new pattern+destr_cons *)
       let (ptrn, oe) = case in
-      fprintf fmt "\n%s| %s -> %a"
+      fprintf fmt "\n%s| %a -> %a"
         indentation
-        (get_pattern_str ptrn)
+        (fun fmt _ -> pp_opattern fmt ptrn depth) ptrn
         (fun fmt _ -> pp_oexpr fmt oe (depth + 1) true) oe
     ) cases;
     

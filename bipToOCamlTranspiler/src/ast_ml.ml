@@ -5,7 +5,20 @@
 
 open Ast_core
 
-type oexpr =
+type opattern = 
+  | Owildcard
+  | Oconst of       constant
+  | Oident of       ident
+  | Oconstructor of cons_name * odestruct_cons
+(* only allowing some patterns for now *)
+
+and odestruct_cons = 
+  | Oident of   ident
+  | Otuple of   oexpr list
+
+and ocase = opattern * oexpr
+
+and oexpr =
   | Onone
   | Ounit
   | Oident of   ident
@@ -25,8 +38,6 @@ type oexpr =
   | Oassert of  oexpr
   | Omatch of   ident * ocase list
   | Oseq of     oexpr * oexpr
-
-and ocase = pattern * oexpr 
 
 and odef = ident * bool (* rec *) * parameter list * ret_type option
            * bool (* return pair *) * oexpr list * spec

@@ -53,17 +53,20 @@ decl:
 ;
 
 type_def:
-| TYPE name = ident EQUAL pl = payload atd = and_type_def?
-    { TDsimple(name, pl, atd) }
-| TYPE name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor) atd = and_type_def?
-    { TDcons(name, cons, atd) }
+| TYPE tdc = type_def_core
+    { tdc }
 ;
-(* make the rule type_def_core *)
+
 and_type_def:
-| AND name = ident EQUAL pl = payload atd = and_type_def?
-    { TDsimple(name, pl, atd) }
-| AND name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor) atd = and_type_def?
-    { TDcons(name, cons, atd) }
+| AND tdc = type_def_core
+    { tdc }
+;
+
+type_def_core:
+| name = ident EQUAL pl = payload atd = and_type_def?
+    { TDsimple (name, pl, atd) }
+| name = ident EQUAL CASE cons = separated_nonempty_list(CASE, constructor) atd = and_type_def?
+    { TDcons (name, cons, atd) }
 ;
 
 def_outer:
@@ -106,8 +109,8 @@ expr:
     { Ecst c }
 | id = ident
     { Eident id }
-| net = non_empty_tuple
-    { Etuple net }
+| tpt = two_plus_tuple
+    { Etuple tpt }
 | cn = cons_name t = tuple 
     { Econs (cn, t) }
 | MINUS e1 = expr %prec unary_minus
@@ -153,11 +156,11 @@ expr:
 tuple:
 |
     { [] }
-| net = non_empty_tuple
-    { net }
+| tpt = two_plus_tuple
+    { tpt }
 ;
 
-non_empty_tuple:
+two_plus_tuple: (* tuple with arity >= 2 *)
 | LP first = expr COMMA rest = separated_list(COMMA, expr) RP
     { first :: rest }
 ;
@@ -230,12 +233,24 @@ payload_elem:
     { PLnew id }
 ;
 
+destruct_cons:
+| t = tuple (* 0, 2+ *)
+    { Etuple t }
+| id = ident (* 1 *)
+    { Eident id }
+(* example:
+    match x with
+    | Zero (* 0 *) -> 0
+    | Neg n (* 1 *) -> n
+    | Pos (n, b) (* 2 *) -> if b then n else n+1 *)
+;
+
 pattern:
-| WILDCARD          { Pwildcard }
-| c = CST           { Pconst c }
-| id = ident        { Pident id }
-(* TODO: change here to deconstruct *)
-| cn = cons_name    { Pconstructor cn } 
+| WILDCARD      { Ewildcard }
+| c = CST       { Econst c }
+| id = ident    { Eident id }
+| cn = cons_name dc = destruct_cons
+    { Econstructor (cn, dc) } 
 ;
 
 bip_type:

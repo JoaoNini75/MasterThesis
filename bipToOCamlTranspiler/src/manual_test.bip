@@ -1,6 +1,6 @@
 type number = 
 	| Neg of int 
-	| Pos of int * bool
+	| Pos of int * bool * int
 	| Zero
 
 type simple = number * bool
@@ -11,18 +11,123 @@ and complex =
 
 and third = complex * simple
 
-let test_construction (num) : number = begin
-	let x = Pos (num, true) in
-	let y = (x, true) in
-	x
+let test_construction (num) : simple = begin
+	let x = Pos (num, true, 3) in
+	let y = (x, true || false) in
+	y
 end
 (*@ ensures true *)
 
-(*let match_destruct () : int = begin
-	let x = Pos in
+let match_destruct () : int = begin
+	let x = Zero in
 	match x with
 	| Zero -> 0
 	| Neg n -> n
-	| Pos (n, b) -> if b then n else n+1
+	| Pos (n, b, third) -> 
+		if b 
+		then begin third end 
+		else begin n+1 end
 end
-(*@ ensures true *) *)
+(*@ ensures true *)
+
+
+type number2 = 
+  | Pos2 of int * int 
+  | Neg2 
+  | Zero2
+
+let match_assert (x : int) = begin
+  let y = 
+    if x > 0 then begin Pos2 (2, 4) end
+    else begin Zero2 end
+  in  
+
+		let res = 
+			( match y with
+			| Pos2 (i, n) -> 10
+			| Neg2 -> -10
+			| Zero2 -> 0 ) 
+		in
+		
+		assert ((res >= -10));
+		res
+end
+(*@ ensures x > 0 -> result = 10
+    ensures x = 0 -> result = 0
+    ensures x < 0 -> result = -10 *)
+
+let test () = begin
+	Neg2
+end
+(*@ ensures true *)
+
+
+(*
+let mult_biplang (n : int, m : int) = begin
+	let result = ref 0 in
+	let j = ref 0 in
+
+	for i = 0 to n-1 do
+		(*@ invariant 0 <= i && i <= n
+				invariant !j = 0
+				invariant !res = m * i + !j *)
+
+		while !j < m do
+			(*@ invariant 0 <= !j && !j <= m
+					invariant !res = m * i + !j
+					variant   m - !j *)
+
+			result := !result + 1;
+			j := !j + 1
+		done;
+
+		j := 0
+	done;
+	
+	!result
+end
+(*@ requires n >= 0 && m >= 0
+    ensures  result = n * m *)
+
+let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+	let i = |_ ref 0 _| in
+	let j = ref 0 <|> ref c in
+	let x = |_ ref 0 _| in
+
+	while |_ !i < n _| do
+		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
+        invariant !j_r = !i_r * b_r + c_r
+        invariant !x_l = !x_r 
+        variant n_l - !i_l *)
+		j := !i * b + c <|> x := !x + !j;
+		x := !x + !j    <|> j := !j + b;
+		i := |_ !i + 1 _|
+	done;
+
+	|_ !x _|
+end
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *) 
+
+let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 <|> ref 16 in 
+	let w = |_ ref 0 _| in
+
+	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
+		(*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+
+		if ((!w mod n == 0) <|> (!w mod n == 0)) then begin
+			z := (!z * !y <|> !z * 2);
+			y := |_ !y - 1 _|
+		end else begin () end;
+
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
+end
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+*)

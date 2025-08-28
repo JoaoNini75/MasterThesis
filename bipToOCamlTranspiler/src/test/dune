@@ -96,3 +96,14 @@
 	 	(with-stdout-to 007_pipe_and_floor.actual
 				(run ../biplang.exe 007_pipe_and_floor.bip))
 	 	(run diff 007_pipe_and_floor.expected 007_pipe_and_floor.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  008_type_and.bip
+  008_type_and.expected)
+ (action
+		(progn
+	 	(with-stdout-to 008_type_and.actual
+				(run ../biplang.exe 008_type_and.bip))
+	 	(run diff 008_type_and.expected 008_type_and.actual))))

@@ -5,7 +5,20 @@
    
 open Ast_core
 
-type expr =
+type pattern = 
+  | Ewildcard
+  | Econst of       constant
+  | Eident of       ident
+  | Econstructor of cons_name * destruct_cons
+(* only allowing some patterns for now *)
+
+and destruct_cons = 
+  | Eident of     ident
+  | Etuple of     expr list
+
+and case = pattern * expr 
+
+and expr =
   | Eunit 
   | Eident of     ident
   | Etuple of     expr list
@@ -26,8 +39,6 @@ type expr =
   | Ematch of     ident * case list
   | Efloor of     expr (* |_ expr _| *)
   | Epipe of      expr * expr (* expr | expr *)
-
-and case = pattern * expr  
 
 and def = ident * bool (* rec *) * parameter list * fun_ret * expr list * spec
 

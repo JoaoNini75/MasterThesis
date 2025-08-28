@@ -38,13 +38,6 @@ type constant =
   | Cbool of    bool
   | Cstring of  string
 
-type pattern = 
-  | Pwildcard
-  | Pconst of       constant
-  | Pident of       ident
-  | Pconstructor of cons_name 
-(* only allowing some patterns for now *)
-
 type payload_elem =
   | PLexisting of bip_type
   | PLnew of      ident
