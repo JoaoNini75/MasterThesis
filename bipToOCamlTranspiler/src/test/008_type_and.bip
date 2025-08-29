@@ -42,12 +42,12 @@ let match_assert (x : int) = begin
     else begin Zero2 end
   in  
 
-  let res = 
-    ( match y with
+  let res = (
+    match y with
     | Pos2 (i, n) -> 10
     | Neg2 -> -10
-    | Zero2 -> 0 ) 
-  in
+    | Zero2 -> 0 
+  ) in
   
   assert ((res >= -10));
   res

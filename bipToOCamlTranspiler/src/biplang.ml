@@ -127,20 +127,45 @@ let indent_spec depth spec_str first_line_diff =
     match lines with
     | [] -> spec_str
     | first :: rest ->
-      let prefix_first = indent (depth + 
-        (if first_line_diff then 3 else 5)) in
+      let prefix_first = 
+        if first_line_diff then " "
+        else indent (depth + 5) in
       let prefix_rest  = indent (depth + 5) in
       let head = prefix_first ^ trim_leading first in
       let tail = List.map (fun line -> prefix_rest ^ trim_leading line) rest in
       String.concat "\n" (head :: tail)
 
+let indent_middle_lines depth spec =
+  let repl = "\n" ^ (indent (depth / 2)) in
+  let parts = String.split_on_char '\n' spec in
+  let enter_char_count = List.length parts - 1 in
+
+  if enter_char_count < 2 then spec (* no middle lines *)
+  else
+    let parts_arr = Array.of_list parts in
+    let buf = Buffer.create (String.length spec + (enter_char_count - 1) * String.length repl) in
+    
+    (* For each separator index i = 0 .. enter_char_count-1:
+       - if i < enter_char_count - 1 : use repl
+       - else (the last separator) : keep '\n' *)
+    for i = 0 to enter_char_count - 1 do
+      Buffer.add_string buf parts_arr.(i);
+      if i < enter_char_count - 1 
+      then Buffer.add_string buf repl
+      else Buffer.add_char buf '\n'
+    done;
+
+    Buffer.add_string buf parts_arr.(enter_char_count);
+    Buffer.contents buf
+
 let indent_spec_if_cond_align depth spec =
   if not (String.contains spec special_cond_align_char) 
   then spec
   else
+    let updated_spec = indent_middle_lines depth spec in
     String.concat 
-    (indent (depth+3)) 
-    (String.split_on_char special_cond_align_char spec)
+      (indent (depth+3)) 
+      (String.split_on_char special_cond_align_char updated_spec)
 
 
 (* There will be problems with mod in specs because of Cameleer needing it prefix. 
@@ -647,49 +672,59 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
 
   | Ofor (id, value, e_to, spec_opt, body) -> 
     let indentation = (indent depth) in
+    let spec = pp_spec_opt spec_opt in
     let specification = 
-      if pp_spec_opt spec_opt = "" then "" 
-      else swap_mod_order (pp_spec_opt spec_opt)
+      if spec = "" then "" 
+      else 
+        "\n" ^ (indent (depth+1)) ^ "(*@"  
+        ^ swap_mod_order (indent_spec (depth-2) spec true)
+        ^ "*)"
     in
 
-    fprintf fmt "\n\n%sfor %s = %a to %a do\n%s(*@@%s*)"
+    fprintf fmt "\n\n%sfor %s = %a to %a do%s"
       indentation
       id.id
       (fun fmt _ -> pp_oexpr fmt value depth true) value
       (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to
-      (indent (depth+1))
       specification; 
 
     let len = List.length body in
     List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) body;
 
-    if not_last_elem
-    then fprintf fmt "\n%sdone;\n" indentation
-    else fprintf fmt "\n%sdone\n" indentation
+    let not_last_elem_str = if not_last_elem then ";" else "" in
+    fprintf fmt "\n%sdone%s\n" indentation not_last_elem_str
 
   | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
-    let first_line_diff = cnd_r = Onone in
+    let spec = pp_spec_opt spec_opt in
 
     ( match cnd_r with
-      | Onone -> 
-        let indented_spec = indent_spec_if_cond_align (depth) (pp_spec_opt spec_opt) in
+      | Onone ->
+        let indented_spec = indent_spec_if_cond_align (depth) spec in
+        let is_cond_align_loop = not (indented_spec = spec) in
+        let indented_spec = 
+          if is_cond_align_loop
+          then indented_spec
+          else indent_spec (depth-2) spec true
+        in
+        
         let specification = 
-          if pp_spec_opt spec_opt = "" then "" 
-          else swap_mod_order indented_spec
+          if spec = "" then "" 
+          else 
+            "\n" ^ (indent (depth+1)) ^ "(*@" ^ 
+            swap_mod_order indented_spec ^ "*)"
         in
 
-        fprintf fmt "\n\n%swhile %a do\n%s(*@@%s*)" 
+        fprintf fmt "\n\n%swhile %a do%s" 
         indentation
         (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
-        (indent (depth+1))
         specification
 
       | _ -> 
-        let indented_spec = indent_spec (depth-2) (pp_spec_opt spec_opt) first_line_diff in
+        let indented_spec = indent_spec (depth-2) spec false in
         let specification = 
-          if pp_spec_opt spec_opt = "" then "" 
+          if spec = "" then "" 
           else swap_mod_order indented_spec
         in
         
@@ -706,9 +741,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
                               pp_oexpr fmt oe (depth+1) not_last_elem) body;
     
-    if not_last_elem
-    then fprintf fmt "\n%sdone;\n" indentation
-    else fprintf fmt "\n%sdone\n" indentation
+    let not_last_elem_str = if not_last_elem then ";" else "" in
+    fprintf fmt "\n%sdone%s\n" indentation not_last_elem_str
 
   | Oassign (id1, id2, e1, e2) ->
     let indentation = (indent depth) in

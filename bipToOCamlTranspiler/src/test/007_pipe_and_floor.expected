@@ -60,16 +60,18 @@ let bip_if_long (x1_l : int) (x1_r : int) (y1_l : bool) (y1_r : bool) : int * in
 let match_test2 (x_l : int) (x_r : int) : int * int =
   let a_l = 1 in
   let a_r = 1 in
-  let b_l = 
-    ( match x_l with
+  let b_l = (
+    match x_l with
     | 0 -> 10
     | 1 -> 11
-    | _ -> -1 ) in
-  let b_r = 
-    ( match x_r with
+    | _ -> -1
+  ) in
+  let b_r = (
+    match x_r with
     | 0 -> 10
     | 1 -> 11
-    | _ -> -1 ) in
+    | _ -> -1
+  ) in
   ((a_l + b_l), (a_r + b_r))
 (*@ ensures true *)
 

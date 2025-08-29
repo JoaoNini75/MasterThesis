@@ -21,7 +21,7 @@ let match_destruct () : int =
   let x = Zero in
   match x with
   | Zero -> 0
-  | Neg n -> n
+  | Neg (n) -> n
   | Pos (n, b, third) -> 
     if b
     then begin 
@@ -43,12 +43,14 @@ let match_assert (x : int) =
       Pos2 (2, 4)
     end else begin 
       Zero2
-    end in
-  let res = 
-    ( match y with
+    end
+  in
+  let res = (
+    match y with
     | Pos2 (i, n) -> 10
     | Neg2 -> -10
-    | Zero2 -> 0 ) in
+    | Zero2 -> 0
+  ) in
   assert ((res >= -10));
   res
 (*@ ensures x > 0 -> result = 10
@@ -58,4 +60,5 @@ let match_assert (x : int) =
 let test () =
   Neg2
 (*@ ensures true *)
+
 

@@ -45,11 +45,12 @@ let match1 (x : int) (y : int) : string =
 (*@ ensures true *)
 
 let match2 (x : int) =
-  let res = 
-    ( match x with
+  let res = (
+    match x with
     | 0 -> 10
     | 1 -> 20
-    | _ -> 0 ) in
+    | _ -> 0
+  ) in
   assert ((res >= 0));
   res
 (*@ ensures true *)

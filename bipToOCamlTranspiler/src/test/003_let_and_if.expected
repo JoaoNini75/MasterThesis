@@ -16,7 +16,8 @@ let fun2 (arg1) (arg2) =
       ((arg1 * a) - !b)
     end else begin 
       arg2
-    end in
+    end
+  in
   ((a mod c) * !b)
 (*@ ensures true *)
 
