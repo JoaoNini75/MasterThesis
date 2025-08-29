@@ -1,63 +1,57 @@
-type number =
-  | Neg of int
-  | Pos of int * bool * int
-  | Zero
+(*@ axiom mult: forall a:int, b:int, c:int, d:int.
+   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *)
 
-type simple = number * bool
+let cond_align_loops (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int =
+  let y_l = ref (x_l) in
+  let y_r = ref (x_r) in
+  let z_l = ref (24) in
+  let z_r = ref (16) in
+  let w_l = ref (0) in
+  let w_r = ref (0) in
 
-and complex =
-  | Num1 of simple * int
-  | Num2 of simple * bool
-
-and third = complex * simple
-
-let test_construction (num) : simple =
-  let x = Pos (num, true, 3) in
-  let y = (x, (true || false)) in
-  y
-(*@ ensures true *)
-
-let match_destruct () : int =
-  let x = Zero in
-  match x with
-  | Zero -> 0
-  | Neg (n) -> n
-  | Pos (n, b, third) -> 
-    if b
+  while ((!y_l > 4) || (!y_r > 4)) do
+    (*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 
+        invariant (!y_l > 4 && mod !w_l 2 <> 0) || (!y_r > 4 && mod !w_r 2 <> 0) || (not (!y_l > 4) && not (!y_r > 4)) || (!y_l > 4 && !y_r > 4) *)
+    if ((!y_l > 4) && ((!w_l mod 2) <> 0))
     then begin 
-      third
+      if ((!w_l mod n_l) = 0)
+      then begin 
+        z_l := (!z_l * !y_l);
+        y_l := (!y_l - 1)
+      end else begin 
+        ()
+      end;
+      w_l := (!w_l + 1)
     end else begin 
-      (n + 1)
-    end;
-(*@ ensures true *)
-
-type number2 =
-  | Pos2 of int * int
-  | Neg2
-  | Zero2
-
-let match_assert (x : int) =
-  let y = 
-    if (x > 0)
-    then begin 
-      Pos2 (2, 4)
-    end else begin 
-      Zero2
+      if ((!y_r > 4) && ((!w_r mod 2) <> 0))
+      then begin 
+        if ((!w_r mod n_r) = 0)
+        then begin 
+          z_r := (!z_r * 2);
+          y_r := (!y_r - 1)
+        end else begin 
+          ()
+        end;
+        w_r := (!w_r + 1)
+      end else begin 
+        assert ( (((!w_l mod n_l) = 0)) = (((!w_r mod n_r) = 0)) );
+        if ((!w_l mod n_l) = 0)
+        then begin 
+          z_l := (!z_l * !y_l);
+          z_r := (!z_r * 2);
+          y_l := (!y_l - 1);
+          y_r := (!y_r - 1)
+        end else begin 
+          ()
+        end;
+        w_l := (!w_l + 1);
+        w_r := (!w_r + 1)
+      end
     end
-  in
-  let res = (
-    match y with
-    | Pos2 (i, n) -> 10
-    | Neg2 -> -10
-    | Zero2 -> 0
-  ) in
-  assert ((res >= -10));
-  res
-(*@ ensures x > 0 -> result = 10
-    ensures x = 0 -> result = 0
-    ensures x < 0 -> result = -10 *)
+  done;
 
-let test () =
-  Neg2
-(*@ ensures true *)
+  (!z_l, !z_r)
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *)
 

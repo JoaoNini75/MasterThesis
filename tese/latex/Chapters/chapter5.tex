@@ -8,6 +8,20 @@
 
 \typeout{NT FILE chapter5.tex}%
 
+\newcommand{\provername}[1]{\cellcolor{yellow!25}
+\begin{sideways}\textbf{#1}~~\end{sideways}}
+\newcommand{\explanation}[1]{\cellcolor{yellow!13}lemma \texttt{#1}}
+\newcommand{\transformation}[1]{\cellcolor{yellow!13}transformation \texttt{#1}}
+\newcommand{\subgoal}[2]{\cellcolor{yellow!13}subgoal #2}
+\newcommand{\valid}[1]{\cellcolor{green!13}#1}
+\newcommand{\unknown}[1]{\cellcolor{red!20}#1}
+\newcommand{\invalid}[1]{\cellcolor{red!50}#1}
+\newcommand{\timeout}[1]{\cellcolor{red!20}(#1)}
+\newcommand{\outofmemory}[1]{\cellcolor{red!20}(#1)}
+\newcommand{\noresult}{\multicolumn{1}{>{\columncolor[gray]{0.8}}c|}{~}}
+%\newcommand{\failure}{\cellcolor{red!20}failure}
+\newcommand{\highfailure}{\cellcolor{red!50}FAILURE}
+
 %% Estrutura:
 %% intro (aprofundar um pouco)
 %% background (igual + aprofundar whyrel + dune)
@@ -29,14 +43,15 @@ TODO: WRITE PROOF AND ADD ITS BENCHMARK FOR ALL OF THE CODE EXAMPLES.
 \section{The Foundations}
 \label{sec:foundations}
 
-This section lists some simple programs that could be written in any other programming language, but shows how it is done in BipLang.
+This section lists some simple programs that could be written in any other 
+programming language, but shows how it is done in BipLang.
 
 %Multiplies two non-negative numbers using nested loops.
 \begin{figure}
 \begin{minipage}{\linewidth}
 \begin{biplangenv}
   let mult_biplang (n : int, m : int) = begin
-    let result = ref 0 in
+    let res = ref 0 in
     let j = ref 0 in
 
     for i = 0 to n-1 do
@@ -49,14 +64,14 @@ This section lists some simple programs that could be written in any other progr
             invariant !res = m * i + !j
             variant   m - !j *)
 
-        result := !result + 1;
+        res := !res + 1;
         j := !j + 1
       done;
 
       j := 0
     done;
     
-    !result
+    !res
   end
   (*@ requires n >= 0 && m >= 0
       ensures  result = n * m *)
@@ -82,7 +97,6 @@ This section lists some simple programs that could be written in any other progr
         (*@ invariant 0 <= !j && !j <= m
             invariant !res = m * i + !j
             variant   m - !j *)
-
         res := (!res + 1);
         j := (!j + 1)
       done;
@@ -98,58 +112,138 @@ This section lists some simple programs that could be written in any other progr
 \caption{Using nested loops to multiply two (non-negative) numbers (OCaml)}
 \end{figure}
 
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for mult\_ocaml}  & \explanation{loop invariant init} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.06} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop variant decrease} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.05} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.05} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{VC for mult\_ocaml} & \valid{0.03} \\ 
+\hline 
+\end{tabular}
+\caption{Multiply two (non-negative) numbers (OCaml) verification results}
+\end{center}
+\end{table}
+
 
 %Demonstrating the use of the match and assert constructions.
 \begin{figure}
 \begin{minipage}{\linewidth}
 \begin{biplangenv}
-  TODO: change to give desired output, need type implemented to do it
-  let match_assert (x : int) = begin
-    let res = 
-      match x with 
-      | 0 -> 10
-      | 1 -> 20
-      | _ -> 0
-    in
-    assert (res >= 0);
+  type number = 
+    | Pos of int
+    | Neg of int
+    | Zero
+
+  let match_assert_type_biplang (x : int) : int = begin
+    let y = 
+      if x > 0 then begin Pos (x) end
+      else begin
+        if x < 0 then begin Neg x end
+        else begin Zero end
+      end
+    in  
+
+    let res = (
+      match y with
+      | Pos n -> (n * 10)
+      | Neg (n) -> (n * 2)
+      | Zero -> 0
+    ) in
+    
+    let expr_to_assert = (res == (x * 2)) || (res == (x * 10)) in
+    assert (expr_to_assert);
     res
   end
-  (*@ ensures true *) 
+  (*@ ensures x > 0 -> result = x * 10
+      ensures x = 0 -> result = 0
+      ensures x < 0 -> result = x * 2 *)
 \end{biplangenv}
 \end{minipage}
-\caption{The match and assert constructions (BipLang)}
+\caption{The match, assert and type constructions (BipLang)}
 \end{figure}
 % TODO: put more space
 
 \begin{figure}
 \begin{minipage}{\linewidth}
 \begin{gospel}
-  type number = Neg | Pos | Zero
+  type number =
+    | Pos of int
+    | Neg of int
+    | Zero
 
-  let match_assert (x : int) =
+  let match_assert_type_ocaml (x : int) : int =
     let y = 
-      if x = 0 then Neg
-      else if x = 1 then Pos
-      else Zero
-    in  
-
-    let res = 
-      ( match y with
-      | Neg -> 10
-      | Pos -> 20
-      | Zero -> 0 ) 
+      if (x > 0)
+      then begin 
+        Pos (x)
+      end else begin 
+        if (x < 0)
+        then begin 
+          Neg (x)
+        end else begin 
+          Zero
+        end
+      end
     in
-    
-    assert ((res >= 0));
+    let res = (
+      match y with
+      | Pos (n) -> (n * 10)
+      | Neg (n) -> (n * 2)
+      | Zero -> 0
+    ) in
+    let expr_to_assert = ((res = (x * 2)) || (res = (x * 10))) in
+    assert (expr_to_assert);
     res
-  (*@ ensures x = 0 -> result = 10
-      ensures x = 1 -> result = 20
-      ensures x <> 0 && x <> 1 -> result = 0 *)
+  (*@ ensures x > 0 -> result = x * 10
+      ensures x = 0 -> result = 0
+      ensures x < 0 -> result = x * 2 *)
 \end{gospel}
 \end{minipage}
-\caption{The match and assert constructions (OCaml)}
+\caption{The match, assert and type constructions (OCaml)}
 \end{figure}
 % TODO: put more space
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for match\_assert\_type\_ocaml}  & \explanation{assertion} & \valid{0.06} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.05} \\ 
+\hline
+\end{tabular}
+\caption{The match, assert and type constructions (OCaml) verification results}
+\end{center}
+\end{table}
 
 
 %Showcasing the presence of nested functions through the use of function applying.
@@ -193,6 +287,20 @@ This section lists some simple programs that could be written in any other progr
 \end{figure}
 % TODO: put more space
 
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for nested\_funs\_ocaml}  & \explanation{postcondition} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.03} \\ 
+\hline
+\end{tabular}
+\caption{Nested functions and function applying (OCaml) verification results}
+\end{center}
+\end{table}
+
 
 
 \section{Incremeting OCaml}
@@ -214,7 +322,7 @@ We also present our tool outputs so we can compare the differences between writi
   end
   (*@ requires x_l = x_r
       ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = x_l * 100 ) *)
+                (l_res = r_res && l_res = x_l * 100) *)
 \end{biplangenv}
 \end{minipage}
 \caption{Showcasing the use of the pipe symbol (BipLang)}
@@ -233,11 +341,23 @@ We also present our tool outputs so we can compare the differences between writi
     (res_l, res_r)
   (*@ requires x_l = x_r
       ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = x_l * 100 ) *)
+                (l_res = r_res && l_res = x_l * 100) *)
 \end{gospel}
 \end{minipage}
 \caption{Showcasing the use of the pipe symbol (OCaml)}
 \end{figure}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for pipe\_ocaml}  & \explanation{postcondition} & \valid{0.03} \\ 
+\hline
+\end{tabular}
+\caption{Showcasing the use of the pipe symbol (OCaml) verification results}
+\end{center}
+\end{table}
 
 
 \begin{figure}
@@ -295,23 +415,261 @@ We also present our tool outputs so we can compare the differences between writi
 \caption{Demonstrating the use of the floor symbols (OCaml)}
 \end{figure}
 
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for floors\_ocaml}  & \explanation{assertion} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.05} \\ 
+\hline
+\end{tabular}
+\caption{Demonstrating the use of the floor symbols (OCaml) verification results}
+\end{center}
+\end{table}
 
 
 \section{Demonstrating the Usefulness}
-\label{sec:applicability}
+\label{sec:usefulness}
 
-This section illustrates the true capabilities of the transpiler through some more complex examples.
+This section illustrates the applicability of our tool through some more complex examples.
 As we did in the previous section, we present these programs written in BipLang versus OCaml.
-Now this really puts in evidence the applicability of our tool.
 
-LIST: factiter, gcditer, inducvarstrengthred, condalignloops, condalignloopsnested
+LIST: mais?
+factiter, gcditer, inducvarstrengthred, condalignloops, condalignloopsnested
+
+REFERENCIAR FIGURE 3.4 COM O CODIGO ORIGINAL DA inducvarstrengthred
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  let induc_var_strength_red_biplang
+    (|_b : int_|, |_c : int_|, |_n : int_|)
+    : |_int_| = begin
+
+    let i = |_ ref 0 _| in
+    let j = ref 0 <|> ref c in
+    let x = |_ ref 0 _| in
+
+    while |_ !i < n _| do
+      (*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r
+          invariant n_l >= 0 -> !i_l <= n_l
+          invariant !j_r = !i_r * b_r + c_r
+          invariant !x_l = !x_r 
+          variant n_l - !i_l *)
+      j := !i * b + c <|> x := !x + !j;
+      x := !x + !j    <|> j := !j + b;
+      i := |_ !i + 1 _|
+    done;
+
+    |_ !x _|
+  end
+  (*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+      ensures  match result with (l_res, r_res) -> l_res = r_res *) 
+\end{biplangenv}
+\end{minipage}
+\caption{Induction variable strength reduction (BipLang)}
+\end{figure}
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{gospel}
+  let induc_var_strength_red_ocaml
+    (b_l : int) (b_r : int) (c_l : int) (c_r : int)
+    (n_l : int) (n_r : int) : int * int =
+    
+    let i_l = ref (0) in
+    let i_r = ref (0) in
+    let j_l = ref (0) in
+    let j_r = ref (c_r) in
+    let x_l = ref (0) in
+    let x_r = ref (0) in
+
+    while (!i_l < n_l) do
+      (*@ invariant ((!i_l < n_l)) <-> ((!i_r < n_r))
+          invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r
+          invariant n_l >= 0 -> !i_l <= n_l
+          invariant !j_r = !i_r * b_r + c_r
+          invariant !x_l = !x_r 
+          variant n_l - !i_l *)
+      j_l := ((!i_l * b_l) + c_l);
+      x_r := (!x_r + !j_r);
+      x_l := (!x_l + !j_l);
+      j_r := (!j_r + b_r);
+      i_l := (!i_l + 1);
+      i_r := (!i_r + 1)
+    done;
+
+    (!x_l, !x_r)
+  (*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+      ensures  match result with (l_res, r_res) -> l_res = r_res *)
+\end{gospel}
+\end{minipage}
+\caption{Induction variable strength reduction (OCaml)}
+\end{figure}
+
+\begin{table}[!h]
+\begin{center}
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for induc\_var\_strength\_red\_ocaml}  & \explanation{loop invariant init} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.02} \\ 
+\cline{2-3}
+ & \explanation{loop variant decrease} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.03} \\ 
+\hline
+\end{tabular}
+\caption{Induction variable strength reduction (OCaml) verification results}
+\end{center}
+\end{table}
 
 
+REFERENCIAR FIGURE DO CODIGO DOS 
+condalignloops DA SECCAO DO WHYREL
 
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{biplangenv}
+  TODO: prova ainda nao passa!
 
+  (*@ axiom mult: forall a:int, b:int, c:int, d:int.
+     0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b ->
+     c > d -> (a * c) > (b * d) *) 
+    
+  let cond_align_loops_biplang (|_x : int_|, |_n : int_|)
+    : |_int_| = begin
 
+    let y = |_ ref x _| in
+    let z = ref 24 <|> ref 16 in 
+    let w = |_ ref 0 _| in
 
+    while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
+      (*@ variant   !y_l + !y_r
+          invariant !y_l = !y_r && !y_r >= 4
+          invariant !z_l > !z_r && !z_l > 0 && !z_r > 0 *)
 
+      if ((!w mod n == 0) <|> (!w mod n == 0)) then begin
+        z := (!z * !y <|> !z * 2);
+        y := |_ !y - 1 _|
+      end else begin () end;
+
+      w := |_ !w + 1 _|
+    done; 
+
+    |_ !z _|
+  end
+  (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+      ensures  match result with (l_res, r_res) -> l_res > r_res *)  
+\end{biplangenv}
+\end{minipage}
+\caption{Conditionally aligned loops (BipLang)}
+\end{figure}
+% TODO: put more space
+
+\begin{figure}
+\begin{minipage}{\linewidth}
+\begin{gospel}
+  TODO: 
+  prova ainda nao passa!
+  codigo nao cabe numa pagina!
+
+  (*@ axiom mult: forall a:int, b:int, c:int, d:int.
+     0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b ->
+     c > d -> (a * c) > (b * d) *)
+
+  let cond_align_loops_ocaml (x_l : int) (x_r : int)
+    (n_l : int) (n_r : int) : int * int =
+
+    let y_l = ref (x_l) in
+    let y_r = ref (x_r) in
+    let z_l = ref (24) in
+    let z_r = ref (16) in
+    let w_l = ref (0) in
+    let w_r = ref (0) in
+
+    while ((!y_l > 4) || (!y_r > 4)) do
+      (*@ variant   !y_l + !y_r
+          invariant !y_l = !y_r && !y_r >= 4
+          invariant !z_l > !z_r && !z_l > 0 && !z_r > 0
+          invariant (!y_l > 4 && mod !w_l 2 <> 0) ||
+                    (!y_r > 4 && mod !w_r 2 <> 0) ||
+                    (not (!y_l > 4) && not (!y_r > 4)) || 
+                    (!y_l > 4 && !y_r > 4) *)
+      if ((!y_l > 4) && ((!w_l mod 2) <> 0))
+      then begin 
+        if ((!w_l mod n_l) = 0)
+        then begin 
+          z_l := (!z_l * !y_l);
+          y_l := (!y_l - 1)
+        end else begin 
+          ()
+        end;
+        w_l := (!w_l + 1)
+      end else begin 
+        if ((!y_r > 4) && ((!w_r mod 2) <> 0))
+        then begin 
+          if ((!w_r mod n_r) = 0)
+          then begin 
+            z_r := (!z_r * 2);
+            y_r := (!y_r - 1)
+          end else begin 
+            ()
+          end;
+          w_r := (!w_r + 1)
+        end else begin 
+          assert ( (((!w_l mod n_l) = 0)) = (((!w_r mod n_r) = 0)) );
+          if ((!w_l mod n_l) = 0)
+          then begin 
+            z_l := (!z_l * !y_l);
+            z_r := (!z_r * 2);
+            y_l := (!y_l - 1);
+            y_r := (!y_r - 1)
+          end else begin 
+            ()
+          end;
+          w_l := (!w_l + 1);
+          w_r := (!w_r + 1)
+        end
+      end
+    done;
+
+    (!z_l, !z_r)
+  (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+      ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+\end{gospel}
+\end{minipage}
+\caption{Conditionally aligned loops (OCaml)}
+\end{figure}
+% TODO: put more space
+
+\iffalse\begin{table}[!h]
+\begin{center}
+
+\end{tabular}
+\caption{Conditionally aligned loops (OCaml) verification results}
+\end{center}
+\end{table}
+\fi
 
 
 
