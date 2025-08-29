@@ -28,12 +28,12 @@ end
 (*@ ensures true *)
 
 let p2 (arg) = begin
-    let x = ref 1 in
-    let y = ref arg in
+  let x = ref 1 in
+  let y = ref arg in
 	x := 0;
-    x := !x * !y;
+  x := !x * !y;
 
-    if !y > 0
+  if !y > 0
 	then begin 
 		y := !x * 10;
 		x := !x + arg
@@ -42,6 +42,6 @@ let p2 (arg) = begin
 		y := !x + 10
 	end;
 
-    !x + !y
+  !x + !y
 end
 (*@ ensures true *)

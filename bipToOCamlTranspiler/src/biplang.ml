@@ -340,6 +340,9 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Eapp (ident, expr_list) -> 
     Oapp (ident, (List.map (fun e -> bip_to_ml e None gen_side) expr_list))
 
+  | Emodapp (ident_cap, ident, expr_list) -> 
+    Omodapp (ident_cap, ident, (List.map (fun e -> bip_to_ml e None gen_side) expr_list))
+
   | Eif (Efloor e_cnd, el_then, el_else) ->
     ( match gen_side with 
       | None ->
@@ -529,6 +532,16 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     (* rev because of the way cases are collected in the parser *)
     let ocases = List.rev (List.map (fun case -> bip_to_ml_case case) cases) in
     Omatch (ident_final, ocases)
+
+  | Earray_new (el) -> 
+    Oarray_new (List.map (fun e -> bip_to_ml e id_side gen_side) el)
+
+  | Earray_read (ident, e) -> 
+    Oarray_read (add_side_to_id ident id_side, bip_to_ml e id_side gen_side)
+
+  | Earray_write (ident, e1, e2) -> 
+    Oarray_write (add_side_to_id ident id_side,
+      bip_to_ml e1 id_side gen_side, bip_to_ml e2 id_side gen_side)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   
@@ -573,6 +586,20 @@ and pp_opattern fmt ptrn depth =
     fprintf fmt "%s%a" 
     idcap 
     (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
+
+and pp_new_array_core fmt oel depth =
+  if List.length oel = 0 
+  then fprintf fmt "[| |]"
+  else 
+    let first_elem = (List.nth oel 0) in
+    fprintf fmt "[| %a"
+      (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
+
+    List.iteri (fun idx oe -> 
+      if idx = 0 then ()
+      else fprintf fmt "; %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel;
+
+    fprintf fmt " |]"
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
   let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
@@ -621,19 +648,29 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let indentation = indent depth in
     fprintf fmt "\n%slet %s = " indentation id.id;
 
-    ( match value with 
+    let is_oif = ( 
+      match value with 
       | Oapp (id, oexpr_list) -> 
         pp_oapp_core fmt (id, oexpr_list) depth;
-        fprintf fmt " in"
+        false
+
+      | Omodapp (ic, id, oexpr_list) -> 
+        fprintf fmt "%s" (ic ^ ".");
+        pp_oapp_core fmt (id, oexpr_list) depth;
+        false
 
       | Oif (cnd_l, cnd_r, e1, e2) -> 
         pp_oexpr fmt value (depth+1) false;
-        fprintf fmt "\n%sin" indentation;
+        true
 
       | _ -> 
         pp_oexpr fmt value depth true;
-        fprintf fmt " in"
-    );
+        false
+    ) in
+
+    ( if is_oif 
+    then fprintf fmt "\n%sin" indentation
+    else fprintf fmt " in");
     
     pp_oexpr fmt body depth not_last_elem
 
@@ -775,6 +812,17 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
       (fun fmt _ -> pp_oapp_core fmt oapp depth) oapp
       semicolon_str
 
+  | Omodapp (ic, id, oexpr_list) -> 
+    let indentation = (indent depth) in
+    let semicolon_str = if not_last_elem then ";" else "" in
+    let oapp = (id, oexpr_list) in
+
+    fprintf fmt "\n%s%s%a%s" 
+      indentation 
+      (ic ^ ".")
+      (fun fmt _ -> pp_oapp_core fmt oapp depth) oapp
+      semicolon_str
+
   | Oassert (oe) ->
     let indentation = (indent depth) in
     let semicolon_str = if not_last_elem then ";" else "" in
@@ -805,6 +853,28 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     if not_last_elem 
     then fprintf fmt "\n%s)" (indent (depth-1))
     else ();
+
+  | Oarray_new oel -> 
+    fprintf fmt "%s%a" 
+      last_elem_str
+      (fun fmt _ -> pp_new_array_core fmt oel depth) oel
+
+  | Oarray_read (ident, oe) -> 
+    fprintf fmt "%s%s.(%a)" 
+      last_elem_str
+      ident.id
+      (fun fmt _ -> pp_oexpr fmt oe (depth + 1) true) oe
+
+  | Oarray_write (ident, oe_idx, oe_val) -> 
+    let indentation = (indent depth) in
+    let semicolon_str = if not_last_elem then ";" else "" in
+
+    fprintf fmt "\n%s%s.(%a) <- %a%s"
+      indentation
+      ident.id
+      (fun fmt _ -> pp_oexpr fmt oe_idx (depth + 1) true) oe_idx
+      (fun fmt _ -> pp_oexpr fmt oe_val (depth + 1) true) oe_val
+      semicolon_str
 
   | Oseq (e1, e2) -> 
     ( match e1 with 

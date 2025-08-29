@@ -1,24 +1,34 @@
-(*@ axiom mult: forall a:int, b:int, c:int, d:int.
-   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
-   
-let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
-	let y = |_ ref x _| in
-	let z = ref 24 <|> ref 16 in 
-	let w = |_ ref 0 _| in
-
-	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
-		(*@ variant   !y_l + !y_r
-				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
-
-		if ((!w mod n == 0) <|> (!w mod n == 0)) then begin
-			z := (!z * !y <|> !z * 2);
-			y := |_ !y - 1 _|
-		end else begin () end;
-
-		w := |_ !w + 1 _|
-	done; 
-
-	|_ !z _|
+let linear_search () = begin
+	let a = [|1; 2|] in
+	let b = [| |] in
+	let c = [| 3 |] in
+	let len = ref (Array.length (a) - 1) in
+	let res = a.(!len) in
+	a.(!len) <- 42;
+	Printf.printf ("%d", res)
 end
-(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
-    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+(*@ ensures true *)
+
+let linear_search (a, v) = begin
+	let i = ref 0 in
+	let res = ref (-1) in
+
+	while !res < 0 && !i < Array.length (a) do
+		(*@ invariant !i >= 0
+				invariant -1 <= !res < Array.length a
+				invariant !res >= 0 -> a.(!res) = v
+				invariant !res = -1 -> forall k. 0 <= k < !i -> a.(k) <> v
+				variant (Array.length a) - !i *)
+		let t = a.(!i) in
+		if t == v 
+		then begin res := !i end
+		else begin () end;
+		i := !i + 1
+	done;
+
+  !res
+end
+(*@	r = linear_search a v 
+		ensures  -1 <= r < Array.length a
+    ensures  r >= 0 -> a.(r) = v
+    ensures  r = -1 -> forall k. 0 <= k < Array.length a -> a.(k) <> v *)

@@ -12,7 +12,7 @@
 %token <string> SPEC
 %token <string> IDENT_CAP
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -26,11 +26,14 @@
 %left LOGICOR LOGICAND
 %nonassoc NOT
 %nonassoc CMP
+%nonassoc TUPLE_REDUCE
+%nonassoc IDENT_REDUCE
 %left PLUS MINUS
 %left TIMES DIV MOD
 %nonassoc CASE
 %nonassoc unary_minus
 %nonassoc REF DEREF
+%right DOT
 
 
 %start file
@@ -111,7 +114,7 @@ expr:
     { Eunit }
 | c = CST
     { Ecst c }
-| id = ident
+| id = ident %prec IDENT_REDUCE
     { Eident id }
 | tpt = two_plus_tuple
     { Etuple tpt }
@@ -147,10 +150,18 @@ expr:
     { Epipe (e1, e2) }
 | id = ident args = app_body 
     { Eapp (id, args) }
+| ic = ident_cap DOT id = ident args = app_body 
+    { Emodapp (ic, id, args) } 
 | ASSERT LP e = expr RP
     { Eassert (e) }
 | MATCH id = ident WITH cases = case_list
     { Ematch (id, cases) }
+| LSQBR CASE array = separated_list(SEMICOLON, expr) CASE RSQBR
+    { Earray_new array }
+| id = ident DOT LP e = expr RP
+    { Earray_read (id, e) }
+| id = ident DOT LP e1 = expr RP INVARROW e2 = expr %prec IDENT_REDUCE
+    { Earray_write (id, e1, e2) }
 | efun = def_inner
     { efun }
 | LP e = expr RP
@@ -158,7 +169,7 @@ expr:
 ;
 
 tuple: (* expressions are not allowed in unary tuples for now *)
-|
+| %prec TUPLE_REDUCE
     { [] }
 | id = ident
     { [Eident id] }
