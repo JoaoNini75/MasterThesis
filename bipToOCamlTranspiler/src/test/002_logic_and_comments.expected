@@ -3,7 +3,7 @@ let nonneg (arg1) : bool =
 (*@ ensures true *)
 
 let cmp1 () : bool =
-  not ((true = false))
+  (not (true) = false)
 (*@ ensures true *)
 
 let cmp2 (x) (y) =

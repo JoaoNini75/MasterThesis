@@ -47,7 +47,7 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 		(*@ variant   !y_l + !y_r
 				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
 
-		if ((!w mod n == 0) <|> (!w mod n == 0)) then begin
+		if (((!w mod n) = 0) <|> ((!w mod n) = 0)) then begin
 			z := (!z * !y <|> !z * 2);
 			y := |_ !y - 1 _|
 		end else begin () end;

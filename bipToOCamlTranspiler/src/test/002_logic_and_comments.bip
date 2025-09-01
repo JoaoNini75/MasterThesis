@@ -6,7 +6,7 @@ end
 (* another comment *)
 
 let cmp1 () : bool (*3rd comment*) = begin
-	not true == false
+	(not true = false)
 end
 (*@ ensures true *)
 
@@ -16,7 +16,7 @@ end
 (*@ ensures true *)
 
 let cmp3 (b1, b2) : bool = begin
-	(b1 && b2) == (* nested: outer (* inner *) *) (b1 || b2)
+	((b1 && b2) = (* nested: outer (* inner *) *) (b1 || b2))
 end
 (*@ ensures true *)
 
@@ -29,6 +29,6 @@ end
 (*@ ensures true *)
 
 let cmp5 (b1, b2) = begin
-	((not b1) && ((not b2) && b1) || b2) == b2
+	(((not b1) && ((not b2) && b1) || b2) = b2)
 end
 (*@ ensures true *)

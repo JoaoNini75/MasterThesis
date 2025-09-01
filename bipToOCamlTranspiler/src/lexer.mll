@@ -87,8 +87,9 @@ rule next_tokens = parse
   | '*'     { TIMES }
   | "/"     { DIV }
   | '='     { EQUAL }
-  | "=="    { CMP Beq }
+  | "=="    { CMP Beqphy }
   | "<>"    { CMP Bneq }
+  | "!="    { CMP Bneqphy }
   | "<"     { CMP Blt }
   | "<="    { CMP Ble }
   | ">"     { CMP Bgt }
@@ -216,7 +217,8 @@ and string = parse
     | CMP op ->
       let s =
         match op with
-        | Beq  -> "=="
+        | Beqphy  -> "=="
+        | Bneqphy -> "!=" 
         | Bneq -> "<>"
         | Blt  -> "<"
         | Ble  -> "<="

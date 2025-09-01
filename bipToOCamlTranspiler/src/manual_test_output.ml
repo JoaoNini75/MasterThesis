@@ -1,19 +1,7 @@
-let linear_search (a) (v) =
-  let i = ref (0) in
-  let res = ref (-1) in
-
-  while ((!res < 0) && (!i < Array.length (a))) do
-    let t = a.(!i) in
-    if (t = v)
-    then begin 
-      res := !i
-    end else begin 
-      ()
-    end;
-    i := (!i + 1)
-  done;
-
-  assert (((42 + 2) = 44));
-  !res
+let test () =
+  assert (((42 + 2) == 44));
+  assert (((42 + 1) <> 44));
+  assert (((42 + 1) != 44));
+  assert (((42 + 2) = 44))
 (*@	ensures true *)
 

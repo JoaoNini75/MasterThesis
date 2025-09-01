@@ -29,8 +29,8 @@ type unop =
 
 type binop =
   | Badd | Bsub | Bmul | Bdiv | Bmod    (* + - * // % *)
-  | Beq | Bneq | Blt | Ble | Bgt | Bge  (* == != < <= > >= *)
-  | Band | Bor                          (* && || <-> *)
+  | Beq | Bneq | Blt | Ble | Bgt | Bge  (* = <> < <= > >= *)
+  | Band | Bor | Beqphy | Bneqphy       (* && || <-> == != *)
 
 type constant =
   | Cnone
