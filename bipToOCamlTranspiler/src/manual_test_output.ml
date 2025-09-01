@@ -1,38 +1,15 @@
-let linear_search () =
-  let a = [| 1; 2 |] in
-  let b = [| |] in
-  let c = [| 3 |] in
-  let len = ref ((
-  Array.length (a); - 1)) in
-  let res = a.(!len) in
-  a.(!len) <- 42;
-  Printf.printf ("%d") (res)
+let p1 (a) =
+  let x = (1 - 1) in
+  let len0 = (Array.length (a) - 1) in
+  let len = ref (len0) in
+  Printf.printf ("%d") (len0);
+  Printf.printf ("%d") (!len)
 (*@ ensures true *)
 
-let linear_search (a) (v) =
-  let i = ref (0) in
-  let res = ref (-1) in
-
-  while ((!res < 0) && (!i < 
-  Array.length (a);)) do
-    (*@ invariant !i >= 0
-        invariant -1 <= !res < Array.length a
-        invariant !res >= 0 -> a.(!res) = v
-        invariant !res = -1 -> forall k. 0 <= k < !i -> a.(k) <> v
-        variant (Array.length a) - !i *)
-    let t = a.(!i) in
-    if (t = v)
-    then begin 
-      res := !i
-    end else begin 
-      ()
-    end;
-    i := (!i + 1)
-  done;
-
-  !res
-(*@	r = linear_search a v 
-		ensures  -1 <= r < Array.length a
-    ensures  r >= 0 -> a.(r) = v
-    ensures  r = -1 -> forall k. 0 <= k < Array.length a -> a.(k) <> v *)
+let linear_search (a) =
+  let len0 = p1 (a) in
+  let len = ref ((p1 (a) - 1)) in
+  p1 (a);
+  p1 (a)
+(*@ ensures true *)
 

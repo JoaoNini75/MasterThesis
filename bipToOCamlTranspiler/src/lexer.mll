@@ -242,6 +242,9 @@ and string = parse
     | AND -> fprintf fmt "and"
     | OPEN -> fprintf fmt "open"
     | INCLUDE -> fprintf fmt "include"
+    | LSQBR -> fprintf fmt "["
+    | RSQBR -> fprintf fmt "]"
+    | INVARROW -> fprintf fmt "<-"
 
   let () =
     let fname = Sys.argv.(1) in

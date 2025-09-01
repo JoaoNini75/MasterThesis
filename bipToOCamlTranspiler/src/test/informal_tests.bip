@@ -102,9 +102,9 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 
 	while |_ !i < n _| do
 		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-            invariant !j_r = !i_r * b_r + c_r
-            invariant !x_l = !x_r 
-            variant n_l - !i_l *)
+        invariant !j_r = !i_r * b_r + c_r
+        invariant !x_l = !x_r 
+        variant n_l - !i_l *)
 		j := !i * b + c <|> x := !x + !j;
 		x := !x + !j    <|> j := !j + b;
 		i := |_ !i + 1 _|

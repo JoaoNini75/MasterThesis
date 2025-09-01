@@ -1,15 +1,26 @@
-let linear_search () = begin
-	let a = [|1; 2|] in
+let p1 (a) = begin
+	(*let a = [|1; 2|] in
 	let b = [| |] in
-	let c = [| 3 |] in
-	let len = ref (Array.length (a) - 1) in
-	let res = a.(!len) in
-	a.(!len) <- 42;
-	Printf.printf ("%d", res)
+	let c = [| 3 |] in*)
+	let x = 1 - 1 in
+	let len0 = Array.length (a) - 1 in
+	let len = ref (len0) in
+	(*let res = a.(!len) in
+	a.(!len) <- 42;*)
+	Printf.printf ("%d", len0);
+	Printf.printf ("%d", !len)
 end
 (*@ ensures true *)
 
-let linear_search (a, v) = begin
+let linear_search (a) = begin
+	let len0 = p1 (a) in
+	let len = ref (p1 (a) - 1) in
+	p1 (a);
+	p1 (a)
+end
+(*@ ensures true *)
+
+(*let linear_search (a, v) = begin
 	let i = ref 0 in
 	let res = ref (-1) in
 
@@ -32,3 +43,4 @@ end
 		ensures  -1 <= r < Array.length a
     ensures  r >= 0 -> a.(r) = v
     ensures  r = -1 -> forall k. 0 <= k < Array.length a -> a.(k) <> v *)
+*)

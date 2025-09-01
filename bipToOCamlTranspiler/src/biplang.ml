@@ -9,6 +9,22 @@ open Ast_core
 
 type side = Left | Right
 
+type print_format =
+  | Inline 
+  | Middle
+  | Final
+(* 
+  Example:
+
+  let p1 (a) = begin
+    let len = Array.length (a) - 1 in  --- Inline (nothing more)
+    Printf.printf ("%d", len);         --- Middle (newline(s) + indentation + semicolon)
+    Printf.printf ("%d", 0)            --- Final  (newline(s) + indentation)
+  end
+  (*@ ensures true *)
+*)
+
+
 let usage = "
   manual use:
     dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip 
@@ -548,6 +564,22 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Epipe (e1, e2) -> 
     Oseq (bip_to_ml e1 (Some Left) gen_side, bip_to_ml e2 (Some Right) gen_side) 
 
+    
+let get_prefix_suffix format depth oexpr =
+  let prefix = ( 
+    match oexpr with
+    | Owhile (_, _, _, _) -> "\n\n" ^ indent depth
+    | Ofor (_, _, _, _, _) -> "\n\n" ^ indent depth
+    | Omatch (_, _) -> "" 
+    | Ofun (_, _, _, _, _, _, _, _) -> "\n\n"
+    | Oseq (_, _) -> ""
+    | _ -> "\n" ^ indent depth
+  ) in
+
+  match format with 
+  | Inline -> ("", "")
+  | Middle -> (prefix, ";")
+  | Final -> (prefix, "")
 
 let rec pp_oapp_core fmt oapp depth =
   let (id, oexpr_list) = oapp in
@@ -558,7 +590,7 @@ let rec pp_oapp_core fmt oapp depth =
   ) else (
     List.iter (fun oe -> 
       fprintf fmt " (%a)" 
-      (fun fmt _ -> pp_oexpr fmt oe depth true)
+      (fun fmt _ -> pp_oexpr fmt oe depth Inline)
       oe) oexpr_list
   )
 
@@ -567,13 +599,15 @@ and pp_tuple_core fmt oel depth is_cons =
   else 
     let first_elem = (List.nth oel 0) in
     let is_cons_str = if is_cons then " " else "" in
+
     fprintf fmt "%s(%a"
       is_cons_str
-      (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
+      (fun fmt _ -> pp_oexpr fmt first_elem depth Inline) first_elem;
+    (* just separating first elem from the rest because of the comma *)
 
     List.iteri (fun idx oe -> 
       if idx = 0 then ()
-      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel;
+      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe) oel;
 
     fprintf fmt ")"
 
@@ -593,119 +627,119 @@ and pp_new_array_core fmt oel depth =
   else 
     let first_elem = (List.nth oel 0) in
     fprintf fmt "[| %a"
-      (fun fmt _ -> pp_oexpr fmt first_elem depth true) first_elem;
+      (fun fmt _ -> pp_oexpr fmt first_elem depth Inline) first_elem;
 
     List.iteri (fun idx oe -> 
       if idx = 0 then ()
-      else fprintf fmt "; %a" (fun fmt _ -> pp_oexpr fmt oe depth true) oe) oel;
+      else fprintf fmt "; %a" (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe) oel;
 
     fprintf fmt " |]"
 
-and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) = 
-  let last_elem_str = if not_last_elem then "" else "\n" ^ indent depth in
+and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) = 
+  let (prefix, suffix) = get_prefix_suffix format depth oexpr in
+  fprintf fmt "%s" prefix;
   
   match oexpr with
   | Onone -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
 
-  | Ounit -> fprintf fmt "\n%s()" (indent depth)
+  | Ounit -> fprintf fmt "()"
 
-  | Oident id -> fprintf fmt "%s%s" last_elem_str id.id
+  | Oident id -> fprintf fmt "%s" id.id
 
-  | Otuple oel -> 
-    fprintf fmt "%s%a" 
-      last_elem_str
-      (fun fmt _ -> pp_tuple_core fmt oel depth false) oel
+  | Otuple oel -> fprintf fmt "%a" (fun fmt _ -> pp_tuple_core fmt oel depth false) oel
 
   | Ocons (idcap, oel) -> 
-    fprintf fmt "%s%s%a" 
-      last_elem_str 
+    fprintf fmt "%s%a"  
       idcap 
       (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
 
-  | Ocst c -> fprintf fmt "%s%s" last_elem_str (get_const_str c)
+  | Ocst c -> fprintf fmt "%s" (get_const_str c)
 
   | Ounop (op, e) -> 
     let operator_str = (get_unop_str op) in
-    fprintf fmt "%s%s" last_elem_str operator_str;
+    fprintf fmt "%s" operator_str;
 
-    ( if not_last_elem 
-      then pp_oexpr fmt e depth not_last_elem
-      else pp_oexpr fmt e depth true 
-    );
+    pp_oexpr fmt e depth Inline;
 
     if operator_str = "ref (" || operator_str = "not (" 
     then fprintf fmt ")"
-    else ()
 
   | Obinop (op, e1, e2) -> 
-    fprintf fmt "%s(%a %s %a)" 
-      last_elem_str
-      (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
+    fprintf fmt "(%a %s %a)"
+      (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
       (get_binop_str op)
-      (fun fmt _ -> pp_oexpr fmt e2 depth true) e2;
+      (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2;
 
   | Olet (id, value, body) -> 
     let indentation = indent depth in
-    fprintf fmt "\n%slet %s = " indentation id.id;
-
-    let is_oif = ( 
+    
+    let is_oif = (
       match value with 
+      | Oif (_, _, _, _) -> true
+      | _ -> false
+    ) in
+
+    let is_oif_str = if is_oif then "\n" ^ (indent (depth+1)) else "" in
+
+    fprintf fmt "let %s = %s" id.id is_oif_str;
+
+    ( match value with 
       | Oapp (id, oexpr_list) -> 
-        pp_oapp_core fmt (id, oexpr_list) depth;
-        false
+        pp_oapp_core fmt (id, oexpr_list) depth
 
       | Omodapp (ic, id, oexpr_list) -> 
         fprintf fmt "%s" (ic ^ ".");
-        pp_oapp_core fmt (id, oexpr_list) depth;
-        false
+        pp_oapp_core fmt (id, oexpr_list) depth
 
       | Oif (cnd_l, cnd_r, e1, e2) -> 
-        pp_oexpr fmt value (depth+1) false;
-        true
+        pp_oexpr fmt value (depth+1) Inline
 
       | _ -> 
-        pp_oexpr fmt value depth true;
-        false
-    ) in
+        pp_oexpr fmt value depth Inline
+    );
 
-    ( if is_oif 
-    then fprintf fmt "\n%sin" indentation
-    else fprintf fmt " in");
+    ( 
+      if is_oif 
+      then fprintf fmt "\n%sin" indentation
+      else fprintf fmt " in"
+    );
     
-    pp_oexpr fmt body depth not_last_elem
+    pp_oexpr fmt body depth format
 
   | Ofun (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after) ->
     let ofun = Ofun (id, is_rec, param_list, fun_type, special_op_opt, oexpr_list, spec_opt, after) in
-    pp_fun_ml fmt ofun depth not_last_elem
+    pp_fun_ml fmt ofun depth format
   
   | Oif (cnd_l, cnd_r, e1, e2) -> 
     let indentation = (indent depth) in
     let len1 = List.length e1 in
     let len2 = List.length e2 in
 
-    if cnd_r = Onone then ()
-    else 
-      fprintf fmt "\n%sassert ( (%a) = (%a) );"
-        indentation
-        (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
-        (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r;
+    if cnd_r <> Onone then
+      fprintf fmt "assert ( (%a) = (%a) );\n%s"
+        (fun fmt _ -> pp_oexpr fmt cnd_l depth Inline) cnd_l
+        (fun fmt _ -> pp_oexpr fmt cnd_r depth Inline) cnd_r
+        indentation;
 
-    fprintf fmt "\n%sif %a\n%sthen begin " 
-      indentation 
-      (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) true) cnd_l
+    fprintf fmt "if %a\n%sthen begin "  
+      (fun fmt _ -> pp_oexpr fmt cnd_l (depth+1) Inline) cnd_l
       indentation;
     
-    List.iteri (fun idx oe -> let not_last_elem = (idx < len1 - 1) in
-                              pp_oexpr fmt oe (depth+1) not_last_elem) e1;
+    List.iteri (fun idx oe ->
+      let not_last_elem = (idx < len1 - 1) in
+      let format = if not_last_elem then Middle else Final in
+      pp_oexpr fmt oe (depth+1) format
+    ) e1;
 
     fprintf fmt "\n%send else begin " indentation;
 
-    List.iteri (fun idx oe -> let not_last_elem = (idx < len2 - 1) in
-                              pp_oexpr fmt oe (depth+1) not_last_elem) e2;
+    List.iteri (fun idx oe ->
+      let not_last_elem = (idx < len2 - 1) in
+      let format = if not_last_elem then Middle else Final in
+      pp_oexpr fmt oe (depth+1) format
+    ) e2;
 
-    if not_last_elem
-    then fprintf fmt "\n%send;" indentation
-    else fprintf fmt "\n%send" indentation
+    fprintf fmt "\n%send%s" indentation suffix
 
   | Ofor (id, value, e_to, spec_opt, body) -> 
     let indentation = (indent depth) in
@@ -713,30 +747,30 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
     let specification = 
       if spec = "" then "" 
       else 
-        "\n" ^ (indent (depth+1)) ^ "(*@"  
-        ^ swap_mod_order (indent_spec (depth-2) spec true)
-        ^ "*)"
+        "\n" ^ (indent (depth+1)) ^ "(*@" ^
+        swap_mod_order (indent_spec (depth-2) spec true) ^ "*)"
     in
 
-    fprintf fmt "\n\n%sfor %s = %a to %a do%s"
-      indentation
+    fprintf fmt "for %s = %a to %a do%s"
       id.id
-      (fun fmt _ -> pp_oexpr fmt value depth true) value
-      (fun fmt _ -> pp_oexpr fmt e_to depth true) e_to
+      (fun fmt _ -> pp_oexpr fmt value depth Inline) value
+      (fun fmt _ -> pp_oexpr fmt e_to depth Inline) e_to
       specification; 
 
     let len = List.length body in
-    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
-                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+    List.iteri (fun idx oe ->
+      let not_last_elem = (idx < len - 1) in
+      let format = if not_last_elem then Middle else Final in
+      pp_oexpr fmt oe (depth+1) format
+    ) body;
 
-    let not_last_elem_str = if not_last_elem then ";" else "" in
-    fprintf fmt "\n%sdone%s\n" indentation not_last_elem_str
+    fprintf fmt "\n%sdone%s\n" indentation suffix
 
   | Owhile (cnd_l, cnd_r, spec_opt, body) -> 
     let indentation = (indent depth) in
     let spec = pp_spec_opt spec_opt in
 
-    ( match cnd_r with
+    ( match cnd_r with (* simple and conditionally aligned loops *)
       | Onone ->
         let indented_spec = indent_spec_if_cond_align (depth) spec in
         let is_cond_align_loop = not (indented_spec = spec) in
@@ -753,142 +787,131 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (not_last_elem : bool) =
             swap_mod_order indented_spec ^ "*)"
         in
 
-        fprintf fmt "\n\n%swhile %a do%s" 
-        indentation
-        (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
+        fprintf fmt "while %a do%s"
+        (fun fmt _ -> pp_oexpr fmt cnd_l depth Inline) cnd_l
         specification
 
-      | _ -> 
+      | _ -> (* loops with pipe or floors *)
         let indented_spec = indent_spec (depth-2) spec false in
         let specification = 
           if spec = "" then "" 
           else swap_mod_order indented_spec
         in
         
-        fprintf fmt "\n\n%swhile %a do\n%s(*@@ invariant (%a) <-> (%a)\n%s*)"
-        indentation
-        (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
-        (indent (depth+1))
-        (fun fmt _ -> pp_oexpr fmt cnd_l depth true) cnd_l
-        (fun fmt _ -> pp_oexpr fmt cnd_r depth true) cnd_r
-        specification
+        fprintf fmt "while %a do\n%s(*@@ invariant (%a) <-> (%a)\n%s*)"
+          (fun fmt _ -> pp_oexpr fmt cnd_l depth Inline) cnd_l
+          (indent (depth+1))
+          (fun fmt _ -> pp_oexpr fmt cnd_l depth Inline) cnd_l
+          (fun fmt _ -> pp_oexpr fmt cnd_r depth Inline) cnd_r
+          specification
     );
 
     let len = List.length body in
-    List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
-                              pp_oexpr fmt oe (depth+1) not_last_elem) body;
+    List.iteri (fun idx oe ->
+      let not_last_elem = (idx < len - 1) in
+      let format = if not_last_elem then Middle else Final in
+      pp_oexpr fmt oe (depth+1) format
+    ) body;
     
-    let not_last_elem_str = if not_last_elem then ";" else "" in
-    fprintf fmt "\n%sdone%s\n" indentation not_last_elem_str
+    fprintf fmt "\n%sdone%s\n" indentation suffix
 
   | Oassign (id1, id2, e1, e2) ->
     let indentation = (indent depth) in
-    let semicolon_str = if not_last_elem then ";" else "" in
 
     ( match e2 with
-      | Onone -> fprintf fmt "\n%s%s := %a%s"
-                  indentation
-                  id1.id
-                  (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
-                  semicolon_str
+      | Onone -> 
+        fprintf fmt "%s := %a"
+          id1.id
+          (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
 
-      | _ -> fprintf fmt "\n%s%s := %a;\n%s%s := %a%s"
-              indentation
-              id1.id
-              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
-              indentation
-              id2.id
-              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
-              semicolon_str
-    ) 
+      | _ -> 
+        fprintf fmt "%s := %a;\n%s%s := %a"
+          id1.id
+          (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
+          indentation
+          id2.id
+          (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2
+    );
 
-  | Oapp (id, oexpr_list) -> 
-    let indentation = (indent depth) in
-    let semicolon_str = if not_last_elem then ";" else "" in
+    fprintf fmt "%s" suffix
+
+  | Oapp (id, oexpr_list) ->
     let oapp = (id, oexpr_list) in
-
-    fprintf fmt "\n%s%a%s" 
-      indentation 
+    fprintf fmt "%a%s" 
       (fun fmt _ -> pp_oapp_core fmt oapp depth) oapp
-      semicolon_str
+      suffix
 
   | Omodapp (ic, id, oexpr_list) -> 
-    let indentation = (indent depth) in
-    let semicolon_str = if not_last_elem then ";" else "" in
     let oapp = (id, oexpr_list) in
-
-    fprintf fmt "\n%s%s%a%s" 
-      indentation 
+    fprintf fmt "%s%a%s"
       (ic ^ ".")
       (fun fmt _ -> pp_oapp_core fmt oapp depth) oapp
-      semicolon_str
+      suffix
 
   | Oassert (oe) ->
-    let indentation = (indent depth) in
-    let semicolon_str = if not_last_elem then ";" else "" in
-
-    fprintf fmt "\n%sassert (%a)%s"
-      indentation
-      (fun fmt _ -> pp_oexpr fmt oe depth true) oe
-      semicolon_str
+    fprintf fmt "assert (%a)%s"
+      (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe
+      suffix
 
   | Omatch (id, cases) -> 
-    let depth = if not_last_elem then (depth + 1) else depth in
+    let depth = if format <> Final then (depth + 1) else depth in
     let indentation = (indent depth) in
-    let not_last_elem_str = if not_last_elem then "(" else "" in
+    let par_prefix = if format <> Final then "(" else "" in
 
     fprintf fmt "%s\n%smatch %s with" 
-      not_last_elem_str
+      par_prefix
       indentation 
       id.id;
 
     List.iter (fun case ->
       let (ptrn, oe) = case in
+      let is_oif_format = (
+        match oe with
+        | Oif (_, _, _, _) -> Middle
+        | _ -> Inline
+      ) in
+
       fprintf fmt "\n%s| %a -> %a"
         indentation
         (fun fmt _ -> pp_opattern fmt ptrn depth) ptrn
-        (fun fmt _ -> pp_oexpr fmt oe (depth + 1) true) oe
+        (fun fmt _ -> pp_oexpr fmt oe (depth + 1) is_oif_format) oe
     ) cases;
     
-    if not_last_elem 
+    if format <> Final
     then fprintf fmt "\n%s)" (indent (depth-1))
-    else ();
 
   | Oarray_new oel -> 
-    fprintf fmt "%s%a" 
-      last_elem_str
-      (fun fmt _ -> pp_new_array_core fmt oel depth) oel
+    fprintf fmt "%a" (fun fmt _ -> pp_new_array_core fmt oel depth) oel
 
   | Oarray_read (ident, oe) -> 
-    fprintf fmt "%s%s.(%a)" 
-      last_elem_str
+    fprintf fmt "%s.(%a)" 
       ident.id
-      (fun fmt _ -> pp_oexpr fmt oe (depth + 1) true) oe
+      (fun fmt _ -> pp_oexpr fmt oe (depth + 1) Inline) oe
 
   | Oarray_write (ident, oe_idx, oe_val) -> 
     let indentation = (indent depth) in
-    let semicolon_str = if not_last_elem then ";" else "" in
 
     fprintf fmt "\n%s%s.(%a) <- %a%s"
       indentation
       ident.id
-      (fun fmt _ -> pp_oexpr fmt oe_idx (depth + 1) true) oe_idx
-      (fun fmt _ -> pp_oexpr fmt oe_val (depth + 1) true) oe_val
-      semicolon_str
+      (fun fmt _ -> pp_oexpr fmt oe_idx (depth + 1) Inline) oe_idx
+      (fun fmt _ -> pp_oexpr fmt oe_val (depth + 1) Inline) oe_val
+      suffix
 
   | Oseq (e1, e2) -> 
-    ( match e1 with 
+    match e1 with 
+    | Oassign (id1, id2, oe1, oe2) -> 
       (* case where there are assigns on both sides of a pipe
-         but the left-hand identifiers are different *)
-      | Oassign (id1, id2, oe1, oe2) -> 
-        pp_oexpr fmt e1 depth true;
-        pp_oexpr fmt e2 depth not_last_elem
+        and the left-hand identifiers are different *)
+      pp_oexpr fmt e1 depth Middle;
+      pp_oexpr fmt e2 depth format
 
-      | _ -> fprintf fmt "\n%s(%a, %a)"
-              (indent depth)
-              (fun fmt _ -> pp_oexpr fmt e1 depth true) e1
-              (fun fmt _ -> pp_oexpr fmt e2 depth true) e2
-    )
+    | _ -> 
+      fprintf fmt "\n%s(%a, %a)"
+        (indent depth)
+        (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
+        (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2
+  
 
 and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth = 
   let fun_type_str = 
@@ -898,10 +921,9 @@ and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spe
     | Some (Retcn ident) -> ident.id
   in
   let is_rec_str = if is_rec then "rec " else "" in
-  let inner_fun = if depth = 0 then "" else "\n\n" in
   let indentation = indent depth in
 
-  fprintf fmt "%s%slet %s%s" inner_fun indentation is_rec_str id.id;
+  fprintf fmt "%slet %s%s" indentation is_rec_str id.id;
 
   if List.nth param_list 0 = Punit then (
     fprintf fmt " ()"
@@ -937,8 +959,11 @@ and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spe
   );
 
   let len = List.length oexpr_list in
-  List.iteri (fun idx oe -> let not_last_elem = (idx < len - 1) in
-                            pp_oexpr fmt oe (depth+1) not_last_elem) oexpr_list;
+  List.iteri (fun idx oe ->
+    let not_last_elem = (idx < len - 1) in
+    let format = if not_last_elem then Middle else Final in
+    pp_oexpr fmt oe (depth+1) format
+  ) oexpr_list;
 
   let specification = 
     if spec.text = "" then ""
@@ -951,7 +976,7 @@ and pp_def_ml fmt (odef: Ast_ml.odef) =
   let specification = (pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec 0) in
   fprintf fmt "\n%s\n\n" specification
   
-and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth not_last_elem = 
+and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth format = 
   match oe with
   | Ofun (id, is_rec, param_list, ret_type_opt, ret_pair, oexpr_list, spec, after) ->
     let specification = (pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth) in
@@ -960,9 +985,9 @@ and pp_fun_ml fmt (oe: Ast_ml.oexpr) depth not_last_elem =
       specification
       (indent depth)
       (indent (depth+1))
-      (fun fmt _ -> pp_oexpr fmt after depth not_last_elem) after
+      (fun fmt _ -> pp_oexpr fmt after depth format) after
 
-  | _ -> fprintf fmt "\nERROR!\n"
+  | _ -> fprintf fmt "\n\n\nERROR!\n\n\n"
 
 
 let pp_spec_ml fmt (sp: spec) =
