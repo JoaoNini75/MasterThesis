@@ -107,3 +107,14 @@
 	 	(with-stdout-to 008_type_and.actual
 				(run ../biplang.exe 008_type_and.bip))
 	 	(run diff 008_type_and.expected 008_type_and.actual))))
+
+(rule
+ (alias runtest)
+ (deps
+  009_modapp_arrays.bip
+  009_modapp_arrays.expected)
+ (action
+		(progn
+	 	(with-stdout-to 009_modapp_arrays.actual
+				(run ../biplang.exe 009_modapp_arrays.bip))
+	 	(run diff 009_modapp_arrays.expected 009_modapp_arrays.actual))))

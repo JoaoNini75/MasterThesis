@@ -350,3 +350,24 @@ end
 open A 
 
 include B 
+
+let arrays (a) = begin
+	let a = [| 1; 2; 3 |] in
+	let b = [| |] in
+	let c = [| 7 |] in
+	assert (Array.length (b) + 1 == Array.length (c));
+	let last_elem_idx = Array.length (a) - 1 in
+	assert (a.(last_elem_idx) == 3);
+	a.(last_elem_idx) <- 42;
+  assert (a.(last_elem_idx) == 42);
+	(Array.get (a, last_elem_idx)) == a.(last_elem_idx)
+end
+(*@ ensures true *)
+
+let module_apps (a) = begin
+	let arr_len = ref (Array.length (a)) in
+	Printf.printf ("%d", !arr_len);
+	Printf.printf ("\nlast print")
+end
+(*@ ensures true *)
+

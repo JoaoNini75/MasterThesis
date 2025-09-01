@@ -70,21 +70,21 @@ let report (b,e) =
 
 
 
-let get_const_str (const : Ast_core.constant) : string = 
+let get_const_str (const : constant) : string = 
   match const with
   | Cint  i -> string_of_int i
   | Cbool b -> string_of_bool b
-  | Cstring str -> "\"" ^ str ^ "\""
+  | Cstring str -> "\"" ^ String.escaped str ^ "\""
   | Cnone -> "Cnone"
 
-let get_unop_str (unop : Ast_core.unop) =
+let get_unop_str (unop : unop) =
   match unop with
   | Uneg -> "-"
   | Unot -> "not ("
   | Uref -> "ref ("
   | Uderef -> "!" 
 
-let get_binop_str (binop : Ast_core.binop) =
+let get_binop_str (binop : binop) =
   match binop with
   | Badd -> "+"
   | Bsub -> "-"
@@ -108,7 +108,7 @@ let get_type_str bt =
   | STRING -> "string"
   | NONE -> ""
 
-let get_type_str_opt (bip_type_opt : Ast_core.bip_type option) =
+let get_type_str_opt (bip_type_opt : bip_type option) =
   match bip_type_opt with
   | None -> ""
   | Some bt -> get_type_str bt
@@ -564,7 +564,7 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Epipe (e1, e2) -> 
     Oseq (bip_to_ml e1 (Some Left) gen_side, bip_to_ml e2 (Some Right) gen_side) 
 
-    
+
 let get_prefix_suffix format depth oexpr =
   let prefix = ( 
     match oexpr with
@@ -889,10 +889,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
       (fun fmt _ -> pp_oexpr fmt oe (depth + 1) Inline) oe
 
   | Oarray_write (ident, oe_idx, oe_val) -> 
-    let indentation = (indent depth) in
-
-    fprintf fmt "\n%s%s.(%a) <- %a%s"
-      indentation
+    fprintf fmt "%s.(%a) <- %a%s"
       ident.id
       (fun fmt _ -> pp_oexpr fmt oe_idx (depth + 1) Inline) oe_idx
       (fun fmt _ -> pp_oexpr fmt oe_val (depth + 1) Inline) oe_val
