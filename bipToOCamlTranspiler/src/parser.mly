@@ -128,6 +128,8 @@ expr:
     { Eunop (Uref, e1) }
 | DEREF e1 = expr
     { Eunop (Uderef, e1) }
+| LP e1 = expr EQUAL e2 = expr RP
+    { Ebinop (Beq, e1, e2) }
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
 | LET id = ident EQUAL value = expr IN body = expr

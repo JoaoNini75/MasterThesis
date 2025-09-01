@@ -1,21 +1,3 @@
-let arrays (a) =
-  let a = [| 1; 2; 3 |] in
-  let b = [| |] in
-  let c = [| 7 |] in
-  assert (((Array.length (b) + 1) = Array.length (c)));
-  let last_elem_idx = (Array.length (a) - 1) in
-  assert ((a.(last_elem_idx) = 3));
-  a.(last_elem_idx) <- 42;
-  assert ((a.(last_elem_idx) = 42));
-  (Array.get (a) (last_elem_idx) = a.(last_elem_idx))
-(*@ ensures true *)
-
-let module_apps (a) =
-  let arr_len = ref (Array.length (a)) in
-  Printf.printf ("%d") (!arr_len);
-  Printf.printf ("\nlast print")
-(*@ ensures true *)
-
 let linear_search (a) (v) =
   let i = ref (0) in
   let res = ref (-1) in
@@ -31,6 +13,7 @@ let linear_search (a) (v) =
     i := (!i + 1)
   done;
 
+  assert (((42 + 2) = 44));
   !res
 (*@	ensures true *)
 

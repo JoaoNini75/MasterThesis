@@ -98,8 +98,7 @@ let get_binop_str (binop : binop) =
   | Bgt -> ">" 
   | Bge -> ">="  
   | Band -> "&&" 
-  | Bor -> "||" 
-  | Bspeq -> "<->"
+  | Bor -> "||"
 
 let get_type_str bt =
   match bt with
