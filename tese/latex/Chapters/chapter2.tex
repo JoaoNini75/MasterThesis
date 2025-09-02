@@ -8,6 +8,19 @@
 
 \typeout{NT FILE chapter2.tex}%
 
+\newcommand{\provername}[1]{\cellcolor{yellow!25}
+\begin{sideways}\textbf{#1}~~\end{sideways}}
+\newcommand{\explanation}[1]{\cellcolor{yellow!13}lemma \texttt{#1}}
+\newcommand{\transformation}[1]{\cellcolor{yellow!13}transformation \texttt{#1}}
+\newcommand{\subgoal}[2]{\cellcolor{yellow!13}subgoal #2}
+\newcommand{\valid}[1]{\cellcolor{green!13}#1}
+\newcommand{\unknown}[1]{\cellcolor{red!20}#1}
+\newcommand{\invalid}[1]{\cellcolor{red!50}#1}
+\newcommand{\timeout}[1]{\cellcolor{red!20}(#1)}
+\newcommand{\outofmemory}[1]{\cellcolor{red!20}(#1)}
+\newcommand{\noresult}{\multicolumn{1}{>{\columncolor[gray]{0.8}}c|}{~}}
+\newcommand{\highfailure}{\cellcolor{red!50}FAILURE}
+
 \chapter{Background}
 \label{cha:background}
 
@@ -348,7 +361,7 @@ Let us reconsider the code presented in this \hyperref[sub:examples_ocaml]{subse
 
 Although this is a simple program, we can already notice what a typical GOSPEL specification looks like.
 If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be none as well) at the beginning of the specification, representing the pre-conditions.
-After that, since these implementations use recursion most of the time, there will be one or more \emph{variant} clauses, indicating what variables vary each the function is called.
+After that, since these implementations use recursion most of the time, there will be one or more \emph{variant} clauses, indicating what variables vary each time the function is called.
 This serves as a guarantee that the recursion does not go forever.
 In this implementation, \emph{variant b} is enough but we could eventually reason about how \emph{a} varies over the execution of the program. 
 Regarding the pre-conditions, this particular example states that \emph{a} and \emph{b} need to be non negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
@@ -379,6 +392,57 @@ The first step is to parse and change the abstract syntax tree of the input OCam
 In the second step, the GOSPEL annotations are processed by a special parser/type-checker that converts the specification into nodes that become part of the previous OCaml AST.
 The third step consists in Cameleer itself translating the complete AST into a description in WhyML that is equivalent; Why3 then takes that as input.
 In step four, if the Why3 type-and-effect system is not able to validate the input generated in the previous step, the problems are shown in the context of the input OCaml code, the one that is submitted by the user. 
-Alternatively, if no errors are found, a series of verification conditions are the output of the respective VCGEN.
+Alternatively, if no errors are found, a series of verification conditions (VCs) are the output of the respective VCGEN.
 Those VCs should then be unraveled by the solvers featured in Cameleer or, if they are not able to do all the work automatically, this tool also allows human intervention to discharge more complex statements.
 
+\subsection{Example}
+\label{subsec:cameleer_example}
+
+We will now demonstrate the execution of the verification of a GOSPEL annotated OCaml program, using the code presented in the previous \hyperref[sec:gospel]{section}.
+To start the verification, assuming the code is saved in a file called \textbf{gcd.ml}, we use the following command: \textbf{cameleer gcd.ml}.
+This will feed our code to the Cameleer pipeline and, even if there are errors, a new window with the Why3 GUI will appear.
+
+Now, we can use the \textit{Split VC} strategy (\underline{Tools} -> \underline{Strategies} -> \underline{Split VC}) to separate our bigger goal into several, smaller and simpler VCs, for each implementation.
+In this case, if we use the \textit{Auto level 0} strategy (\underline{Tools} -> \underline{Strategies} -> \underline{Auto level 0}) on the \textbf{gcd.ml} goal, our proof successfully terminates.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[max width=\textwidth]{gcd_why3}
+  \caption{Verifying \textbf{gcd.ml} with the Why3 IDE. TODOOO: FIX IMAGE} 
+  \label{fig:gcd_why3}
+\end{figure}
+
+You can now get automatically generated Latex code that shows how much time each VC took to be proven, using the command \textit{why3 session latex -o proof\textunderscore tex test}.
+Do not forget to create the proof\textunderscore tex directory, otherwise you will get an error.
+The Latex code for this example will look like the following.
+As you can see, CVC5 was the prover used and it took double the time to discharge the imperative implementation (0.46 seconds) than its functional counterpart (0.23 seconds).
+
+\begin{tabular}{|l|l|l|l|c|}
+\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+\hline
+\explanation{VC for gcd}  & \explanation{precondition} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{variant decrease} & \valid{0.08} \\ 
+\cline{2-3}
+ & \explanation{precondition} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{precondition} & \valid{0.08} \\ 
+\hline
+\explanation{VC for gcd\_iter}  & \explanation{loop invariant init} & \valid{0.03} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop invariant init} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{precondition} & \valid{0.04} \\ 
+\cline{2-3}
+ & \explanation{loop variant decrease} & \valid{0.08} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.08} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.05} \\ 
+\cline{2-3}
+ & \explanation{loop invariant preservation} & \valid{0.05} \\ 
+\cline{2-3}
+ & \explanation{postcondition} & \valid{0.05} \\ 
+\hline \end{tabular}
