@@ -32,6 +32,53 @@ Despite the well-defined focus, the efforts of the work mentioned in the beginni
 In the end, the authors were able to establish a general theory of self-composition to prove that programs are non-interfering.
 One of the main features of self-composition is its expressiveness and that there is no need to prove the soundness of type systems, since it is based on logic.
 
+\subsection{Example}
+\label{subsec:self_composition_example}
+
+The following program will be used as an example to illustrate the concept of declassification in the context of self-composition.
+\[ \textbf{if} \, (in = pin) \, \, \textbf{then} \, acc := true \, \, \textbf{else} \, acc := false \, \textbf{fi} \]
+
+TODO: REWRITE
+The variable pin, which stores the actual PIN number, is supposed to be confidential, whereas in, containing the attempted number, is a public input
+variable and acc, conceding or not the access to the system, is a public
+output variable. The declassified information only should reveal whether
+the input number (in) agrees with the PIN number (pin) or not, and
+such information is revealed by granting the access or not (indicated in
+acc). 
+
+TODO: ADAPT CODE BC OF SYMBOLS AND GIVE CONTEXT
+We, therefore, require that the program is (I, ={acc}
+)-secure, where
+I is such that ~I
+id iff ($\mu$(in) = $\mu$(pin)) ⇔ ($\mu$
+'
+(in) = $\mu$
+'
+(pin)). Hence,
+I(I) ≡ ((in = pin) ↔ (in' = pin'
+)) and I(={acc}
+) ≡ (acc = acc'
+). 
+The proof is as follows:
+
+\begin{tabbing}
+  \hspace{3cm}\= \{(in = pin) $\Leftrightarrow$ (in' = pin')\} \\ 
+  \> \, \textbf{if} (in = pin) \textbf{then} \\
+  \> \quad \{in' = pin'\} \\
+  \> \quad acc := \textbf{true} \\
+  \> \, \textbf{else} \\
+  \> \quad \{in' $\neq$ pin'\} \\
+  \> \quad acc := false \\
+  \> \, \textbf{fi}; \\
+  \> \{(acc = \textbf{true}) $\Leftrightarrow$ (in' = pin')\} \\
+  \> \, \textbf{if} (in' = pin') \\
+  \> \, \textbf{then} acc' := \textbf{true} \\
+  \> \, \textbf{else} acc' := false \textbf{fi} \\
+  \> \{(acc = \textbf{true}) $\Leftrightarrow$ (acc' = \textbf{true})\} \\
+  \> \{ acc = acc' \} \\
+  \> 
+\end{tabbing}
+
 
 \section{Cross-products} 
 \label{sec:cross_products}
