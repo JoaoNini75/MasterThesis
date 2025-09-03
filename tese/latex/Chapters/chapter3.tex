@@ -19,6 +19,24 @@
 \label{cha:state_of_the_art}
 
 
+\section{Program Equivalence}
+\label{sec:program_equivalence}
+
+Program equivalence stands out as a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
+"Traditional" program correctness by itself is usually harder to prove than program equivalence, especially when it comes to real world programs, making the latter a topic whose research can reach success easier.
+
+This~\cite{DBLP:journals/fmsd/KlebanovRU18} work brings to light an interesting approach called regression verification, which combines regression testing with formal verification.
+It is based on invariant inference techniques to automatically prove that two imperative pointer programs are equivalent, in the context of one being an updated version of the other.
+By updated version we mean that the program has now more features, has been refactored or went through performance optimizations.
+
+This automatic proof method is achieved by first transforming the two programs into Horn clauses over uninterpreted predicate symbols. 
+Then, these clauses constrain equivalence witnessing coupling predicates that establish the relation of the two programs at key points.
+Finally, if there is a solution for the coupling predicates, a Horn constraint solver is utilized to find it.
+It may be important to mention that, according to the authors, the approach was implemented and its effectiveness demonstrated.
+
+Besides the fact that the focus of our work does not include pointer programs, it is important to note that, due to the lack of human-written specification, this approach has its limitations.
+The range of situations where regression verification can be applied is still confined to some programming language constructs and there are issues regarding the scalability.
+
 
 \section{Self-composition} 
 \label{sec:self_composition}
@@ -26,12 +44,12 @@
 \subsection{Introduction}
 \label{subsec:self_composition_intro}
 
-The proposal of self-composition in this~\cite{DBLP:conf/csfw/BartheDR04} work was to offer an extensible and flexible way of controlling information flow.
+The proposal of self-composition ~\cite{DBLP:conf/csfw/BartheDR04} is to offer an extensible and flexible way of controlling information flow.
 This is usually done by information flow type systems, but they suffer from the issues that self-composition attempted to solve.
-In the work mentioned above, the authors were trying to address the static enforcement of information flow policies but focused on a specific one called non-interference.
+In the work mentioned above, the authors tried to address the static enforcement of information flow policies but focused on a specific one called non-interference.
 Non-interference separates the state of a program into a public and a secret part and, by observing its execution, determines if there was a information leak on the secret part of the state.
 
-Despite the well-defined focus, the efforts of the work mentioned in the beginning of the section apply to several programming languages and different definitions of security, even including declassification, partially.
+Despite the well-defined focus, the efforts of the work specified before apply to several programming languages and different definitions of security, even including declassification, partially.
 In the end, the authors were able to establish a general theory of self-composition to prove that programs are non-interfering.
 One of the main features of self-composition is its expressiveness and that there is no need to prove the soundness of type systems, since it is based on logic.
 
@@ -87,7 +105,7 @@ More generally, this form of characterization allows us to use existing verifica
 Cross-products~\cite{DBLP:conf/fm/ZaksP08} aim to prove program equivalence, with a strong focus on verifying compiler optimizations.
 Instead of proving that both programs are equivalent, the analysis is done by combining the two input programs into one: the cross-product.
 With them, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
-Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint for this work.
+Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint of this work.
 
 One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, is that it was made to validate program equivalence in general while balancing precision and efficiency.
 The approach was to divide the analysis in two phases, a faster one first and a more precise after that.
@@ -95,7 +113,7 @@ The first phase utilizes a fast, yet imprecise value numbering algorithm whose r
 This final part is based on assertion checking, a static program verification method which, under the hood, computes the weakest-precondition~\cite{DBLP:books/ph/Dijkstra76} using CVC3~\cite{cvc3}. 
 
 The results presented on the cited work reveal that CoVaC was able to verify a very considerable set of optimizations of LLVM~\cite{llvm}, a complex modern compiler.
-Yet, the tool does not support verification of interprocedural optimizations or information flow policies, for example, but these are issues that the authors showed interest in addressing.
+Yet, the tool does not support verification of interprocedural optimizations or information flow policies, for example, but these are limitations that the authors showed interest in addressing.
 
 
 \section{Product Programs} 
@@ -462,22 +480,3 @@ In the example, \emph{j} is a derived induction variable defined as a linear fun
 The optimization in question substitutes the statement \emph{j := i * B + C} by the equivalent and more performant statement \emph{j' += B} (multiplication is more costly than addition to a computer), makes the assignment \emph{x' += j'} come first inside the loop and adds an initial assignment \emph{j' = C} before the start of the loop.
 To verify the correctness of the optimization, we need to guarantee that \emph{x = x'} is an invariant of the product program.
 And to do that, we need the linear condition \emph{j := i * B + C} to be part of the loop invariant.
-
-\FloatBarrier
-\section{Program Equivalence}
-\label{sec:program_equivalence}
-
-Program equivalence stands out as a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
-"Traditional" program correctness by itself is usually harder to prove than program equivalence, especially when it comes to real world programs, making the latter a topic whose research can reach success easier.
-
-This work~\cite{DBLP:journals/fmsd/KlebanovRU18} brings to light an interesting approach called regression verification, which combines regression testing with formal verification.
-It is based on invariant inference techniques to automatically prove that two imperative pointer programs are equivalent, in the context of one being an updated version of the other.
-By updated version we mean that the program has now more features, has been refactored or went through performance optimizations.
-
-This automatic proof method is achieved by first transforming the two programs into Horn clauses over uninterpreted predicate symbols. 
-Then, these clauses constrain equivalence witnessing coupling predicates that establish the relation of the two programs at key points.
-Finally, if there is a solution for the coupling predicates, a Horn constraint solver is utilized to find it.
-It may be important to mention that, according to the authors, the approach was implemented and its effectiveness demonstrated.
-
-Besides the fact that the focus of our work does not include pointer programs, it is important to note that, due to the lack of human-written specification, this approach has its limitations.
-The range of situations where regression verification can be applied is still confined to some programming language constructs and there are issues regarding the scalability.

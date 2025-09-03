@@ -1,7 +1,22 @@
-let test () = begin
-	assert (42 + 2 == 44);
-	assert (42 + 1 <> 44);
-	assert (42 + 1 != 44);
-	assert ((42 + 2 = 44))
+let loop_unswitching (|_ x : int _|, n : int, k : int, |_ a _|, |_ b _|, |_ c _|) : unit = begin
+	let i = |_ ref 0 _| in
+	assert (|_ !i < n _|);
+
+	if x_r < 7 then begin
+
+		while (!i_l < n_l) do
+			|_ a.(!i) <- a.(!i) + k _|
+			assert (|_  _|);
+
+
+
+		done
+
+	end else begin
+		()
+	end
 end
-(*@	ensures true *)
+(*@	requires n_l = n_r && n_l >= 0
+		ensures  a_l[i_l] = a_r[i_r]
+		ensures  b_l[i_l] = b_r[i_r]
+		ensures  c_l[i_l] = c_r[i_r] *)
