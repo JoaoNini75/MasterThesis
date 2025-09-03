@@ -23,6 +23,9 @@
 \section{Self-composition} 
 \label{sec:self_composition}
 
+\subsection{Introduction}
+\label{subsec:self_composition_intro}
+
 The proposal of self-composition in this~\cite{DBLP:conf/csfw/BartheDR04} work was to offer an extensible and flexible way of controlling information flow.
 This is usually done by information flow type systems, but they suffer from the issues that self-composition attempted to solve.
 In the work mentioned above, the authors were trying to address the static enforcement of information flow policies but focused on a specific one called non-interference.
@@ -32,52 +35,50 @@ Despite the well-defined focus, the efforts of the work mentioned in the beginni
 In the end, the authors were able to establish a general theory of self-composition to prove that programs are non-interfering.
 One of the main features of self-composition is its expressiveness and that there is no need to prove the soundness of type systems, since it is based on logic.
 
-\subsection{Example}
+
+\subsection{Exploring non-interference}
+\label{subsec:exploring_non_interference}
+
+In order to give an example of self-composition in the next subsection, we present now a simple program that respects the properties of termination-insensitivity and non-interference.
+
+Consider a simple, deterministic and imperative language that allows sequential composition and the evaluation relation \(\langle P, u\rangle \Downarrow v\), where \(P\) is a program and \(u,v\) are memories.
+Memory in this context means a map where the keys are the program variables of \(P\) and the values are the values of those program variables.
+Furthermore, consider that all variables of \(P\) need to be either public or private, let \(\overrightarrow{x}\) be the set of all public variables in \(P\) and \(\overrightarrow{y}\) the set of all of its private variables.
+For all memories \(u_1,u_2,v_1,v_2\), the properties of termination-insensitivity and non-interference for \(P\) can be described as:
+
+\[ [\langle P, u_1\rangle \Downarrow v_1 \, \land \, \langle P, u_2\rangle \Downarrow v_2 \, \land \, u_1 {=}_{L} u_2] \Rightarrow v_1 {=}_{L} v_2 \]
+
+where ${=}_{L}$ is the point-wise extension of equality on values to public parts of memories.
+
+Consider [\(\overrightarrow{x'}, \overrightarrow{y'} / \overrightarrow{x}, \overrightarrow{y}\)] as being a renaming of the program variables \(\overrightarrow{x}\) and \(\overrightarrow{y}\) of \(P\) with fresh variables \(\overrightarrow{x'}\), \(\overrightarrow{y'}\) and let \(P'\) be as \(P\) but with its variables renamed: \(P\)[\(\overrightarrow{x'}, \overrightarrow{y'} / \overrightarrow{x}, \overrightarrow{y}\)].
+Also, to refer to the the disjoint union of two memories we will use the $\uplus$ symbol.
+Therefore, we have \(\langle P, u\rangle \Downarrow v \, \land \, \langle P', u'\rangle \Downarrow v' \) iff \(\langle P; P, u \uplus u' \rangle \Downarrow v \uplus v'\).
+We can now rearrange non-interference, for memories \(u,u',v,v'\), as the following:
+
+\[ (\langle P; P, u \uplus u' \rangle \Downarrow v \uplus v' \, \land \, u = {}_{\overrightarrow{x}} u' \circ [\overrightarrow{x} / \overrightarrow{x'}]) \Rightarrow v = {}_{\overrightarrow{x}} v' \circ [\overrightarrow{x} / \overrightarrow{x'}] \]
+
+where $\circ$ is the symbol for function composition and \(= {}_{\overrightarrow{x}}\) is the point-wise extension of equality on values to the restriction of memories to $\overrightarrow{x}$.
+With this formulation, we are able to reduce the non-interference property of \(P\) to a property of all the executions of \(P; P'\).
+Therefore, an alternative characterization of non-interference can be presented by using programming logics, since they are sound and relatively complete with relation to the operational semantic.
+We can describe non-interference using Hoare triples:
+
+\[ \{\overrightarrow{x} = \overrightarrow{x'}\} \, P; P' \, \{\overrightarrow{x} = \overrightarrow{x'}\} \]
+
+
+\subsection{Code Example}
 \label{subsec:self_composition_example}
 
-The following program will be used as an example to illustrate the concept of declassification in the context of self-composition.
-\[ \textbf{if} \, (in = pin) \, \, \textbf{then} \, acc := true \, \, \textbf{else} \, acc := false \, \textbf{fi} \]
+Consider the following program:
 
-TODO: REWRITE
-The variable pin, which stores the actual PIN number, is supposed to be confidential, whereas in, containing the attempted number, is a public input
-variable and acc, conceding or not the access to the system, is a public
-output variable. The declassified information only should reveal whether
-the input number (in) agrees with the PIN number (pin) or not, and
-such information is revealed by granting the access or not (indicated in
-acc). 
+\[ x := y; \, x := 0 \]
 
-TODO: ADAPT CODE BC OF SYMBOLS AND GIVE CONTEXT
-We, therefore, require that the program is (I, ={acc}
-)-secure, where
-I is such that ~I
-id iff ($\mu$(in) = $\mu$(pin)) ⇔ ($\mu$
-'
-(in) = $\mu$
-'
-(pin)). Hence,
-I(I) ≡ ((in = pin) ↔ (in' = pin'
-)) and I(={acc}
-) ≡ (acc = acc'
-). 
-The proof is as follows:
+and \(x \mapsto x'\) and \(y \mapsto y'\) as the renaming functions. 
+The program is non-interferent iff
 
-\begin{tabbing}
-  \hspace{3cm}\= \{(in = pin) $\Leftrightarrow$ (in' = pin')\} \\ 
-  \> \, \textbf{if} (in = pin) \textbf{then} \\
-  \> \quad \{in' = pin'\} \\
-  \> \quad acc := \textbf{true} \\
-  \> \, \textbf{else} \\
-  \> \quad \{in' $\neq$ pin'\} \\
-  \> \quad acc := false \\
-  \> \, \textbf{fi}; \\
-  \> \{(acc = \textbf{true}) $\Leftrightarrow$ (in' = pin')\} \\
-  \> \, \textbf{if} (in' = pin') \\
-  \> \, \textbf{then} acc' := \textbf{true} \\
-  \> \, \textbf{else} acc' := false \textbf{fi} \\
-  \> \{(acc = \textbf{true}) $\Leftrightarrow$ (acc' = \textbf{true})\} \\
-  \> \{ acc = acc' \} \\
-  \> 
-\end{tabbing}
+\[ \{x = x'\} \, x := y; x := 0 \, x' := y'; x' := 0 \, \{x = x'\} \]
+
+We are able to characterize information flow policies, which include some types of declassification, through the replacement of the =- relation by other (partial) equivalence relation.
+More generally, this form of characterization allows us to use existing verification tools to prove (or disprove) information flow policies for a given program.
 
 
 \section{Cross-products} 
