@@ -205,18 +205,20 @@ case:
     { (ptrn, e) }
 ;
 
-parameter_core:
-| id = ident COLON? tp = bip_type?
-    { id, tp }
-;
-
 parameter:
 | pc = parameter_core
-    { let (id, tp) = pc in Param (id, tp, None) }
+    { let (id, tp, tpmod) = pc in Param (id, tp, None, tpmod) }
 | LFLOOR pc = parameter_core RFLOOR
-    { let (id, tp) = pc in Param (id, tp, Some SOfloor) }
+    { let (id, tp, tpmod) = pc in Param (id, tp, Some SOfloor, tpmod) }
 | pc1 = parameter_core PIPE pc2 = parameter_core
-    { let (id, tp) = pc1 in Param (id, tp, Some SOpipe) }
+    { let (id, tp, tpmod) = pc1 in Param (id, tp, Some SOpipe, tpmod) }
+;
+
+parameter_core:
+| id = ident
+    { id, None, None }
+| id = ident COLON tp = any_type type_modifier = ident?
+    { id, Some tp, type_modifier }
 ;
 
 fun_ret:
@@ -229,10 +231,10 @@ fun_ret:
 ;
 
 ret_type:
-| bt = bip_type 
-    { Some (Retbt (bt)) }
-| id = ident
-    { Some (Retcn (id)) }
+| bt = bip_type type_modifier = ident?
+    { Some (Retbt (bt, type_modifier)) }
+| id = ident type_modifier = ident?
+    { Some (Retcn (id, type_modifier)) }
 ;
 
 constructor:
@@ -260,6 +262,11 @@ pattern:
 | id = ident    { Eident id }
 | cn = ident_cap t = tuple
     { Econstructor (cn, t) } 
+;
+
+any_type:
+| bt = bip_type { ATbt (bt) }
+| id = ident    { ATid (id) }
 ;
 
 bip_type:

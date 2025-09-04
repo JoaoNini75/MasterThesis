@@ -11,15 +11,19 @@ type ident_cap = string
 
 type bip_type = BOOL | INT | STRING | NONE
 type special_op = SOfloor | SOpipe  
+type any_type = 
+  | ATbt of bip_type
+  | ATid of ident
+
 type ret_type = 
-  | Retbt of bip_type
-  | Retcn of ident
+  | Retbt of bip_type * ident option
+  | Retcn of ident * ident option
 
 type fun_ret = (ret_type option * special_op option) option
 
 type parameter = 
   | Punit
-  | Param of ident * bip_type option * special_op option
+  | Param of ident * any_type option * special_op option * ident option (* array, list, etc *)
 
 type unop =
   | Uneg    (* -e *)

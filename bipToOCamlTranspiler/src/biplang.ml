@@ -109,11 +109,16 @@ let get_type_str bt =
   | STRING -> "string"
   | NONE -> ""
 
-let get_type_str_opt (bip_type_opt : bip_type option) =
-  match bip_type_opt with
+let get_type_str_opt (any_type_opt : any_type option) =
+  match any_type_opt with
   | None -> ""
-  | Some bt -> get_type_str bt
+  | Some (ATbt bt) -> get_type_str bt
+  | Some (ATid id) -> id.id
 
+let get_tpmod_opt (str_opt : ident option) = 
+  match str_opt with 
+  | None -> ""
+  | Some s -> " " ^ s.id
 
 let pp_spec_opt spec_opt : string =
   match spec_opt with 
@@ -909,14 +914,14 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
         (indent depth)
         (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
         (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2
-  
+
 
 and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth = 
   let fun_type_str = 
     match ret_type_opt with
     | None -> ""
-    | Some (Retbt bt) -> get_type_str bt
-    | Some (Retcn ident) -> ident.id
+    | Some (Retbt (bt, tpmod_opt)) -> get_type_str bt ^ (get_tpmod_opt tpmod_opt)
+    | Some (Retcn (ident, tpmod_opt)) -> ident.id ^ (get_tpmod_opt tpmod_opt)
   in
   let is_rec_str = if is_rec then "rec " else "" in
   let indentation = indent depth in
@@ -930,21 +935,34 @@ and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spe
       fun (param) ->
         match param with
         | Punit -> fprintf fmt "\nSOMETHING WENT WRONG!\n"
-        | Param (ident, param_type, special_op_opt) -> 
+        | Param (ident, param_type, special_op_opt, tpmod_opt) -> 
           let param_type_str = get_type_str_opt param_type in
+          let tpmod_str = get_tpmod_opt tpmod_opt in
 
           match special_op_opt with 
           | None -> (
             if param_type_str = "" 
             then fprintf fmt " (%s)" ident.id
-            else fprintf fmt " (%s : %s)" ident.id param_type_str )
+            else 
+              fprintf fmt " (%s : %s%s)" 
+                ident.id 
+                param_type_str 
+                tpmod_str )
+
           | _ -> (
             let id1 = ident.id ^ "_l" in
             let id2 = ident.id ^ "_r" in
-
             if param_type_str = "" 
-            then fprintf fmt " (%s, %s)" id1 id2
-            else fprintf fmt " (%s : %s) (%s : %s)" id1 param_type_str id2 param_type_str ) 
+            then fprintf fmt " (%s) (%s)" id1 id2
+            else 
+              fprintf fmt " (%s : %s%s) (%s : %s%s)" 
+                id1 
+                param_type_str 
+                tpmod_str 
+                id2 
+                param_type_str 
+                tpmod_str ) 
+
     ) param_list;
   );
 

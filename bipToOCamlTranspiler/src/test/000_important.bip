@@ -84,3 +84,26 @@ let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
 end
 (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
     ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+
+(*let loop_unswitching (|_ x : int _|, n : int, k : int, |_ a _|, |_ b _|, |_ c _|) : unit = begin
+	let i = |_ ref 0 _| in
+	assert (|_ !i < n _|);
+
+	if x_r < 7 then begin
+
+		while (!i_l < n_l) do
+			|_ a.(!i) <- a.(!i) + k _|
+			assert (|_  _|);
+
+
+
+		done
+
+	end else begin
+		()
+	end
+end
+(*@	requires n_l = n_r && n_l >= 0
+		ensures  a_l[i_l] = a_r[i_r]
+		ensures  b_l[i_l] = b_r[i_r]
+		ensures  c_l[i_l] = c_r[i_r] *)*)
