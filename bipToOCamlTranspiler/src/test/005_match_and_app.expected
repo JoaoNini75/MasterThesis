@@ -1,12 +1,3 @@
-let assert1 () =
-  assert ((1 <> 3))
-(*@ ensures true *)
-
-let assert2 (x : int) : int =
-  assert (((x + 4) = 5));
-  (x - 1)
-(*@ ensures true *)
-
 let app_fun (x : int) =
   x
 (*@ ensures true *)

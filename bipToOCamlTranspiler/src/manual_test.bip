@@ -1,11 +1,66 @@
-type number3 = 
-	| Pos3 of int
-	| Neg3 of int
-	| Zero3
+let simple_for (x : int, y) = begin
+	let z = ref x in
+	for i = 0 to y do
+		z := !z * 3
+	done;
+	!z
+end
+(*@ ensures true *)
 
-let array_type_param (|_ x : int _|, n : int array, l : number3 array, k : int, |_ a : int array _|, |_ b _|) : int array = begin
-	let i = |_ ref 0 _| in
-	i := |_ !i + 30  _|;
-	[| 1; 2; k |]
+let fact_iter (n) = begin
+	if n <= 1 
+    then begin 1 end
+	else
+		begin 
+			let res = ref 1 in
+			for i = 2 to n do
+				res := !res * i
+			done;
+      !res
+		end
+end
+(*@ ensures true *)
+
+let gcd_iter (a0, b0) = begin 
+	let b = ref b0 in
+	let a = ref a0 in
+	while !b <> 0 do
+		let tmp = !a in
+		a := !b;
+		b := tmp mod !b
+	done;
+	!a
+end
+(*@ ensures true *)
+
+let nested () = begin
+	let a = ref 0 in
+	let b = ref 100 in
+
+	for i = 0 to !b / 10 do
+		while !a mod 10 <> 0 do
+			a := !a + 1
+		done
+	done;
+	
+	!a
+end
+(*@ ensures true *)
+
+let assert1 () = begin
+	assert (1 <> 3)
+end
+(*@ ensures true *)
+
+let assert2 (x: int) : int = begin
+	assert ((x + 4 = 5));
+	x - 1
+end
+(*@ ensures true *)
+
+let assert_v2 () : unit = begin
+	let x = -1 <|> 2 in
+	assert (|_ (x < 5) _|);
+	assert (x < 0 <|> x < 10)
 end
 (*@	ensures true *)

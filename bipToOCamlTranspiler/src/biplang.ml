@@ -29,7 +29,7 @@ let usage = "
   manual use:
     dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip 
 
-  update test/dune when tests are changed:
+  update test/dune when you add or delete test files:
     cd test
     ocaml update_test_dune.ml
 
@@ -855,9 +855,17 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
       suffix
 
   | Oassert (oe) ->
-    fprintf fmt "assert (%a)%s"
-      (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe
-      suffix
+    ( match oe with 
+      | Oseq (oe1, oe2) ->
+        fprintf fmt "assert (%a && %a)%s"
+          (fun fmt _ -> pp_oexpr fmt oe1 depth Inline) oe1
+          (fun fmt _ -> pp_oexpr fmt oe2 depth Inline) oe2
+          suffix
+      | _ ->
+        fprintf fmt "assert (%a)%s"
+          (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe
+          suffix 
+    )
 
   | Omatch (id, cases) -> 
     let depth = if format <> Final then (depth + 1) else depth in

@@ -60,3 +60,15 @@ let test () = begin
 	Neg2
 end
 (*@ ensures true *)
+
+type number3 = 
+	| Pos3 of int
+	| Neg3 of int
+	| Zero3
+
+let array_type_param (|_ x : int _|, n : int array, l : number3 array, k : int, |_ a : int array _|, |_ b _|) : int array = begin
+	let i = |_ ref 0 _| in
+	i := |_ !i + 30  _|;
+	[| 1; 2; k |]
+end
+(*@	ensures true *)

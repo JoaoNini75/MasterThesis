@@ -46,3 +46,21 @@ let nested () = begin
 	!a
 end
 (*@ ensures true *)
+
+let assert1 () = begin
+	assert (1 <> 3)
+end
+(*@ ensures true *)
+
+let assert2 (x: int) : int = begin
+	assert ((x + 4 = 5));
+	x - 1
+end
+(*@ ensures true *)
+
+let assert_v2 () : unit = begin
+	let x = -1 <|> 2 in
+	assert (|_ (x < 5) _|);
+	assert (x < 0 <|> x < 10)
+end
+(*@	ensures true *)

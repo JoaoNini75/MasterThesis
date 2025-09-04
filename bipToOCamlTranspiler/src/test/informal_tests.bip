@@ -383,3 +383,9 @@ let array_type_param (|_ x : int _|, n : int array, l : number3 array, k : int, 
 end
 (*@	ensures true *)
 
+let assert_v2 () : unit = begin
+	let x = -1 <|> 2 in
+	assert (|_ (x < 5) _|);
+	assert (x < 0 <|> x < 10)
+end
+(*@	ensures true *)

@@ -51,4 +51,20 @@ let nested () =
   !a
 (*@ ensures true *)
 
+let assert1 () =
+  assert ((1 <> 3))
+(*@ ensures true *)
+
+let assert2 (x : int) : int =
+  assert (((x + 4) = 5));
+  (x - 1)
+(*@ ensures true *)
+
+let assert_v2 () : unit =
+  let x_l = -1 in
+  let x_r = 2 in
+  assert ((x_l < 5) && (x_r < 5));
+  assert ((x_l < 0) && (x_r < 10))
+(*@	ensures true *)
+
 
