@@ -119,6 +119,8 @@ rule next_tokens = parse
   | "["     { LSQBR }
   | "]"     { RSQBR }
   | "<-"    { INVARROW }
+  | "@"     { CONCAT }
+  | "::"    { PREPEND }
 
   | eof     { EOF }
   | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
@@ -247,6 +249,8 @@ and string = parse
     | LSQBR -> fprintf fmt "["
     | RSQBR -> fprintf fmt "]"
     | INVARROW -> fprintf fmt "<-"
+    | CONCAT -> fprintf fmt "@"
+    | PREPEND -> fprintf fmt "::"
 
   let () =
     let fname = Sys.argv.(1) in

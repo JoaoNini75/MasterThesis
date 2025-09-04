@@ -12,7 +12,7 @@
 %token <string> SPEC
 %token <string> IDENT_CAP
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW CONCAT PREPEND
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD
@@ -28,6 +28,8 @@
 %nonassoc CMP
 %nonassoc TUPLE_REDUCE
 %nonassoc IDENT_REDUCE
+%right CONCAT
+%right PREPEND
 %left PLUS MINUS
 %left TIMES DIV MOD
 %nonassoc CASE
@@ -158,16 +160,52 @@ expr:
     { Eassert (e) }
 | MATCH id = ident WITH cases = case_list
     { Ematch (id, cases) }
+
 | LSQBR CASE array = separated_list(SEMICOLON, expr) CASE RSQBR
     { Earray_new array }
 | id = ident DOT LP e = expr RP
     { Earray_read (id, e) }
 | id = ident DOT LP e1 = expr RP INVARROW e2 = expr %prec IDENT_REDUCE
     { Earray_write (id, e1, e2) }
+
+| lstd = list_std
+    { Elist_new lstd }
+| l1 = list_def CONCAT l2 = list_concat
+    { Elist_concat (l1, l2) }
+| ppd_elems = prepend_rec PREPEND lc = list_concat
+    { Elist_prepend (ppd_elems, lc) }
+
 | efun = def_inner
     { efun }
 | LP e = expr RP
     { e }
+;
+
+list_std:
+| LSQBR list = separated_list(SEMICOLON, expr) RSQBR
+    { ELDsimple list }
+;
+
+list_def:
+| elds = list_std
+    { elds }
+| id = ident
+    { ELDid id }
+;
+
+list_concat:
+| lds = separated_nonempty_list(CONCAT, list_def)
+    { ELDconcat lds }
+;
+
+prepend_elem:
+| id = ident { PPDid id }
+| c = CST    { PPDcst c }
+;
+
+prepend_rec:
+| prepends = separated_nonempty_list(PREPEND, prepend_elem)
+    { PPDrec prepends }
 ;
 
 tuple: (* expressions are not allowed in unary tuples for now *)
@@ -257,16 +295,32 @@ payload_elem:
 ;
 
 pattern:
-| WILDCARD      { Ewildcard }
-| c = CST       { Econst c }
-| id = ident    { Eident id }
+| WILDCARD      
+    { Ewildcard }
+| c = CST       
+    { Econst c }
+| id = ident    
+    { Eident id }
 | cn = ident_cap t = tuple
     { Econstructor (cn, t) } 
+| array = array_ptrn
+    { Earray_ptrn array }
+;
+
+array_ptrn:
+| LSQBR CASE array = separated_list(SEMICOLON, array_ptrn_elem) CASE RSQBR
+    { array }
+;
+
+array_ptrn_elem:
+| id = ident { APid id }
+| c = CST    { APcst c } 
+| WILDCARD   { APwc }
 ;
 
 any_type:
-| bt = bip_type { ATbt (bt) }
-| id = ident    { ATid (id) }
+| bt = bip_type { ATbt bt }
+| id = ident    { ATid id }
 ;
 
 bip_type:

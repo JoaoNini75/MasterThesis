@@ -5,11 +5,17 @@
 
 open Ast_core
 
-type opattern = 
+
+type olist_def =
+  | OLDsimple of oexpr list
+  | OLDconcat of olist_def * olist_def option
+
+and opattern = 
   | Owildcard
   | Oconst of       constant
   | Oident of       ident
   | Oconstructor of ident_cap * oexpr list
+  | Oarray_ptrn of  array_ptrn list
 (* only allowing some patterns for now *)
 
 and ocase = opattern * oexpr
@@ -17,27 +23,30 @@ and ocase = opattern * oexpr
 and oexpr =
   | Onone
   | Ounit
-  | Oident of       ident
-  | Otuple of       oexpr list
-  | Ocons of        ident_cap * oexpr list
-  | Ocst of         constant
-  | Ounop of        unop * oexpr
-  | Obinop of       binop * oexpr * oexpr
-  | Olet of         ident * oexpr * oexpr
-  | Ofun of         ident * bool (* rec *) * parameter list * ret_type option
-                    * bool (* return pair *) * oexpr list * spec * oexpr
-  | Oapp of         ident * oexpr list
-  | Omodapp of      ident_cap * ident * oexpr list
-  | Oif of          oexpr * oexpr * oexpr list * oexpr list
-  | Ofor of         ident * oexpr * oexpr * spec option * oexpr list  
-  | Owhile of       oexpr * oexpr * spec option * oexpr list
-  | Oassign of      ident * ident * oexpr * oexpr (* x := 3 *)
-  | Oassert of      oexpr
-  | Omatch of       ident * ocase list
-  | Oarray_new of   oexpr list
-  | Oarray_read of  ident * oexpr
-  | Oarray_write of ident * oexpr * oexpr
-  | Oseq of         oexpr * oexpr
+  | Oident of         ident
+  | Otuple of         oexpr list
+  | Ocons of          ident_cap * oexpr list
+  | Ocst of           constant
+  | Ounop of          unop * oexpr
+  | Obinop of         binop * oexpr * oexpr
+  | Olet of           ident * oexpr * oexpr
+  | Ofun of           ident * bool (* rec *) * parameter list * ret_type option
+                      * bool (* return pair *) * oexpr list * spec * oexpr
+  | Oapp of           ident * oexpr list
+  | Omodapp of        ident_cap * ident * oexpr list
+  | Oif of            oexpr * oexpr * oexpr list * oexpr list
+  | Ofor of           ident * oexpr * oexpr * spec option * oexpr list  
+  | Owhile of         oexpr * oexpr * spec option * oexpr list
+  | Oassign of        ident * ident * oexpr * oexpr (* x := 3 *)
+  | Oassert of        oexpr
+  | Omatch of         ident * ocase list
+  | Oarray_new of     oexpr list
+  | Oarray_read of    ident * oexpr
+  | Oarray_write of   ident * oexpr * oexpr
+  | Olist_new of      olist_def
+  | Olist_concat of   olist_def * olist_def
+  | Olist_prepend of  prepend_arg1 * olist_def
+  | Oseq of           oexpr * oexpr
 
 and odef = ident * bool (* rec *) * parameter list * ret_type option
            * bool (* return pair *) * oexpr list * spec

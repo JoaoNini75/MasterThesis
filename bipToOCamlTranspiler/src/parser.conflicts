@@ -1,0 +1,32 @@
+
+** Conflict (shift/reduce) in state 124.
+** Token involved: PREPEND
+** This state is reached from file after reading:
+
+LET ident param_list option(fun_ret) EQUAL BEGIN prepend_elem
+
+** The derivations that appear below have the following common factor:
+** (The question mark symbol (?) represents the spot where the derivations begin to differ.)
+
+file 
+list(decl) EOF 
+decl list(decl) 
+def_outer 
+LET ident param_list option(fun_ret) EQUAL block spec 
+                                           BEGIN block_core END 
+                                                 expr 
+                                                 prepend_rec list_concat 
+                                                 (?)
+
+** In state 124, looking ahead at PREPEND, reducing production
+** separated_nonempty_list(PREPEND,prepend_elem) -> prepend_elem
+** is permitted because of the following sub-derivation:
+
+separated_nonempty_list(PREPEND,prepend_elem) PREPEND // lookahead token appears
+prepend_elem . 
+
+** In state 124, looking ahead at PREPEND, shifting is permitted
+** because of the following sub-derivation:
+
+separated_nonempty_list(PREPEND,prepend_elem) PREPEND 
+prepend_elem . PREPEND separated_nonempty_list(PREPEND,prepend_elem) 

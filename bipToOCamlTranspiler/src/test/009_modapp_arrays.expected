@@ -34,4 +34,17 @@ let linear_search (a) (v) =
   !res
 (*@	ensures true *)
 
+let array_pattern_match (arr : int array) : unit =
+  let message = (
+    match arr with
+    | [| |] -> "empty array"
+    | [| x |] -> "one element"
+    | [| _; _ |] -> "two elements"
+    | [| x; y; z |] -> "three elements"
+    | [| x; _; z; w |] -> "four elements"
+    | _ -> "more than four elements"
+  ) in
+  Printf.printf ("%s\n") (message)
+(*@ ensures true *)
+
 

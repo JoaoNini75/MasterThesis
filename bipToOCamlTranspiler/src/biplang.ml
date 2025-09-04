@@ -124,6 +124,12 @@ let pp_spec_opt spec_opt : string =
   match spec_opt with 
   | None -> ""
   | Some spec -> spec.text 
+
+let get_array_ptrn_str (apt : array_ptrn) =
+  match apt with
+  | APid ident -> ident.id
+  | APcst c -> (get_const_str c)
+  | APwc -> "_"
   
 let indent depth =
   String.make (depth * indent_spaces) ' '
@@ -239,7 +245,7 @@ let rec bip_to_ml_fun (ident, is_rec, param_list, fun_ret, body, spec_op, after)
   (ident, is_rec, param_list, ret_type_opt, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op, bip_to_ml after None None)
 
-and bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
+and bip_to_ml_def (def: def) : odef =
   let (ident, is_rec, param_list, fun_ret, body, spec_op) = def in
   let (ret_type_opt, special_op_opt) = 
     match fun_ret with 
@@ -249,17 +255,23 @@ and bip_to_ml_def (def: Ast_bip.def) : Ast_ml.odef =
   (ident, is_rec, param_list, ret_type_opt, special_op_opt <> None,
     List.map (fun e -> bip_to_ml e None None) body, spec_op)
 
-and bip_to_ml_case (case: Ast_bip.case) : Ast_ml.ocase = 
+and bip_to_ml_case (case: case) : ocase = 
   let (ptrn, e) = case in
   (bip_to_ml_ptrn ptrn, bip_to_ml e None None)
 
-and bip_to_ml_ptrn (ptrn : Ast_bip.pattern) : Ast_ml.opattern =
+and bip_to_ml_ptrn (ptrn : pattern) : opattern =
   match ptrn with 
   | Ewildcard -> Owildcard
   | Econst c -> Oconst c
   | Eident id -> Oident id
   | Econstructor (idcap, el) -> 
     Oconstructor (idcap, List.map (fun e -> bip_to_ml e None None) el)
+  | Earray_ptrn array -> Oarray_ptrn array
+
+and bip_to_ml_list (ld : list_def) (id_side) (gen_side) : olist_def =
+  match ld with 
+  | ELDsimple el -> 
+    OLDsimple (List.map (fun e -> bip_to_ml e id_side gen_side) el)
 
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
@@ -564,6 +576,15 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Earray_write (ident, e1, e2) -> 
     Oarray_write (add_side_to_id ident id_side,
       bip_to_ml e1 id_side gen_side, bip_to_ml e2 id_side gen_side)
+
+  | Elist_new ld -> Olist_new (bip_to_ml_list ld id_side gen_side)
+
+  | Elist_concat (ld1, ld2) -> 
+      Olist_concat (bip_to_ml_list ld1 id_side gen_side, 
+        bip_to_ml_list ld2 id_side gen_side)
+    
+  | Elist_prepend (ppd_elem, ld) -> 
+    Olist_prepend (ppd_elem, bip_to_ml_list ld id_side gen_side)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   
@@ -622,24 +643,50 @@ and pp_opattern fmt ptrn depth =
   | Owildcard -> fprintf fmt "_"
   | Oconst c -> fprintf fmt "%s" (get_const_str c)
   | Oident ident -> fprintf fmt "%s" ident.id
-  | Oconstructor (idcap, oel) -> 
-    fprintf fmt "%s%a" 
-    idcap 
-    (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
 
-and pp_new_array_core fmt oel depth =
-  if List.length oel = 0 
+  | Oconstructor (idcap, oel) -> 
+      fprintf fmt "%s%a" 
+        idcap 
+        (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
+
+  | Oarray_ptrn array -> pp_array_ptrn_core fmt array depth 
+
+and pp_array_ptrn_core fmt aptrn_list depth =
+  if List.length aptrn_list = 0 
   then fprintf fmt "[| |]"
   else 
+    let first_elem = (List.nth aptrn_list 0) in
+    fprintf fmt "[| %s" (get_array_ptrn_str first_elem);
+
+    List.iteri (fun idx ap -> 
+      if idx <> 0 
+      then fprintf fmt "; %s" (get_array_ptrn_str ap)) aptrn_list;
+
+    fprintf fmt " |]"
+
+and pp_new_array_or_list_core fmt oel depth is_array =
+  let prefix = if is_array then "[|" else "[" in
+  let suffix = if is_array then "|]" else "]" in
+
+  if List.length oel = 0 
+  then fprintf fmt "%s %s" prefix suffix
+  else 
     let first_elem = (List.nth oel 0) in
-    fprintf fmt "[| %a"
+    fprintf fmt "%s %a"
+      prefix
       (fun fmt _ -> pp_oexpr fmt first_elem depth Inline) first_elem;
 
     List.iteri (fun idx oe -> 
       if idx = 0 then ()
       else fprintf fmt "; %a" (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe) oel;
 
-    fprintf fmt " |]"
+    fprintf fmt " %s" suffix
+
+and pp_list_def fmt old depth = 
+  match old with 
+  | OLDsimple oel -> 
+    fprintf fmt "%a" 
+      (fun fmt _ -> pp_new_array_or_list_core fmt oel depth false) oel
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) = 
   let (prefix, suffix) = get_prefix_suffix format depth oexpr in
@@ -895,7 +942,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
     then fprintf fmt "\n%s)" (indent (depth-1))
 
   | Oarray_new oel -> 
-    fprintf fmt "%a" (fun fmt _ -> pp_new_array_core fmt oel depth) oel
+    fprintf fmt "%a" 
+      (fun fmt _ -> pp_new_array_or_list_core fmt oel depth true) oel
 
   | Oarray_read (ident, oe) -> 
     fprintf fmt "%s.(%a)" 
@@ -908,6 +956,26 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
       (fun fmt _ -> pp_oexpr fmt oe_idx (depth + 1) Inline) oe_idx
       (fun fmt _ -> pp_oexpr fmt oe_val (depth + 1) Inline) oe_val
       suffix
+
+  | Olist_new old ->
+    fprintf fmt "%a" 
+      (fun fmt _ -> pp_list_def fmt old depth) old
+
+  | Olist_concat (old1, old2) -> 
+    fprintf fmt "%a @@ %a" 
+      (fun fmt _ -> pp_list_def fmt old1 depth) old1
+      (fun fmt _ -> pp_list_def fmt old2 depth) old2
+    
+  | Olist_prepend (ppd_elem, old) -> 
+    let ppd_elem_str = (
+      match ppd_elem with
+      | PPDid ident -> ident.id
+      | PPDcst c -> get_const_str c
+    ) in
+
+    fprintf fmt "%s :: %a" 
+      ppd_elem_str
+      (fun fmt _ -> pp_list_def fmt old depth) old
 
   | Oseq (e1, e2) -> 
     match e1 with 

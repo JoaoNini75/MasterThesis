@@ -55,3 +55,13 @@ type typedef =
   | TDsimple of ident * payload * typedef option
   (* type ex2 = | Cons1 | Cons2 of bool *)
   | TDcons of   ident * constructor list * typedef option 
+
+type array_ptrn =
+  | APid of   ident
+  | APcst of  constant
+  | APwc
+
+type prepend_elem =
+  | PPDid of    ident
+  | PPDcst of   constant
+  | PPDrec of   prepend_elem * prepend_elem option

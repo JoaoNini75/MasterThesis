@@ -5,40 +5,50 @@
    
 open Ast_core
 
-type pattern = 
+
+type list_def =
+  | ELDsimple of  expr list
+  | ELDid of      ident
+  | ELDconcat of  list_def * list_def option
+
+and pattern = 
   | Ewildcard
   | Econst of       constant
   | Eident of       ident
   | Econstructor of ident_cap * expr list
+  | Earray_ptrn of  array_ptrn list
 (* only allowing some patterns for now *)
 
 and case = pattern * expr 
 
 and expr =
   | Eunit 
-  | Eident of       ident
-  | Etuple of       expr list
-  | Econs of        ident_cap * expr list
-  | Ecst of         constant
-  | Eunop of        unop * expr
-  | Ebinop of       binop * expr * expr
-  | Elet of         ident * expr * expr
-  | Eletpipe of     ident * expr * ident * expr * expr
-  | Efun of         ident * bool (* rec *) * parameter list * fun_ret * expr list * spec * expr
-  | Eapp of         ident * expr list
-  | Emodapp of      ident_cap * ident * expr list
-  | Eif of          expr * expr list * expr list
-  | Efor of         ident * expr * expr * spec option * expr list  
-  | Ewhile of       expr * spec option * expr list 
-  | Ewhilecnd of    expr * expr * expr * expr * spec option * expr list 
-  | Eassign of      ident * expr (* x := 3 *)
-  | Eassert of      expr
-  | Ematch of       ident * case list
-  | Earray_new of   expr list
-  | Earray_read of  ident * expr
-  | Earray_write of ident * expr * expr
-  | Efloor of       expr (* |_ expr _| *)
-  | Epipe of        expr * expr (* expr | expr *)
+  | Eident of         ident
+  | Etuple of         expr list
+  | Econs of          ident_cap * expr list
+  | Ecst of           constant
+  | Eunop of          unop * expr
+  | Ebinop of         binop * expr * expr
+  | Elet of           ident * expr * expr
+  | Eletpipe of       ident * expr * ident * expr * expr
+  | Efun of           ident * bool (* rec *) * parameter list * fun_ret * expr list * spec * expr
+  | Eapp of           ident * expr list
+  | Emodapp of        ident_cap * ident * expr list
+  | Eif of            expr * expr list * expr list
+  | Efor of           ident * expr * expr * spec option * expr list  
+  | Ewhile of         expr * spec option * expr list 
+  | Ewhilecnd of      expr * expr * expr * expr * spec option * expr list 
+  | Eassign of        ident * expr (* x := 3 *)
+  | Eassert of        expr
+  | Ematch of         ident * case list
+  | Earray_new of     expr list
+  | Earray_read of    ident * expr
+  | Earray_write of   ident * expr * expr
+  | Elist_new of      list_def
+  | Elist_concat of   list_def * list_def
+  | Elist_prepend of  prepend_arg1 * list_def
+  | Efloor of         expr (* |_ expr _| *)
+  | Epipe of          expr * expr (* expr | expr *)
 
 and def = ident * bool (* rec *) * parameter list * fun_ret * expr list * spec
 
