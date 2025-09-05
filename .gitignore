@@ -6,6 +6,8 @@
 ### Joao Nini added: ###
 bipToOCamlTranspiler/src/_build/
 *.Identifier
+gather_files_content.ml
+contents.txt
 
 
 # Ignore all template files…
