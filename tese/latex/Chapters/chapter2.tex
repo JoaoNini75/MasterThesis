@@ -43,7 +43,7 @@ The main feature of the Hoare logic is the Hoare triple.
 The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}) and the post-condition (\emph{Q}):
 \[ \{P\} \ \textbf{S} \ \{Q\} \]
 
-This means that if a program \emph{S} satisfies a given pre-condition \emph{P}, the state of the program after the execution finishes satisfies the post-condition \emph{Q}.
+This means that if we execute \emph{S} in a state that satisfies a given pre-condition \emph{P}, then the execution finishes in a state that satisfies the post-condition \emph{Q}.
 To simplify a lot, you can look at the triple as a simple logical consequence \emph{P} $\Rightarrow$ \emph{Q}.
 In the same way as in the logical consequence, if \emph{P} is false, we can not say anything certain about the value of \emph{Q} (after the execution terminates, in the case of the triple).
 
@@ -70,19 +70,24 @@ Otherwise, you can only guarantee \emph{partial correctness}.
 \label{sub:relational_hoare_logic_motivation}
 
 Relational Hoare Logic~\cite{naumann2022thirtysevenyearsrelationalhoare, DBLP:conf/popl/Benton04} (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
-Some of these properties are observational equivalence and 2-properties, being non-interference and continuity two examples of that concept.
+Some of these properties are non-interference and the equivalence of two implementations of the same algorithm, the latter being the one we are most interested in.
+
 While classical HL reasons about the satisfaction of the post-condition if the pre-condition is satisfied, RHL analyzes the relation between two programs in terms of their corresponding evolution from a given pre-condition to a post-condition.
-In other words, if programs \emph{P1} and \emph{P2} both respect the pre-condition (let us name it $\Phi$), they will end (if their executions terminate) both respecting the post-condition (let us name it $\Psi$) or none of them will.
+In other words, if programs \emph{P1} and \emph{P2} start in a state in which both respect the pre-condition (let us name it $\Phi$), their executions will end (if they terminate) in a state in which both respect the post-condition (let us name it $\Psi$), or none of them will.
 This means that one of the programs satisfying $\Psi$ and the other not satisfying it is not valid in RHL.
+That relation between the two programs is defined by the $\sim$ symbol.
 This idea is known as the Hoare quadruple:
 \[ \{\Phi\} \, \emph{P1} \, \sim \, \emph{P2} \, \{\Psi\} \]
 
 So, why was RHL created when we already had classical HL? 
 The main reason lies in the fact that the classical version does not have a direct or easy way of specifying the relation between two programs. 
-This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven or versions that are easier to prove.
-However, this work is definitely not the only one that relies on the connection between two different implementations of the same of code.
-The most common examples are probably compiler optimizations.
-Nonetheless, there is another example: when a given program has different algorithms that perform the same task and they get chosen depending on some characteristics that make one implementation more performant than some other(s).
+This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven versions or the ones that are easier to prove.
+However, this thesis is definitely not the only one that relies on the connection between two different implementations of the same idea.
+
+One common example are compiler optimizations, since they aim to make the code more performant but still outputting the same results.
+Another example is represented by a "client" program that uses a abstract data type and does not care about which implementation the "server" provides.
+This can happen since the implementations are expected to be observationally equivalent (i.e., to the "client" they behave the same way) and is the "server" internal logic that decides which one to choose.
+That choice would depend on some characteristics that, for example, cause one implementation to be more performant than some other(s) in a given situation.
 
 
 \subsubsection{Detailing RHL with examples}
