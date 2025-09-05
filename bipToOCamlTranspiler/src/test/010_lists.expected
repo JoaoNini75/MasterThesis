@@ -17,4 +17,27 @@ let lists (l : int list) : int list =
   1 :: listn @ listc1 @ listp1
 (*@ ensures true *)
 
+let list_pattern_matching (l) =
+  let res1 = (
+    match l with
+    | [] -> "empty"
+    | x :: xs -> "head = x"
+  ) in
+  let res2 = (
+    match l with
+    | fnd :: snd :: tail -> "1 + 2 + tail"
+    | head :: tail -> "head + tail"
+    | _ -> "otherwise"
+  ) in
+  let res3 = (
+    match l with
+    | [] -> "len 0"
+    | [ x ] -> "len 1"
+    | [ x; y ] -> "len 2"
+    | [ x; y; z ] -> "len 3"
+    | _ -> "len 4 or more"
+  ) in
+  res1
+(*@ ensures true *)
+
 

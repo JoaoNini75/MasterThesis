@@ -125,16 +125,26 @@ let pp_spec_opt spec_opt : string =
   | None -> ""
   | Some spec -> spec.text 
 
-let get_array_ptrn_str (apt : array_ptrn) =
-  match apt with
-  | APid ident -> ident.id
-  | APcst c -> (get_const_str c)
-  | APwc -> "_"
+let get_ptrn_elem_str (pe : pattern_elem) =
+  match pe with
+  | PEid ident -> ident.id
+  | PEcst c -> (get_const_str c)
+  | PEwc -> "_"
   
 let get_ppd_elem_str ppd =
   match ppd with
   | PPDid ident -> ident.id
   | PPDcst c -> get_const_str c
+
+let remove_whitespace s =
+  let b = Buffer.create (String.length s) in
+
+  String.iter (fun c ->
+    if c <> ' '
+    then Buffer.add_char b c
+  ) s;
+  
+  Buffer.contents b
 
 let indent depth =
   String.make (depth * indent_spaces) ' '
@@ -265,13 +275,12 @@ and bip_to_ml_case (case: case) : ocase =
   (bip_to_ml_ptrn ptrn, bip_to_ml e None None)
 
 and bip_to_ml_ptrn (ptrn : pattern) : opattern =
-  match ptrn with 
-  | Ewildcard -> Owildcard
-  | Econst c -> Oconst c
-  | Eident id -> Oident id
+  match ptrn with
   | Econstructor (idcap, el) -> 
     Oconstructor (idcap, List.map (fun e -> bip_to_ml e None None) el)
   | Earray_ptrn array -> Oarray_ptrn array
+  | Elist_fl list -> Olist_fl list
+  | Elist_ppd list -> Olist_ppd list
 
 and bip_to_ml_list_def (ld : list_def) (id_side) (gen_side) : olist_def =
   match ld with 
@@ -649,29 +658,29 @@ and pp_tuple_core fmt oel depth is_cons =
 
 and pp_opattern fmt ptrn depth =
   match ptrn with
-  | Owildcard -> fprintf fmt "_"
-  | Oconst c -> fprintf fmt "%s" (get_const_str c)
-  | Oident ident -> fprintf fmt "%s" ident.id
-
   | Oconstructor (idcap, oel) -> 
       fprintf fmt "%s%a" 
         idcap 
         (fun fmt _ -> pp_tuple_core fmt oel depth true) oel
 
-  | Oarray_ptrn array -> pp_array_ptrn_core fmt array depth 
+  | Oarray_ptrn array -> pp_ptrn_elem_list_core fmt array depth "[| " " |]" "; "
+  | Olist_fl list -> pp_ptrn_elem_list_core fmt list depth "[ " " ]" "; "
+  | Olist_ppd list -> pp_ptrn_elem_list_core fmt list depth "" "" " :: "
 
-and pp_array_ptrn_core fmt aptrn_list depth =
+
+and pp_ptrn_elem_list_core fmt aptrn_list depth prefix suffix sep =
   if List.length aptrn_list = 0 
-  then fprintf fmt "[||]"
+  then fprintf fmt "%s" (remove_whitespace (prefix ^ suffix))
   else 
     let first_elem = (List.nth aptrn_list 0) in
-    fprintf fmt "[| %s" (get_array_ptrn_str first_elem);
+    fprintf fmt "%s%s" prefix (get_ptrn_elem_str first_elem);
 
-    List.iteri (fun idx ap -> 
+    List.iteri (fun idx pe -> 
       if idx <> 0 
-      then fprintf fmt "; %s" (get_array_ptrn_str ap)) aptrn_list;
+      then fprintf fmt "%s%s" sep (get_ptrn_elem_str pe)
+    ) aptrn_list;
 
-    fprintf fmt " |]"
+    fprintf fmt "%s" suffix
 
 and pp_new_array_or_list_core fmt oel depth is_array =
   let prefix = if is_array then "[|" else "[" in

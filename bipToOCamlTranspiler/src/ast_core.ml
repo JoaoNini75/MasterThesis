@@ -56,10 +56,10 @@ type typedef =
   (* type ex2 = | Cons1 | Cons2 of bool *)
   | TDcons of   ident * constructor list * typedef option 
 
-type array_ptrn =
-  | APid of   ident
-  | APcst of  constant
-  | APwc
+type pattern_elem =
+  | PEid of   ident
+  | PEcst of  constant
+  | PEwc
 
 type prepend_elem =
   | PPDid of    ident

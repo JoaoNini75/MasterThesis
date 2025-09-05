@@ -1,21 +1,26 @@
-let lists (l : int list) : int list = begin
-  let listn = [
-		1+0*78;
-		if 2 > 1 then begin 2 end else begin 1 end;
-		3
-	] in
+let list_pattern_matching (l) = begin
+	let res1 = (
+		match l with
+		| [] -> "empty"
+		| x :: xs -> "head = x"
+	) in
 
-	let listc1 = [1] @ [2;3] in
-	let listc2 = [1] @ listn in
-	let listc3 = listn @ listn in
+  let res2 = (
+		match l with
+		| fnd :: snd :: tail -> "1 + 2 + tail"
+		| head :: tail -> "head + tail" 
+		| _ -> "otherwise"
+	) in
 
-	let e = 2 in
-	let listp1 = e :: [2;3] in
-	let listp2 = 9 :: [2;3] in
-	let listp3 = e :: l in
-	let listp4 = 9 :: l in
-	let listp5 = 1 :: 2 :: 3 :: [] in
+	let res3 = (
+		match l with
+		| [] -> "len 0"
+		| [x] -> "len 1"
+		| [x; y] -> "len 2"
+		| [x; y; z] -> "len 3"
+		| _ -> "len 4 or more"
+	) in
 
-	1 :: listn @ listc1 @ listp1
+	res1
 end
 (*@ ensures true *)

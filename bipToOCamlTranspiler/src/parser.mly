@@ -297,27 +297,35 @@ payload_elem:
 ;
 
 pattern:
-| WILDCARD      
-    { Ewildcard }
-| c = CST       
-    { Econst c }
-| id = ident    
-    { Eident id }
 | cn = ident_cap t = tuple
     { Econstructor (cn, t) } 
 | array = array_ptrn
     { Earray_ptrn array }
+| lpfl = list_ptrn_fixed_len
+    { Elist_fl lpfl }
+| lp_ppd = list_ptrn_prepend (* this includes a single pattern_elem *)
+    { Elist_ppd lp_ppd }
+;
+
+list_ptrn_prepend:
+| list = separated_nonempty_list(PREPEND, pattern_elem)
+    { list }
+;
+
+list_ptrn_fixed_len:
+| LSQBR list = separated_list(SEMICOLON, pattern_elem) RSQBR
+    { list }
 ;
 
 array_ptrn:
-| LSQBR CASE array = separated_list(SEMICOLON, array_ptrn_elem) CASE RSQBR
+| LSQBR CASE array = separated_list(SEMICOLON, pattern_elem) CASE RSQBR
     { array }
 ;
 
-array_ptrn_elem:
-| id = ident { APid id }
-| c = CST    { APcst c } 
-| WILDCARD   { APwc }
+pattern_elem:
+| id = ident { PEid id }
+| c = CST    { PEcst c } 
+| WILDCARD   { PEwc }
 ;
 
 any_type:

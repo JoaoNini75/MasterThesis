@@ -11,12 +11,10 @@ type olist_def =
   | OLDid of      ident
 
 and opattern = 
-  | Owildcard
-  | Oconst of       constant
-  | Oident of       ident
   | Oconstructor of ident_cap * oexpr list
-  | Oarray_ptrn of  array_ptrn list
-(* only allowing some patterns for now *)
+  | Oarray_ptrn of  pattern_elem list
+  | Olist_fl of     pattern_elem list
+  | Olist_ppd of    pattern_elem list
 
 and ocase = opattern * oexpr
 
