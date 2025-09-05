@@ -172,7 +172,7 @@ expr:
     { Elist_new lstd }
 | l1 = list_def CONCAT l2 = list_concat
     { Elist_concat (l1, l2) }
-| ppd_elems = prepend_rec PREPEND lc = list_concat
+| ppd_elems = prepend_seq lc = list_concat
     { Elist_prepend (ppd_elems, lc) }
 
 | efun = def_inner
@@ -195,17 +195,19 @@ list_def:
 
 list_concat:
 | lds = separated_nonempty_list(CONCAT, list_def)
-    { ELDconcat lds }
+    { lds }
 ;
 
 prepend_elem:
-| id = ident { PPDid id }
-| c = CST    { PPDcst c }
+| id = ident PREPEND { PPDid id }
+| c = CST PREPEND    { PPDcst c }
 ;
 
-prepend_rec:
-| prepends = separated_nonempty_list(PREPEND, prepend_elem)
-    { PPDrec prepends }
+prepend_seq:
+| ppd_elem = prepend_elem
+    { [ppd_elem] }
+| prepends = prepend_seq first_ppd = prepend_elem 
+    { first_ppd :: prepends }
 ;
 
 tuple: (* expressions are not allowed in unary tuples for now *)

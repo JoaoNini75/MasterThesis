@@ -64,4 +64,3 @@ type array_ptrn =
 type prepend_elem =
   | PPDid of    ident
   | PPDcst of   constant
-  | PPDrec of   prepend_elem * prepend_elem option

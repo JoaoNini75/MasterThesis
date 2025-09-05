@@ -1,6 +1,6 @@
 let arrays (a) =
   let a = [| 1; 2; 3 |] in
-  let b = [| |] in
+  let b = [||] in
   let c = [| 7 |] in
   assert (((Array.length (b) + 1) = Array.length (c)));
   let last_elem_idx = (Array.length (a) - 1) in
@@ -37,7 +37,7 @@ let linear_search (a) (v) =
 let array_pattern_match (arr : int array) : unit =
   let message = (
     match arr with
-    | [| |] -> "empty array"
+    | [||] -> "empty array"
     | [| x |] -> "one element"
     | [| _; _ |] -> "two elements"
     | [| x; y; z |] -> "three elements"

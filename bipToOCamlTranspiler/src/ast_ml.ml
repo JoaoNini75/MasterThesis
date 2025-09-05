@@ -7,8 +7,8 @@ open Ast_core
 
 
 type olist_def =
-  | OLDsimple of oexpr list
-  | OLDconcat of olist_def * olist_def option
+  | OLDsimple of  oexpr list
+  | OLDid of      ident
 
 and opattern = 
   | Owildcard
@@ -44,8 +44,8 @@ and oexpr =
   | Oarray_read of    ident * oexpr
   | Oarray_write of   ident * oexpr * oexpr
   | Olist_new of      olist_def
-  | Olist_concat of   olist_def * olist_def
-  | Olist_prepend of  prepend_arg1 * olist_def
+  | Olist_concat of   olist_def * olist_def list
+  | Olist_prepend of  prepend_elem list * olist_def list
   | Oseq of           oexpr * oexpr
 
 and odef = ident * bool (* rec *) * parameter list * ret_type option

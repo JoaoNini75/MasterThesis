@@ -9,7 +9,6 @@ open Ast_core
 type list_def =
   | ELDsimple of  expr list
   | ELDid of      ident
-  | ELDconcat of  list_def * list_def option
 
 and pattern = 
   | Ewildcard
@@ -45,8 +44,8 @@ and expr =
   | Earray_read of    ident * expr
   | Earray_write of   ident * expr * expr
   | Elist_new of      list_def
-  | Elist_concat of   list_def * list_def
-  | Elist_prepend of  prepend_arg1 * list_def
+  | Elist_concat of   list_def * list_def list
+  | Elist_prepend of  prepend_elem list * list_def list
   | Efloor of         expr (* |_ expr _| *)
   | Epipe of          expr * expr (* expr | expr *)
 

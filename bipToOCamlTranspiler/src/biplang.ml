@@ -131,6 +131,11 @@ let get_array_ptrn_str (apt : array_ptrn) =
   | APcst c -> (get_const_str c)
   | APwc -> "_"
   
+let get_ppd_elem_str ppd =
+  match ppd with
+  | PPDid ident -> ident.id
+  | PPDcst c -> get_const_str c
+
 let indent depth =
   String.make (depth * indent_spaces) ' '
 
@@ -268,10 +273,11 @@ and bip_to_ml_ptrn (ptrn : pattern) : opattern =
     Oconstructor (idcap, List.map (fun e -> bip_to_ml e None None) el)
   | Earray_ptrn array -> Oarray_ptrn array
 
-and bip_to_ml_list (ld : list_def) (id_side) (gen_side) : olist_def =
+and bip_to_ml_list_def (ld : list_def) (id_side) (gen_side) : olist_def =
   match ld with 
   | ELDsimple el -> 
     OLDsimple (List.map (fun e -> bip_to_ml e id_side gen_side) el)
+  | ELDid ident -> OLDid (add_side_to_id ident id_side)
 
 and bip_to_ml (e: Ast_bip.expr) (id_side: side option) 
                                 (gen_side : side option) : Ast_ml.oexpr =
@@ -577,14 +583,16 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     Oarray_write (add_side_to_id ident id_side,
       bip_to_ml e1 id_side gen_side, bip_to_ml e2 id_side gen_side)
 
-  | Elist_new ld -> Olist_new (bip_to_ml_list ld id_side gen_side)
+  | Elist_new ld -> Olist_new (bip_to_ml_list_def ld id_side gen_side)
 
-  | Elist_concat (ld1, ld2) -> 
-      Olist_concat (bip_to_ml_list ld1 id_side gen_side, 
-        bip_to_ml_list ld2 id_side gen_side)
+  | Elist_concat (ld1, ldl) -> 
+      Olist_concat (bip_to_ml_list_def ld1 id_side gen_side, 
+        List.map (fun ld -> bip_to_ml_list_def ld id_side gen_side) ldl)
     
-  | Elist_prepend (ppd_elem, ld) -> 
-    Olist_prepend (ppd_elem, bip_to_ml_list ld id_side gen_side)
+  | Elist_prepend (ppdl, ldl) -> 
+    (* rev because of the way ppd elems are collected in the parser *)
+    Olist_prepend (List.rev ppdl,
+      List.map (fun ld -> bip_to_ml_list_def ld id_side gen_side) ldl)
      
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   
@@ -633,8 +641,9 @@ and pp_tuple_core fmt oel depth is_cons =
     (* just separating first elem from the rest because of the comma *)
 
     List.iteri (fun idx oe -> 
-      if idx = 0 then ()
-      else fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe) oel;
+      if idx <> 0
+      then fprintf fmt ", %a" (fun fmt _ -> pp_oexpr fmt oe depth Inline) oe
+    ) oel;
 
     fprintf fmt ")"
 
@@ -653,7 +662,7 @@ and pp_opattern fmt ptrn depth =
 
 and pp_array_ptrn_core fmt aptrn_list depth =
   if List.length aptrn_list = 0 
-  then fprintf fmt "[| |]"
+  then fprintf fmt "[||]"
   else 
     let first_elem = (List.nth aptrn_list 0) in
     fprintf fmt "[| %s" (get_array_ptrn_str first_elem);
@@ -669,7 +678,7 @@ and pp_new_array_or_list_core fmt oel depth is_array =
   let suffix = if is_array then "|]" else "]" in
 
   if List.length oel = 0 
-  then fprintf fmt "%s %s" prefix suffix
+  then fprintf fmt "%s%s" prefix suffix
   else 
     let first_elem = (List.nth oel 0) in
     fprintf fmt "%s %a"
@@ -687,6 +696,7 @@ and pp_list_def fmt old depth =
   | OLDsimple oel -> 
     fprintf fmt "%a" 
       (fun fmt _ -> pp_new_array_or_list_core fmt oel depth false) oel
+  | OLDid ident -> fprintf fmt "%s" ident.id
 
 and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) = 
   let (prefix, suffix) = get_prefix_suffix format depth oexpr in
@@ -961,21 +971,30 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
     fprintf fmt "%a" 
       (fun fmt _ -> pp_list_def fmt old depth) old
 
-  | Olist_concat (old1, old2) -> 
-    fprintf fmt "%a @@ %a" 
-      (fun fmt _ -> pp_list_def fmt old1 depth) old1
-      (fun fmt _ -> pp_list_def fmt old2 depth) old2
-    
-  | Olist_prepend (ppd_elem, old) -> 
-    let ppd_elem_str = (
-      match ppd_elem with
-      | PPDid ident -> ident.id
-      | PPDcst c -> get_const_str c
-    ) in
+  | Olist_concat (old1, oldl) -> 
+    fprintf fmt "%a " 
+      (fun fmt _ -> pp_list_def fmt old1 depth) old1;
 
-    fprintf fmt "%s :: %a" 
-      ppd_elem_str
-      (fun fmt _ -> pp_list_def fmt old depth) old
+      List.iter (fun old ->
+        fprintf fmt "@@ %a"
+          (fun fmt _ -> pp_list_def fmt old depth) old
+      ) oldl;
+    
+  | Olist_prepend (ppdl, oldl) -> 
+    List.iter (fun ppd ->
+      fprintf fmt "%s :: "
+        (get_ppd_elem_str ppd)
+    ) ppdl;
+
+    let first_elem = List.nth oldl 0 in
+    fprintf fmt "%a"
+      (fun fmt _ -> pp_list_def fmt first_elem depth) first_elem;
+    
+    List.iteri (fun idx old ->
+      if idx <> 0
+      then fprintf fmt " @@ %a"
+        (fun fmt _ -> pp_list_def fmt old depth) old
+    ) oldl
 
   | Oseq (e1, e2) -> 
     match e1 with 
