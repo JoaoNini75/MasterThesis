@@ -112,9 +112,10 @@ We can see that \emph{b} and \emph{c} do not change the final state of any of th
 \vspace{-25pt}
 \[ and \ \ \Psi \triangleq \text{P1.a} = \text{P2.a} \land \text{P1.b} = \text{P2.b} \land \text{P1.c} = \text{P2.c} \]
 
-This Hoare quadruple should be read as: \emph{If an execution of P1 and P2 guarantee the equality of their x-components, they both diverge from the post-condition or they both finish in states where their x-components, y-components and z-components have the same values
-\protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{P1.x} has no relation to \emph{P1.y}, for example).}.}
+This Hoare quadruple should be read as: \emph{For any executions of P1 and P2, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components and c-components have the same values
+\protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{P1.a} has no relation to \emph{P1.b}, for example).}.}
 
+\iffalse considerando livres e ligadas? ou incorpora a conversao? \fi
 We now introduce the concept of separability.
 If two programs \emph{P1} and \emph{P2} utilize disjoint sets of variables, we say that they are \emph{separable}.
 Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
@@ -140,7 +141,7 @@ In this example, the Hoare quadruple would be:
 \[ \text{and} \ \ \Psi \triangleq (a = a') \land (b = b') \land (i = i') \land (j = j') \]
 
 Since the previous values in \emph{a} and \emph{i} (respectively \emph{a'} and \emph{i'}) are discarded by the assignments made to these variables, they will have no effect on the final state, so they do not appear in the pre-condition.
-On the other hand, to make sure that the components of \emph{P1} and \emph{P2} hold the same values after the executions terminate, we must assert that the n-components and y-components are equal in the initial state of the programs. 
+On the other hand, to make sure that the components of \emph{P1} and \emph{P2} hold the same values after the executions terminate, we must assert that the b-components and j-components are equal in the initial state of the programs. 
 
 Furthermore, there is a special case of the usage of the Hoare quadruple that does not challenge any concept described before.
 Usually, in the context of the Hoare quadruple, we consider that the programs \emph{P1} and \emph{P2} are different, but what would happen if they are exactly the same?
@@ -153,9 +154,25 @@ The way one should look at the transformation of Hoare triples into Hoare quadru
 \subsubsection{Axioms and Inference Rules}
 \label{sub:relational_hoare_logic_formal_proof_rules}
 
-Consider, for the rules in this subsubsection, that the two given programs \emph{C1} and \emph{C2} are separable.
-To derive valid Hoare quadruples, there are axioms and inference rules that reason about the relation between two programs.
-We can divide these rules in at least three sets that increment the former set with some additional rules, meaning there is the simplest set, the base set and the extended set.
+Consider the following syntax, that will be used in the rules in this subsubsection.
+Let \emph{n} represent any integer number \{... -1, 0, 1 ...\} and \emph{x} any variable of a given program.
+Let $\epsilon$ be the set of integer expressions, $\beta$ the set of boolean expressions and $\zeta$ the set of program expressions.
+The syntaxes of $\epsilon$, $\beta$ and $\zeta$ are given by the following extended BNF definition:\\ \\
+\noindent\hspace*{1em}
+\begin{minipage}{\dimexpr\linewidth-2em\relax}
+\[\begin{aligned} 
+& E ::= \, n \,|\, x \,|\, E_1 + E_2 \,|\, E_1 - E_2 \,|\, E_1 * E_2 \,|\, E_1 / E_2 \,|\, ... &\\
+& B ::= \, \textbf{true} \,|\, \textbf{false} \,|\, \neg B \,|\, B_1 \lor B_2 \,|\, B_1 \land B_2 \,|\, B_1 = B_2 \,|\, B_1 < B_2 \,|\, ... &\\
+& C ::= \, \textbf{skip} \,|\, x := E \,|\, C_1;C_2 \,|\, \textbf{if}\, B\, \textbf{then}\, C_1\, \textbf{else}\, C_2\, \textbf{fi} \,|\, \textbf{while}\, B\, \textbf{do}\, C\, \textbf{od} &
+\end{aligned}\]
+\end{minipage}\\ \\
+
+The ellipses above mean that other forms of integer expressions could be added according need.
+It is also important to note that this language does not consider indentation, so we will use that advantage to make reading easier below.
+Finally, assume, for the rules in this subsubsection, that the two given programs \emph{$C_1$} and \emph{$C_2$} are separable.
+
+To derive valid Hoare quadruples, there are axioms and inference rules that reason about the relation between two programs~\cite{DBLP:journals/jlp/BartheCK16}.
+We can divide these rules in at least three sets that increment the former set with some additional rules, meaning that there is the simplest set, the base set and the extended set.
 The simplest set has limitations that we will discuss after presenting them, but is the best starting point:
 
 \begin{figure}[h]
@@ -195,9 +212,9 @@ The simplest set has limitations that we will discuss after presenting them, but
   \caption{Simplest set of rules of RHL.}
 \end{figure}
   
-This set of rules has some considerable limitations however: both programs \emph{C1} and \emph{C2} must be structurally equivalent and execute in lockstep.
+This set of rules has some considerable limitations however: both programs \emph{$C_1$} and \emph{$C_2$} must have the same shape and execute in lockstep.
 This creates a situation where we can not derive a simple Hoare quadruple like \{$\Phi$\} \emph{C}; \textbf{skip} \emph{\textasciitilde} \emph{C} \{$\Psi$\}.
-To allow this and other important derivations, we present next other 4 rules that enable the separate reasoning of \emph{C1} and \emph{C2}.
+To allow this and other important derivations, we present next other 4 rules that enable the separate reasoning of \emph{$C_1$} and \emph{$C_2$}.
 Together with the rules of the simplest set, these rules constitute the base set:
 
 \begin{figure}[h]
@@ -226,8 +243,9 @@ Together with the rules of the simplest set, these rules constitute the base set
   \caption{Base set of rules of RHL.}
 \end{figure}
 
-Finally, the extended set contains one more rule than the base set: self-composition.
-We will not dive deep here on the need of this rule, instead we do it in this \hyperref[sec:self_composition]{section}.
+The base set of rules of RHL is incomplete, since it does not provide a way to reason about programs whose loop structures differ or, even when they do not, the pre-condition is not strong enough to prove that the loops execute in lockstep.
+This problem can be overcome when we the extend the base set with one more rule: self-composition.
+
 
 \begin{figure}[h]
   \centering
@@ -242,13 +260,15 @@ We will not dive deep here on the need of this rule, instead we do it in this \h
   \label{fig:extended_rules_rhl}
 \end{figure}
 
-Note that the premise of this rule is not a Hoare quadruple but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequence of \emph{C1} and \emph{C2} within a single program.
+Note that the premise of this rule is not a Hoare quadruple but a Hoare triple since there is no \emph{\textasciitilde} operator, only a sequence of \emph{$C_1$} and \emph{$C_2$} within a single program.
 This triple can also be presented as the following quadruple:
 \vspace{-4pt} 
-\[ \{\Phi \land \Phi'\} \, \emph{C1 ; C2} \, \sim \, \emph{C1' ; C2'} \, \{ \Psi \land \Psi' \} \]
+\[ \{\Phi \land \Phi'\} \, \emph{$C_1 ; C_2$} \, \sim \, \emph{$C_1' ; C_2'$} \, \{ \Psi \land \Psi' \} \]
 \vspace{-18pt} 
 
-If we keep the programs \emph{C1;C2} and \emph{C1';C2'} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule in the \hyperref[fig:extended_rules_rhl]{figure}.
+If we keep the programs \emph{$C_1;C_2$} and \emph{$C_1';C_2'$} \emph{separable} by renaming their variables and if \emph{$\Phi$ = $\Phi$'} and \emph{$\Psi$ = $\Psi$'}, we get to the self-composition rule presented before.
+Another way of looking at self-composition is that it reduces a Hoare quadruple into a Hoare triple by transforming the two related programs \emph{$C_1$} and \emph{$C_2$} into a new one that executes them in sequence (\emph{$C_1; C_2$}).
+Finally, it is important to mention that relative completeness of the simplest or base sets of rules of RHL extended with self-composition follows immediately from relative completeness of self-composition ~\cite{DBLP:journals/jlp/BartheCK16}.
 
 
 \section{OCaml}
