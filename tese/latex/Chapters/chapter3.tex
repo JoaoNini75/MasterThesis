@@ -18,6 +18,14 @@
 \chapter{State of the Art}
 \label{cha:state_of_the_art}
 
+\textbf{Definition: Structural equivalence.} We say that two programs are structurally equivalent if they present the same sequence statements/commands.
+For example, a program \emph{$P_1$} that consists in two assignments and a while loop is not equivalent to another program program \emph{$P_2$} if the latter's structure is a single for loop.
+On the other hand, if \emph{$P_1$} and \emph{$P_2$} both contain, let us say, three assignments followed by a for loop (with a single assignment inside) that executes the same number of iterations, they are structurally equivalent, despite the values being assigned to the variables.
+
+Note that this definition is useful when reading about self-composition and cross-products below in this capter.
+However, we aim to allow verification of programs that would not be considered by this definition of structural equivalence and therefore be more flexible, but we still need some degree of similarity.
+That is why we do not target programs that include exceptions.
+
 
 \section{Program Equivalence}
 \label{sec:program_equivalence}
@@ -126,42 +134,98 @@ Relational Hoare Logic serves as a good starting point to compare the behavior o
 However, there are few available tools and practical reasoning logics for relational verification.
 One of the main limitations of the existing ones~\cite{DBLP:conf/popl/Benton04, DBLP:journals/tcs/Yang07} is the constraint of \emph{structural equivalence}.
 Inversely, traditional program verification has diverse and extensive tool support.
-Therefore, as a way of getting around that obstacle, relational verification tasks could be soundly reduced into standard verification.
-This means we would translate Hoare quadruples (\{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\}) into Hoare triples (\{$\phi$\} \emph{P} \{$\psi$\}), making the triples valid when the quadruples are also valid.
+Therefore, as a way of getting around that limitation, we can take advatange of the existing tool support if we are able to soundly reduce relational verification tasks into standard verification ones.
+This means we would translate Hoare quadruples (\{$\Phi$\} \emph{$P_1$} \emph{\textasciitilde} \emph{$P_2$} \{$\Psi$\}) into Hoare triples (\{$\phi$\} \emph{P} \{$\psi$\}), making sure that: if the original quadruple is valid, then the generated triple is also valid; if the if the original quadruple is not valid, the generated triple would also be invalid.
 Considering $\vDash$ the symbol for validity, the objective is finding \emph{$\phi$, P, $\psi$} that:
-\[ \vDash \{\phi\} \, \textbf{P} \, \{\psi\} \ \ \ \rightarrow \ \ \ \ \ \vDash \{\Phi\} \, \textbf{P1} \sim \textbf{P2} \, \{\Psi\} \]
+\[ \vDash \{\Phi\} \, \textbf{$P_1$} \sim \textbf{$P_2$} \, \{\Psi\} \ \ \ \rightarrow \ \ \ \ \ \vDash \{\phi\} \, \textbf{P} \, \{\psi\} \]
 
-Let us consider two imperative and \emph{separable} programs \emph{P1} and \emph{P2}.
-This enables the capacity of the assertions to be seen as first-order formulas about the variables of \emph{P1} and \emph{P2}.
-Self-composition~\cite{DBLP:conf/csfw/BartheDR04} comes from the establishment of the wanted equalities above: \emph{P $\equiv$ P1;P2}, \emph{$\phi$ $\equiv$ $\Phi$} and \emph{$\psi$ $\equiv$ $\Psi$}.
-Despite being sound and considerably complete, this construction is impractical~\cite{DBLP:conf/sas/TerauchiA05} for two main reasons.
-One of them is that the existing automatic safety analysis tools available are not powerful enough to verify most of realistic problems and, when they can, there is a lack of performance.
-The other reason is that, for the authors of the last cited work, the safety analysis developed for naturally 1-safety problems is not expected to advance significantly in the foreseeable future.
+Let us consider two imperative and \emph{separable} programs \emph{$P_1$} and \emph{$P_2$}.
+This enables the capacity of the assertions to be seen as first-order formulas about the variables of \emph{$P_1$} and \emph{$P_2$}.
+Self-composition~\cite{DBLP:conf/csfw/BartheDR04} represents a way of establishing the wanted equalities mentioned above: \emph{P $\equiv$ $P_1$;$P_2$}, \emph{$\phi$ $\equiv$ $\Phi$} and \emph{$\psi$ $\equiv$ $\Psi$}.
+Despite being characterized by soundness and relative completeness~\cite{DBLP:journals/jlp/BartheCK16}, this construction is impractical for the authors of this~\cite{DBLP:conf/sas/TerauchiA05} work.
+One of the two main reasons is that the existing automatic safety analysis tools available are not powerful enough to verify most of realistic problems and, when they can, there is a lack of performance.
+The other reason is that the safety analysis developed for naturally 1-safety problems is not expected to advance significantly in the foreseeable future.
 
-There is another relevant method previously discussed in this \hyperref[sec:cross_products]{section}, the cross-products.
+There is another relevant method previously discussed in this \hyperref[sec:cross_products]{this} section, the cross-products.
 These suffer from the constraint of structural equivalence, making impossible to reason about properties or program optimizations that are based on different control flows.
 
 Product Programs~\cite{DBLP:conf/fm/BartheCK11} appear to be the best path to follow, since they represent a general notion that combines the flexibility of self-composition in executing asynchronous steps and the efficiency of cross-products when it comes to treat synchronous steps. 
+Product programs are a way to reduce relational verification into standard verification through the construction of a product program \emph{P} that simulates the execution statements of any two programs \emph{$P_1$} and \emph{$P_2$}.
 
 
 \subsection{From relational verification to standard verification} 
 \label{subsec:product_programs_relverif_to_stdverif}
 
-Consider two generic programs \emph{P1} and \emph{P2} and their product program \emph{P}.
-The approach of product programs to reduce relational reasoning into standard reasoning goes through the capacity of constructing \emph{P}, that simulates the execution of both \emph{P1} and \emph{P2}.
-Next, we will describe the grammar rules to show how we will proceed and then explain how product programs are effectively constructed.
+\FloatBarrier
+\subsubsection{A first intuition} 
+\label{subsubsec:product_programs_intuition}
 
+As a way to provide a first intuition of construction of a product from structurally dissimilar programs before we dive into the definitions and rules later in this subsection, consider the simple \hyperref[fig:pp_first_intuition]{example} below (assume 0 $\leq$ N).
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{0.28\textwidth}
+    \centering
+    \makebox[\linewidth][l]{\textbf{Source program}}\par\smallskip
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, linewidth=\linewidth, xleftmargin=0pt, framexleftmargin=0pt]
+@i := 1@; 
+while (@i (*$\textcolor{red}{\leq}$*) N@) do
+  @x += i@;
+  @i++@
+    \end{lstlisting}
+  \end{subfigure}\hfill%
+  \begin{subfigure}[t]{0.28\textwidth}
+    \centering
+    \makebox[\linewidth][l]{\textbf{Transformed program}}\par\smallskip
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, linewidth=\linewidth, xleftmargin=0pt, framexleftmargin=0pt]
+.j := 1.; 
+while (.j (*$\textcolor{blue}{\leq}$*) N.) do
+  .y += j.;
+  .j++.
+    \end{lstlisting}
+  \end{subfigure}\hfill%
+  \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+    \makebox[\linewidth][l]{\textbf{Product program}}\par\smallskip
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, linewidth=\linewidth, xleftmargin=0pt, framexleftmargin=0pt]
+@i := 1@; @x += i@; @i++@; .j := 1.;
+while (@i (*$\textcolor{red}{\leq}$*) N@) do
+  @x += i@; @i++@;
+  .y += j.; .j++.
+    \end{lstlisting}
+  \end{subfigure}
+
+  \caption{First intuition source, transformed and product programs.}
+  \label{fig:pp_first_intuition}
+\end{figure}
+
+The first step to build the product program is to unroll the first loop iteration of the source code before synchronizing the loop statements.
+Rather than relying plainly on self-composition, this idea maximizes synchronization and differs from a functional interpretation of the product components.
+Furthermore, this approach also reduces considerably the complexity of the invariants required to prove the product program.
+In the case of a sequential composition of the source and transformed programs, we would need to provide invariants of the form \emph{x = X + $\frac{i(i-1)}{2}$} and \emph{y = Y + $\frac{j(j-1)}{2}$}, respectively, assuming the pre-conditions \emph{x = X} and \emph{y = Y}.
+On the other hand, if we construct the product program, the loop invariant \emph{i = j $\land$ x = y} is enough to verify that the two first programs above satisfy the pre and post-relation \emph{x = y}.
+
+
+\FloatBarrier
 \subsubsection{Establishing the ground rules} 
 \label{subsubsec:product_programs_ground_rules}
 
-The commands in our programming model will stick to these grammar rules:
-\[ \text{c ::=} \ \ \ \text{x:= e} \ | \ \text{a[e]:= e} \ | \ \textbf{skip} \ | \ \textbf{assert} \text{(b)} \ |
-                    \ \text{c; c} \ | \ \textbf{if} \ \text{b} \ \textbf{then} \ \text{c1} \ \textbf{else} \ \text{c2} \ | \ \textbf{while} \ \text{b} \ \textbf{do} \ \text{c} \]
+The commands in our programming model will stick to the grammar defined previously \hyperref[sub:relational_hoare_logic_formal_proof_rules]{here}, but we redefine some of its components in a more specific way.
 
-In this context, \emph{x} is a integer variable, \emph{a} is an array variable, \emph{e} is an integer expression and \emph{b} is a boolean expression.
-Execution states are represented as \emph{S = (V$_i$ $\rightharpoonup$ $\mathbb{Z}$) X (V$_a$ $\rightharpoonup$ ($\mathbb{Z}$ $\rightharpoonup$ $\mathbb{Z}$)).}
+\emph{x} ranges over a set of integer variables V$_i$, \emph{a} ranges over a set of array variables V$_a$, let V denote V$_i$ $\cup$ V$_a$, and assuming V$_i$ $\cap$ V$_a$ = $\emptyset$.
+Let \emph{e} $\in$ AExp and \emph{b} $\in$ BExp range over integer and boolean expressions.
+Their semantics are given by ${(\llbracket e \rrbracket)}_{e \in AExp}$ : S $\rightarrow$ $\mathbb{Z}$ and ${(\llbracket b \rrbracket)}_{b \in BExp}$ : S $\rightarrow$ $\mathbb{B}$, respectively.
+Execution states' representation is \emph{S = (V$_i$ $\rightharpoonup$ $\mathbb{Z}$) X (V$_a$ $\rightharpoonup$ ($\mathbb{Z}$ $\rightharpoonup$ $\mathbb{Z}$)).}
 The semantics of the commands are standard, deterministic and are based on the relation $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$ $\langle$c', $\sigma$'$\rangle$.
-Notice that $\langle$\textbf{skip}, $\sigma$$\rangle$ marks the end of the programs, \textbf{assert}(b) blocks the execution of the program if \emph{b} is false and we let $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' mean $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$* $\langle$\textbf{skip}, $\sigma$'$\rangle$.
+
+Notice that $\langle$\textbf{skip}, $\sigma$$\rangle$ marks the end of the programs, \textbf{assert}(b) blocks the execution of the program if \emph{b} is false, and we let $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' mean $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$* $\langle$\textbf{skip}, $\sigma$'$\rangle$.
+An assertion $\phi$ is a first-order formula with variables in V.
+We let $\llbracket\phi\rrbracket$ denote the set of states satisfying $\phi$.
+Finally, we let var(\emph{c}) $\subseteq$ V and var($\phi$) $\subseteq$ V denote the set of (free) variables of a command c and assertion $\phi$, respectively.
 
 As we discussed before in this document, two commands are \emph{separable} if they operate on disjoint sets of variables.
 Similarly, we consider that two states are \emph{separable} if their domains are disjoint.
@@ -209,7 +273,7 @@ The necessary rule is:
 \label{subsubsec:product_programs_construction}
 
 Firstly in this section, we define the rules that will be used to deal with structurally equivalent programs. 
-After that, we that set with structural transformations to allow the treatment of programs with different structures.
+After that, we increment that set with structural transformations to allow the treatment of programs with different structures.
 
 \begin{figure}[h]
   \centering

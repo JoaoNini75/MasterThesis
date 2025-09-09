@@ -73,11 +73,11 @@ Relational Hoare Logic~\cite{naumann2022thirtysevenyearsrelationalhoare, DBLP:co
 Some of these properties are non-interference and the equivalence of two implementations of the same algorithm, the latter being the one we are most interested in.
 
 While classical HL reasons about the satisfaction of the post-condition if the pre-condition is satisfied, RHL analyzes the relation between two programs in terms of their corresponding evolution from a given pre-condition to a post-condition.
-In other words, if programs \emph{P1} and \emph{P2} start in a state in which both respect the pre-condition (let us name it $\Phi$), their executions will end (if they terminate) in a state in which both respect the post-condition (let us name it $\Psi$), or none of them will.
+In other words, if programs \emph{$P_1$} and \emph{$P_2$} start in a state in which both respect the pre-condition (let us name it $\Phi$), their executions will end (if they terminate) in a state in which both respect the post-condition (let us name it $\Psi$), or none of them will.
 This means that one of the programs satisfying $\Psi$ and the other not satisfying it is not valid in RHL.
 That relation between the two programs is defined by the $\sim$ symbol.
 This idea is known as the Hoare quadruple:
-\[ \{\Phi\} \, \emph{P1} \, \sim \, \emph{P2} \, \{\Psi\} \]
+\[ \{\Phi\} \, \emph{$P_1$} \, \sim \, \emph{$P_2$} \, \{\Psi\} \]
 
 So, why was RHL created when we already had classical HL? 
 The main reason lies in the fact that the classical version does not have a direct or easy way of specifying the relation between two programs. 
@@ -95,34 +95,34 @@ That choice would depend on some characteristics that, for example, cause one im
 
 Next, there are some requirements not specified previously when presenting the Hoare quadruple.
 These are important details that have to be accounted for and will be described using example programs to make the explanation more tangible.
-Consider the notation \emph{Pi.j} that will be used in this subsubsection, where \emph{i} represents a given program index, \emph{Pi} refers to a given program and \emph{Pi.j} the identifier of a variable \emph{j} in program \emph{Pi}.
+Consider the notation \emph{P$_i$.j} that will be used in this subsubsection, where \emph{i} represents a given program index, \emph{P$_i$} refers to a given program and \emph{P$_i$.j} the identifier of a variable \emph{j} in program \emph{P$_i$}.
 
-The first example corresponds to two different programs, let us call them \emph{P1} and \emph{P2}, and they both contain only two assignment statements applied to the same group of variables (\emph{a, b, c}): 
+The first example corresponds to two different programs, let us call them \emph{$P_1$} and \emph{$P_2$}, and they both contain only two assignment statements applied to the same group of variables (\emph{a, b, c}): 
 \begin{tabbing}
-  \hspace{2cm}\= \emph{P1} \hspace{2cm} \= \emph{P2} \\ 
+  \hspace{2cm}\= \emph{$P_1$} \hspace{2cm} \= \emph{$P_2$} \\ 
   \> \emph{b := a + 1;} \> \emph{c := a + 2;} \\
   \> \emph{c := b + 1;} \> \emph{b := c - 1;}
   \label{tabbing:simple_equivalent_program}
 \end{tabbing}
 
-We can see that \emph{b} and \emph{c} do not change the final state of any of the programs, so, to write a Hoare quadruple that creates an equivalence between \emph{P1} and \emph{P2}, we need the pre-condition to assert that \emph{P1.a = P2.a}:
-\[ \{ \Phi \} \, \emph{P1} \, \sim \, \emph{P2} \, \{ \Psi \} \]
+We can see that \emph{b} and \emph{c} do not change the final state of any of the programs, so, to write a Hoare quadruple that creates an equivalence between \emph{$P_1$} and \emph{$P_2$}, we need the pre-condition to assert that \emph{$P_1$.a = $P_2$.a}:
+\[ \{ \Phi \} \, \emph{$P_1$} \, \sim \, \emph{$P_2$} \, \{ \Psi \} \]
 \vspace{-20pt}
-\[ where \ \ \Phi \triangleq \text{P1.a} = \text{P2.a} \]
+\[ where \ \ \Phi \triangleq \text{$P_1$.a} = \text{$P_2$.a} \]
 \vspace{-25pt}
-\[ and \ \ \Psi \triangleq \text{P1.a} = \text{P2.a} \land \text{P1.b} = \text{P2.b} \land \text{P1.c} = \text{P2.c} \]
+\[ and \ \ \Psi \triangleq \text{$P_1$.a} = \text{$P_2$.a} \land \text{$P_1$.b} = \text{$P_2$.b} \land \text{$P_1$.c} = \text{$P_2$.c} \]
 
-This Hoare quadruple should be read as: \emph{For any executions of P1 and P2, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components and c-components have the same values
-\protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{P1.a} has no relation to \emph{P1.b}, for example).}.}
+This Hoare quadruple should be read as: \emph{For any executions of $P_1$ and $P_2$, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components and c-components have the same values
+\protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{$P_1$.a} has no relation to \emph{$P_1$.b}, for example).}.}
 
 \iffalse considerando livres e ligadas? ou incorpora a conversao? \fi
 We now introduce the concept of separability.
-If two programs \emph{P1} and \emph{P2} utilize disjoint sets of variables, we say that they are \emph{separable}.
+If two programs \emph{$P_1$} and \emph{$P_2$} utilize disjoint sets of variables, we say that they are \emph{separable}.
 Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
 Below is another example to show the impact on conciseness that this creates.
-Consider two programs, \emph{P1}, whose variables are \{{a, b, i, j}\} and \emph{P2} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:
+Consider two programs, \emph{$P_1$}, whose variables are \{{a, b, i, j}\} and \emph{$P_2$} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:
 \begin{tabbing}
-  \hspace{3cm}\= \emph{P1} \hspace{3cm} \= \emph{P2} \\ 
+  \hspace{3cm}\= \emph{$P_1$} \hspace{3cm} \= \emph{$P_2$} \\ 
   \> \emph{a := 1;} \> \emph{a' := 1;} \\
   \> \emph{while a < b do} \> \emph{i' := j' * j';} \\
   \> \emph{\ \ \ \ i := j * j;} \> \emph{while a' < b' do} \\
@@ -130,40 +130,40 @@ Consider two programs, \emph{P1}, whose variables are \{{a, b, i, j}\} and \emph
   \> \emph{od} \> \emph{od} 
 \end{tabbing}
 
-What these programs calculate is not the focus here but notice a subtle, yet relevant difference: \emph{i' := j' * j';} is out of the loop in \emph{P2}.
+What these programs calculate is not the focus here but notice a subtle, yet relevant difference: \emph{i' := j' * j';} is out of the loop in \emph{$P_2$}.
 This is a common compiler optimization called \emph{invariant hoisting}.
 \emph{Why would you waste time performing a task several times if you can do it only once and get the same output?}
 In this example, the Hoare quadruple would be:
-\[ \{ \Phi \} \, \emph{P1} \, \emph{\textasciitilde} \, \emph{P2} \, \{ \Psi \} \]
+\[ \{ \Phi \} \, \emph{$P_1$} \, \emph{\textasciitilde} \, \emph{$P_2$} \, \{ \Psi \} \]
 \vspace{-20pt} 
 \[ \text{where} \ \ \Phi \triangleq (b = b') \land (j = j') \]
 \vspace{-25pt} 
 \[ \text{and} \ \ \Psi \triangleq (a = a') \land (b = b') \land (i = i') \land (j = j') \]
 
 Since the previous values in \emph{a} and \emph{i} (respectively \emph{a'} and \emph{i'}) are discarded by the assignments made to these variables, they will have no effect on the final state, so they do not appear in the pre-condition.
-On the other hand, to make sure that the components of \emph{P1} and \emph{P2} hold the same values after the executions terminate, we must assert that the b-components and j-components are equal in the initial state of the programs. 
+On the other hand, to make sure that the components of \emph{$P_1$} and \emph{$P_2$} hold the same values after the executions terminate, we must assert that the b-components and j-components are equal in the initial state of the programs. 
 
 Furthermore, there is a special case of the usage of the Hoare quadruple that does not challenge any concept described before.
-Usually, in the context of the Hoare quadruple, we consider that the programs \emph{P1} and \emph{P2} are different, but what would happen if they are exactly the same?
+Usually, in the context of the Hoare quadruple, we consider that the programs \emph{$P_1$} and \emph{$P_2$} are different, but what would happen if they are exactly the same?
 Well, since they are equal letter for letter, it is natural that they will always output the same results given the same inputs.
 
-Finally, consider again two equal programs \emph{P1} and \emph{P2}.
-The way one should look at the transformation of Hoare triples into Hoare quadruples is that if \{$\Phi$\} \emph{P1} \emph{\textasciitilde} \emph{P2} \{$\Psi$\} is true, then \{$\phi$\} \emph{P1} \{$\psi$\} will be true as well.
+Finally, consider again two equal programs \emph{$P_1$} and \emph{$P_2$}.
+The way one should look at the transformation of Hoare triples into Hoare quadruples is that if \{$\Phi$\} \emph{$P_1$} \emph{\textasciitilde} \emph{$P_2$} \{$\Psi$\} is true, then \{$\phi$\} \emph{$P_1$} \{$\psi$\} will be true as well.
 
 
 \subsubsection{Axioms and Inference Rules}
 \label{sub:relational_hoare_logic_formal_proof_rules}
 
-Consider the following syntax, that will be used in the rules in this subsubsection.
-Let \emph{n} represent any integer number \{... -1, 0, 1 ...\} and \emph{x} any variable of a given program.
-Let $\epsilon$ be the set of integer expressions, $\beta$ the set of boolean expressions and $\zeta$ the set of program expressions.
-The syntaxes of $\epsilon$, $\beta$ and $\zeta$ are given by the following extended BNF definition:\\ \\
+Consider the following grammar, that will be used in the rules in this subsubsection.
+Let \emph{n} represent any integer number \{... -1, 0, 1 ...\}, \emph{x} any integer variable of a given program and \emph{a} any array variable.
+Let \emph{e} be the set of integer expressions, \emph{b} the set of boolean expressions and \emph{c} the set of program expressions (also called commands or statements).
+The syntaxes of \emph{e}, \emph{b} and \emph{c} are given by the following extended BNF definition:\\ \\
 \noindent\hspace*{1em}
 \begin{minipage}{\dimexpr\linewidth-2em\relax}
 \[\begin{aligned} 
 & E ::= \, n \,|\, x \,|\, E_1 + E_2 \,|\, E_1 - E_2 \,|\, E_1 * E_2 \,|\, E_1 / E_2 \,|\, ... &\\
 & B ::= \, \textbf{true} \,|\, \textbf{false} \,|\, \neg B \,|\, B_1 \lor B_2 \,|\, B_1 \land B_2 \,|\, B_1 = B_2 \,|\, B_1 < B_2 \,|\, ... &\\
-& C ::= \, \textbf{skip} \,|\, x := E \,|\, C_1;C_2 \,|\, \textbf{if}\, B\, \textbf{then}\, C_1\, \textbf{else}\, C_2\, \textbf{fi} \,|\, \textbf{while}\, B\, \textbf{do}\, C\, \textbf{od} &
+& C ::= \, \textbf{skip} \,|\, \textbf{assert} (B) \,|\, x := E \,|\, a[E_1] := E_2 \,|\, C_1;C_2 \,|\, \textbf{if}\, B\, \textbf{then}\, C_1\, \textbf{else}\, C_2 \,|\, \textbf{while}\, B\, \textbf{do}\, C \,|\, ... &
 \end{aligned}\]
 \end{minipage}\\ \\
 
