@@ -115,9 +115,9 @@ We can see that \emph{b} and \emph{c} do not change the final state of any of th
 This Hoare quadruple should be read as: \emph{For any executions of $P_1$ and $P_2$, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components and c-components have the same values
 \protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{$P_1$.a} has no relation to \emph{$P_1$.b}, for example).}.}
 
-\iffalse considerando livres e ligadas? ou incorpora a conversao? \fi
 We now introduce the concept of separability.
 If two programs \emph{$P_1$} and \emph{$P_2$} utilize disjoint sets of variables, we say that they are \emph{separable}.
+In this context, this means that these two programs have their own memory, so that the variables of \emph{$P_1$} are never accessed by \emph{$P_2$} and vice-versa.
 Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
 Below is another example to show the impact on conciseness that this creates.
 Consider two programs, \emph{$P_1$}, whose variables are \{{a, b, i, j}\} and \emph{$P_2$} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:

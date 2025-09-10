@@ -12,13 +12,16 @@
 \label{cha:methodology}
 
 
-\section{WhyRel}
-\label{sec:whyrel}
+\FloatBarrier
+\section{WhyRel: what we used and what we did different}
+\label{sec:whyrel_diff}
 
 
 
-\section{The Transpiler}
-\label{sec:transpiler}
+
+\FloatBarrier
+\section{bip2ml}
+\label{sec:bip2ml}
 
 \begin{figure}[htbp]
   \centering
@@ -30,32 +33,120 @@
 \begin{figure}[htbp]
   \centering
   \includegraphics[max width=\textwidth]{transpiler_pipeline}
-  \caption{Architecture and pipeline of our transpiler}
+  \caption{Architecture and pipeline of bip2ml}
   \label{fig:transpiler_pipeline}
 \end{figure}
 
 
+\FloatBarrier
+\subsection{Language Definition}
+\label{subsec:lang_def}
 
-\subsection{Lexer}
-\label{subsec:lexer}
+We now present the grammar of our language.
+The syntaxes of the most relevant rules are given by the following extended BNF definition.
+Note that Biplang's keywords are written in bold.
+
+\begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include},
+                    emphstyle=\ttfamily\bfseries]
+file ::= decl*
+
+decl ::= 
+            | def
+            | spec
+            | typedef
+
+spec ::= { loc: location; text: string; }
+
+typedef ::=
+              | type id = payload (and typedef)?
+              | type id = $\overrightarrow{constructor}$ (and typedef)?
+
+payload ::= 
+              | $\overrightarrow{bt}$
+              | $\overrightarrow{id}$
+
+constructor ::= idc * payload?
+
+def ::= let rec? id ($\overrightarrow{parameter}$) : fun_ret? = $\overrightarrow{expr}$ spec
+
+expr ::=
+            | ()
+            | (e)
+            | c
+            | id
+            | -e
+            | $\neg$ e
+            | ref e 
+            | !e
+            | e + e
+            | e - e
+            | e * e
+            | e / e
+            | e mod e
+            | e = e
+            | e <> e
+            | e < e
+            | e $\leq$ e
+            | e > e
+            | e $\geq$ e
+            | e == e
+            | e != e
+            | e && e
+            | e || e 
+            | let id = e in $\overrightarrow{e}$
+            | if $e_1$ then $e_2$ else $e_3$
+            | for id = $e_1$ to $e_2$ do spec? $e_3$ done 
+            | while $e_1$ do spec? $e_2$ done 
+            | id := e
+            | assert (e)
+            | match id with ($\overrightarrow{case}$)
+            | ($\overrightarrow{e}$)
+            | idc ($\overrightarrow{e}$)
+            | fun_id ($\overrightarrow{e}$)
+            | Module_id.fun_id ($\overrightarrow{e}$)
+            | def in e
+            
+            $\emph{arrays}$
+            | [| $\overrightarrow{e}$ |]
+            | id.(e)
+            | id.($e_1$) <- $e_2$
+
+            $\emph{lists}$
+            | [ $\overrightarrow{e}$ ]
+            | e :: [ $\overrightarrow{e}$ ]
+            | e @ [ $\overrightarrow{e}$ ]
+
+            $\emph{introduced by BipLang}$
+            | $e_1$ <|> $e_2$ $\emph{(pipe)}$
+            | $\lfloor e \rfloor$ $\emph{(floors)}$
+            | while $e_1$ <|> $e_2$ . $e_3$ <|> $e_4$ do spec? $e_5$ done
+            $\emph{(conditionally aligned loops)}$
+
+c ::=
+        | None
+        | int
+        | bool
+        | string
+
+\end{lstlisting}
+
+explicar: id, idc, bt, at, payload, constructor, parameter, fun\_ret, c, case
+
+FALAR DAS DIFERENÇAS E SEMELHANÇAS ENTRE BIPLANG E OCAML
 
 
-
-\subsection{Parser}
-\label{subsec:parser}
-
-
-
+\FloatBarrier
 \subsection{Translator}
 \label{subsec:translator}
 
 
+\FloatBarrier
+\subsubsection{Printer}
+\label{subsubsec:printer}
 
-\subsection{Printer}
-\label{subsec:printer}
 
-
-
+\FloatBarrier
 \subsection{Syntax Highlighter}
 \label{subsec:syntax_highlighter}
 
@@ -69,7 +160,7 @@ The first one relies on including a post-condition that states that the result o
 The second way uses product programs, where we present the source and the transformed programs.
 Then, we apply \hyperref[fig:product_construction_equal_struct]{these} rules to create the corresponding product program, which can be proven with standard verification.
 
-
+\FloatBarrier
 \section{Simple equivalence proofs}
 \label{sec:results_eq_proofs}
 
