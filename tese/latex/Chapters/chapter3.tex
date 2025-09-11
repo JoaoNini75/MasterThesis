@@ -164,10 +164,10 @@ while (@i (*$\textcolor{red}{\leq}$*) N@) do
     \makebox[\linewidth][l]{\textbf{Transformed program}}\par\smallskip
     \noindent
     \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, linewidth=\linewidth, xleftmargin=0pt, framexleftmargin=0pt]
-.j := 1.; 
-while (.j (*$\textcolor{blue}{\leq}$*) N.) do
-  .y += j.;
-  .j++.
+çj := 1ç; 
+while (çj (*$\textcolor{blue}{\leq}$*) Nç) do
+  çy += jç;
+  çj++ç
     \end{lstlisting}
   \end{subfigure}\hfill%
   \begin{subfigure}[t]{0.4\textwidth}
@@ -175,10 +175,10 @@ while (.j (*$\textcolor{blue}{\leq}$*) N.) do
     \makebox[\linewidth][l]{\textbf{Product program}}\par\smallskip
     \noindent
     \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, linewidth=\linewidth, xleftmargin=0pt, framexleftmargin=0pt]
-@i := 1@; @x += i@; @i++@; .j := 1.;
+@i := 1@; @x += i@; @i++@; çj := 1ç;
 while (@i (*$\textcolor{red}{\leq}$*) N@) do
   @x += i@; @i++@;
-  .y += j.; .j++.
+  çy += jç; çj++ç
     \end{lstlisting}
   \end{subfigure}
 
@@ -428,13 +428,13 @@ Loop alignment is an optimization that consists in improving cache effectiveness
     \begin{minipage}[t]{\linewidth}
       \textbf{Optimized program}
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
-        .j := 1.;
-        .(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0].;
-        while (.j (*$\textcolor{blue}{\leq}$*) N-1.) do
-          .(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j].;
-          .(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j].;
-          .j++.;
-        .(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N].
+        çj := 1ç;
+        ç(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0]ç;
+        while (çj (*$\textcolor{blue}{\leq}$*) N-1ç) do
+          ç(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j]ç;
+          ç(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j]ç;
+          çj++ç;
+        ç(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N]ç
       \end{lstlisting}
     \end{minipage}
   \end{subfigure}
@@ -445,16 +445,16 @@ Loop alignment is an optimization that consists in improving cache effectiveness
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
         {a = (*$\overline{a}$*) (*$\land$*) b[0] = (*$\overline{b}$*)[0]}
           @i := 1@; 
-          .j := 1.;
+          çj := 1ç;
           assert(@i (*$\textcolor{red}{\leq}$*) N@);
           @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
-          .(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0].;
-          assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) .j (*$\textcolor{blue}{\leq}$*) N-1.);
+          ç(*$\textcolor{blue}{\overline{d}}$*)[1] := (*$\textcolor{blue}{\overline{b}}$*)[0]ç;
+          assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) çj (*$\textcolor{blue}{\leq}$*) N-1ç);
           while (@i (*$\textcolor{red}{\leq}$*) N@) do
             @b[i] := a[i]@; @d[i] := b[i-1]@; @i++@;
-            .(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j].; .(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j].; .j++.;
-            assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) .j (*$\textcolor{blue}{\leq}$*) N-1.);
-          .(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N].
+            ç(*$\textcolor{blue}{\overline{b}}$*)[j] := (*$\textcolor{blue}{\overline{a}}$*)[j]ç; ç(*$\textcolor{blue}{\overline{d}}$*)[j+1] := (*$\textcolor{blue}{\overline{b}}$*)[j]ç; çj++ç;
+            assert(@i (*$\textcolor{red}{\leq}$*) N@ (*$\Leftrightarrow$*) çj (*$\textcolor{blue}{\leq}$*) N-1ç);
+          ç(*$\textcolor{blue}{\overline{b}}$*)[N] := (*$\textcolor{blue}{\overline{a}}$*)[N]ç
         {d[1,N] = (*$\overline{d}$*)[1,N]}
       \end{lstlisting}
     \end{minipage}
@@ -499,12 +499,12 @@ Some rather common examples of this are constant propagation and common subexpre
     \begin{minipage}[t]{\linewidth}
       \textbf{Optimized program}
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
-        .i(*\textcolor{blue}{\textasciiacute}*) := 0.;
-        .j(*\textcolor{blue}{\textasciiacute}*) := C.;
-        while (.i(*\textcolor{blue}{\textasciiacute}*) < N.) do
-          .x(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*).;
-          .j(*\textcolor{blue}{\textasciiacute}*) += B.;
-          .i(*\textcolor{blue}{\textasciiacute}*)++.
+        çi(*\textcolor{blue}{\textasciiacute}*) := 0ç;
+        çj(*\textcolor{blue}{\textasciiacute}*) := Cç;
+        while (çi(*\textcolor{blue}{\textasciiacute}*) < Nç) do
+          çx(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*)ç;
+          çj(*\textcolor{blue}{\textasciiacute}*) += Bç;
+          çi(*\textcolor{blue}{\textasciiacute}*)++ç
       \end{lstlisting}
     \end{minipage}
   \end{subfigure}
@@ -513,10 +513,10 @@ Some rather common examples of this are constant propagation and common subexpre
     \begin{minipage}[t]{\linewidth}
       \textbf{Product program}
       \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang]
-        @i := 0@; .i(*\textcolor{blue}{\textasciiacute}*) := 0.; .j(*\textcolor{blue}{\textasciiacute}*) := C.;
-        while (@i < N@ (*$\land$*) .i(*\textcolor{blue}{\textasciiacute}*) < N.) do
+        @i := 0@; çi(*\textcolor{blue}{\textasciiacute}*) := 0ç; çj(*\textcolor{blue}{\textasciiacute}*) := Cç;
+        while (@i < N@ (*$\land$*) çi(*\textcolor{blue}{\textasciiacute}*) < Nç) do
           @j := i * B + C@; @x += j@; @i++@
-          .x(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*).; .j(*\textcolor{blue}{\textasciiacute}*) += B.; .i(*\textcolor{blue}{\textasciiacute}*)++.
+          çx(*\textcolor{blue}{\textasciiacute}*) += j(*\textcolor{blue}{\textasciiacute}*)ç; çj(*\textcolor{blue}{\textasciiacute}*) += Bç; çi(*\textcolor{blue}{\textasciiacute}*)++ç
       \end{lstlisting}
     \end{minipage}
   \end{subfigure}
@@ -544,7 +544,7 @@ One of the types of tools are the ones that do not support well the relational v
 The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
 
 Some of the most relevant relational properties are conditional program equivalence, non-interference and sensitivity~\cite{barthe2019verifying}.
---- TODO: PAGE 2---
+--- TODO: PAGE 2 ---
 
 This tool should be interpreted as a front-end to Why3, where users provide the code, specifications and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
 After that, WhyRel translates these inputs into WhyML code, enconding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
@@ -553,19 +553,218 @@ Fianlly, some VCs are added by WhyRel as intermediate assertions and lemmas for 
 WhyRel was evaluated through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
 
 
-\subsection{Specifying programs and relational properties}
+\subsection{Implementation details}
 \label{subsec:whyrel_specifying}
+importante do 2 e 4
+--- TODO: falar de maximal alignments ---
 
-a tour of WhyRel
 
 
 \subsection{Patterns of program alignment}
 \label{subsec:whyrel_patterns}
 
-Patterns of alignment
+Choosing alignments to decompose relational verification is an important task since that choice directly impacts how simple the relational assertions and loop invariants can be to prove the program in question.
+In this subsection, we present two examples of biprograms that capture alignments that are not maximal.
+We will explain what that means below.
 
 
+\subsubsection{Differing control structures}
+\label{subsubsec:diff_control_structs}
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang,
+                        emph={meth, while, do, result, done, old, invariant, assert, int},
+                        emphstyle=\ttfamily\bfseries\color{myorange}]
+meth mult1(n: int, m: int) : int =
+  i := 0;
+
+  while (i < n) do
+    j := 0;
+
+    while (j < m) do
+      result := result + 1;
+      j := j + 1;
+    done;
+
+    i := i + 1;
+  done;
+    \end{lstlisting}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang,
+                        emph={meth, while, do, result, done, old, invariant, assert, int},
+                        emphstyle=\ttfamily\bfseries\color{myorange}]
+meth mult2(n: int, m: int) : int =
+  i := 0;
+
+  while (i < n) do
+    result := result + m;
+    i := i + 1;
+  done;
+    \end{lstlisting}
+  \end{subfigure}
+
+  \caption{Two different programs that multiply two integer numbers.}
+  \label{fig:mult_source_programs}
+\end{figure}
+
+In this~\cite{DBLP:conf/pldi/ChurchillP0A19} work, the authors developed a way to establish program equivalence through state-dependent alignments of program traces.
+They identified a challenge when trying to confirm the equivalence of two programs that multiply two integer numbers using different control flow, as shown in \hyperref[fig:mult_source_programs]{the} figure.
+The challenge arises in the context of automated approaches to relational verification specifically, because of the necessity of aligning an unbounded number \emph{m} of loop iterations on the left (\emph{mult1}) with a single iteration on the right (\emph{mult2}).
+
+\begin{figure}[h]
+  \centering
+  \noindent
+  \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, mathescape,
+                      emph={meth, while, do, result, done, old, invariant, assert, int},
+                      emphstyle=\ttfamily\bfseries\color{myorange}]
+meth mult_bip (n: int, m: int | n: int, m: int) : (int | int) =
+  $\lfloor$ i := 0 $\rfloor$;
+
+  while (i < n) | (i < n) do
+    invariant { i $\doteq$ i $\land$ result $\doteq$ result }
+
+    (
+      j := 0;
+      while (j < m) do
+        result := result + 1;
+        j := j + 1;
+      done
+      |
+      result := result + m;
+    )
+
+    assert { $\lhd$ result = old(result) + m $\lhd$ };
+    $\lfloor$ i := i + 1 $\rfloor$;
+  done;
+  \end{lstlisting}
+  \caption{An example of a biprogram for the example in \hyperref[fig:mult_source_programs]{this} figure.}
+  \label{fig:mult_biprogram}
+\end{figure}
+
+In order to prove equivalence, we verify the biprogram presented in \hyperref[fig:mult_biprogram]{this} figure.
+To achieve that, the pre-relation (or pre-condition) should be \(n \doteq n \land m \doteq m \) and the post-relation (or post-condition) \(result \doteq result\).
+The $\doteq$ symbol means that the left side of the expression (only reasoning about the left program) is equal to the right side of the expression (this side also only reasons about the right program).
+Therefore, the specification above means that if the input variables have the same values, then the output will also be the same.
+
+We call unary programs the source programs, in this case, \emph{mult1} and \emph{mult2} present in \hyperref[fig:mult_source_programs]{this} figure.
+We say that an alignment is maximal if every statement/command is the same for the two unary programs.
+This example's alignment is therefore not maximal, since we have two while loops on the left side and only one on the right side.
+Nevertheless, we can still explore their similarities through the alignment of the outer loops in lockstep, and the left inner loop with the \emph{result := result+m;} instruction on the right.
+
+Observe that the notation $\lhd F \lhd$ (respectively $\rhd F \rhd$) means that the unary formula \emph{F} is true for the state of the left (respectively right) program.
+To prove that \emph{mult1} and \emph{mult2} are equivalent, we only need the invariant that shows equivalence on \emph{i} and \emph{result} for every iteration of the outer loop.
+Additionally, to prove this invariant, we need to state that the inner loop of the left side has the same effect as the single assignement on the right: incrementing the \emph{result} by \emph{m}.
+In this case, that reasoning comes to life through the assertion after the left inner loop and before the assigment to \emph{i}.
+Notice the \emph{old(result)} inside that assertion? 
+That represents the value that the result variable had in the previous loop iteration.
+
+
+\FloatBarrier
+\subsubsection{Conditionally aligned loops}
+\label{subsubsec:cond_align_loops_example}
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang,
+                        emph={meth, while, do, result, done, old, invariant, assert, int, if, then, end},
+                        emphstyle=\ttfamily\bfseries\color{myorange}]
+meth ex1 (x: int, n: int) : int =
+  y := x;
+  z := 24; // 4!
+  w := 0;
+
+  while (y > 4) do
+    if (w mod n = 0) then
+      z := z * y;
+      y := y - 1;
+    end;
+
+    w := w + 1;
+  done;
+
+  result := z;
+    \end{lstlisting}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang,
+                        emph={meth, while, do, result, done, old, invariant, assert, int, if, then, end},
+                        emphstyle=\ttfamily\bfseries\color{myorange}]
+meth ex2 (x: int, n: int) : int =
+  y := x;
+  z := 16; // 2^4
+  w := 0;
+
+  while (y > 4) do
+    if (w mod n = 0) then
+      z := z * 2;
+      y := y - 1;
+    end;
+
+    w := w + 1;
+  done;
+
+  result := z;
+    \end{lstlisting}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.99\textwidth}
+    \centering
+    \noindent
+    \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, mathescape,
+                        emph={meth, while, do, result, done, old, invariant, assert, int, if, then, end},
+                        emphstyle=\ttfamily\bfseries\color{myorange}]
+meth ex_bip (x: int, n: int | x: int, n: int) : (int | int) =
+  $\lfloor$ y := x $\rfloor$;
+  (z := 24 | z := 16);
+  $\lfloor$ w := 0 $\rfloor$;
+
+  while (y > 4) | (y > 4) . $\lhd$ w mod n $\neq$ 0 $\lhd$ | $\rhd$ w mod n $\neq$ 0 $\rhd$ do
+    invariant { $\lhd$ z $\lhd$ > $\rhd$ z $\rhd$ $\land$ y $\doteq$ y $\land$ $\rhd$ y $\geq$ 4 $\rhd$ }
+
+    if (w mod n = 0) | (w mod n = 0) then
+      (z := z * y | z := z * 2);
+      $\lfloor$ y := y - 1 $\rfloor$;
+    end;
+
+    $\lfloor$ w := w + 1 $\rfloor$;
+  done;
+
+  $\lfloor$ result := z $\rfloor$;
+    \end{lstlisting}
+  \end{subfigure}
+
+  \caption{Programs that compute the factorial, the exponent of x $\geq$ 4 and a biprogram.}
+  \label{fig:cond_align_loops_ex}
+\end{figure}
+
+
+
+
+\FloatBarrier
 \subsection{Translating biprograms to product programs}
 \label{subsec:whyrel_translation}
+Regras de traducao
 
-encoding and design
+
+
+
+\subsubsection{Translation example}
+\label{subsubsec:whyrel_translation_example}
+completar exemplo do mult com product program EM WHYML!!!
+
