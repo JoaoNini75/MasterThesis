@@ -534,4 +534,38 @@ And to do that, we need the linear condition \emph{j := i * B + C} to be part of
 \section{WhyRel}
 \label{sec:whyrel}
 
+\subsection{Introduction}
+\label{subsec:whyrel_intro}
 
+WhyRel~\cite{whyrel} is a tool that aims to verify relational properties of pointer programs based on relational region logic, in an auto-active way.
+It also supports state-based encapsulation and dynamic framing. 
+This tool appears in a context where there are two existing types of tools exist but are not powerful enough to reduce the gap between them.
+One of the types of tools are the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
+The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
+
+Some of the most relevant relational properties are conditional program equivalence, non-interference and sensitivity~\cite{barthe2019verifying}.
+--- TODO: PAGE 2---
+
+This tool should be interpreted as a front-end to Why3, where users provide the code, specifications and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
+After that, WhyRel translates these inputs into WhyML code, enconding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
+Fianlly, some VCs are added by WhyRel as intermediate assertions and lemmas for the user to confirm, and the verification itself is achieved mainly through the use of the Why3 IDE.
+
+WhyRel was evaluated through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
+
+
+\subsection{Specifying programs and relational properties}
+\label{subsec:whyrel_specifying}
+
+a tour of WhyRel
+
+
+\subsection{Patterns of program alignment}
+\label{subsec:whyrel_patterns}
+
+Patterns of alignment
+
+
+\subsection{Translating biprograms to product programs}
+\label{subsec:whyrel_translation}
+
+encoding and design
