@@ -466,3 +466,24 @@
   biburl    = {https://dblp.org/rec/conf/pldi/ChurchillP0A19.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+
+@article{10.1145/3551497,
+  author     = {Banerjee, Anindya and Nagasamudram, Ramana and Naumann, David A. and Nikouei, Mohammad},
+  title      = {A Relational Program Logic with Data Abstraction and Dynamic Framing},
+  year       = {2023},
+  issue_date = {December 2022},
+  publisher  = {Association for Computing Machinery},
+  address    = {New York, NY, USA},
+  volume     = {44},
+  number     = {4},
+  issn       = {0164-0925},
+  url        = {https://doi.org/10.1145/3551497},
+  doi        = {10.1145/3551497},
+  abstract   = {Dedicated to Tony Hoare.In a paper published in 1972, Hoare articulated the fundamental notions of hiding invariants and simulations. Hiding: invariants on encapsulated data representations need not be mentioned in specifications that comprise the API of a module. Simulation: correctness of a new data representation and implementation can be established by proving simulation between the old and new implementations using a coupling relation defined on the encapsulated state. These results were formalized semantically and for a simple model of state, though the paper claimed this could be extended to encompass dynamically allocated objects. In recent years, progress has been made toward formalizing the claim, for simulation, though mainly in semantic developments. In this article, hiding and simulation are combined with the idea in Hoare’s 1969 paper: a logic of programs. For an object-based language with dynamic allocation, we introduce a relational Hoare logic with stateful frame conditions that formalizes encapsulation, hiding of invariants, and couplings that relate two implementations. Relations and other assertions are expressed in first-order logic. Specifications can express a wide range of relational properties such as conditional equivalence and noninterference with declassification. The proof rules facilitate relational reasoning by means of convenient alignments and are shown sound with respect to a conventional operational semantics. A derived proof rule for equivalence of linked programs directly embodies representation independence. Applicability to representative examples is demonstrated using an SMT-based implementation.},
+  journal    = {ACM Trans. Program. Lang. Syst.},
+  month      = jan,
+  articleno  = {25},
+  numpages   = {136},
+  keywords   = {automated verification, product programs, representation independence, data abstraction, logics of programs, relational verification, Relational properties}
+}
+

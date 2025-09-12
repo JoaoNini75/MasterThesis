@@ -130,3 +130,16 @@
 \usepackage{amsmath}
 
 \definecolor{myorange}{RGB}{220,100,0}
+
+\usepackage{accents}
+\usepackage{scalerel}   % \scalerel* to scale one symbol to another's width
+
+% stretchy left-harpoon accent
+\newcommand{\wideleftharpoonup}[1]{%
+  \accentset{\scalerel*{\leftharpoonup}{\ensuremath{#1}}}{#1}%
+}
+
+% stretchy right-harpoon accent
+\newcommand{\widerightharpoonup}[1]{%
+  \accentset{\scalerel*{\rightharpoonup}{\ensuremath{#1}}}{#1}%
+}

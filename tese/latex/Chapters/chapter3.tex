@@ -542,22 +542,32 @@ It also supports state-based encapsulation and dynamic framing.
 This tool appears in a context where there are two existing types of tools exist but are not powerful enough to reduce the gap between them.
 One of the types of tools are the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
 The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
+Note that we will purposefully omit a considerable part of the details about WhyRel, since the verification of pointer programs is out of the scope of this thesis.
+
+
+\subsection{Implementation details}
+\label{subsec:whyrel_specifying}
+TODO:
+- importante do 2
+- importante do 4
+- maximal alignments
 
 Some of the most relevant relational properties are conditional program equivalence, non-interference and sensitivity~\cite{barthe2019verifying}.
---- TODO: PAGE 2 ---
+WhyRel addresses tooling that enables modular verification of relational properties of heap-manipulating programs, including the ones that act on differing data representations and involve dynamically allocated pointer structures.
+It reaches modular reasoning about programs that contain pointers through local reasoning, using frame conditions and procedural and data abstraction.
+Simpler relational invariants and specs can be achieved through the alignment of intermediate execution steps, a type of compositionality.
+
+WhyRel invests a lot in encapsulation, as a way to hide internal representation details from clients and to verify the modular correctness of a client independently of its internal organization.
+Since this challenging on a technical level, WhyRel specifies encapsulation as a \emph{dynamic boundary}, a kind of dynamic frame.
+A dynamic boundary captures the set of the module's internal locations.
+Therefore, enforcing encapsulation in practice requires making sure that clients do not modify any internal locations of a module.
+Relational logic has thorough soundness proofs~\cite{10.1145/3551497} and WhyRel, according to its authors, is an accurate implementation.
 
 This tool should be interpreted as a front-end to Why3, where users provide the code, specifications and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
 After that, WhyRel translates these inputs into WhyML code, enconding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
 Fianlly, some VCs are added by WhyRel as intermediate assertions and lemmas for the user to confirm, and the verification itself is achieved mainly through the use of the Why3 IDE.
 
-WhyRel was evaluated through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
-
-
-\subsection{Implementation details}
-\label{subsec:whyrel_specifying}
-importante do 2 e 4
---- TODO: falar de maximal alignments ---
-
+WhyRel was evaluated by its authors through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
 
 
 \subsection{Patterns of program alignment}
@@ -753,14 +763,117 @@ meth ex_bip (x: int, n: int | x: int, n: int) : (int | int) =
   \label{fig:cond_align_loops_ex}
 \end{figure}
 
+The example presented in the previous subsubsection takes advantage of the fact that the two outer loops are executed the same number of times, which can be inferred from their conditions being the same (\emph{i < n}).
+It allows a lockstep alignment of the loops' iterations, leading to simple relational invariants.
+However, we can not exploit this lockstep reasoning on all cases, forcing us to use other patterns of loop alignment, such as those that consider conditions on data.
 
+Considering the example in the \hyperref[fig:cond_align_loops_ex]{figure}, observe that \emph{ex1} calculates the factorial of \emph{x} and \emph{ex2} computes the result of \emph{$2^x$}, both for \emph{x $\geq$ 4}.
+In this case, we do not want to prove the equivalence of \emph{ex1} and \emph{ex2}, but that the factorial majorizes the exponent for \emph{x $\geq$ 4}.
+Therefore, we provide the following relational specification to reach that goal, keeping in mind that the post-condition, indicated by the \emph{ensures} keyword, should be interpreted as "the value of the variable \emph{result} of \emph{ex1} is strictly greater than its \emph{ex2}'s counterpart, after the execution ends".
+
+\begin{figure}[h]
+  \centering
+  \noindent
+  \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, mathescape,
+                      emph={meth, while, do, result, done, old, invariant, assert, int, requires, ensures, Both},
+                      emphstyle=\ttfamily\bfseries\color{myorange}]
+meth ex_bip_spec (x: int, n: int | x: int, n: int) : (int | int) =
+  requires { x $\doteq$ x $\land$ $\rhd$ x $\geq$ 4 $\rhd$ $\land$ Both (n > 0) }
+  ensures { $\lhd$ result $\lhd$ > $\rhd$ result $\rhd$ }
+  \end{lstlisting}
+  \caption{Relational spec for the example in \hyperref[fig:cond_align_loops_ex]{this} figure.}
+  \label{fig:cond_align_loops_rel_spec}
+\end{figure}
+
+This relational spec means that, if at the start of the execution: both programs \emph{x's} are equal; \emph{ex2's x} is greater or equal to 4; and both \emph{n's} are strictly greater than 0, then the output of the left program will be strictly greater than the output of the right side.
+
+\emph{ex1} and \emph{ex2} structure's are very similar and the example is simplified by setting the \emph{z} to 4! and $2^4$, respectively.
+The \emph{w} variables' goal is to introduce \emph{stuttering} steps.
+In this case, it restricts the loops from both sides to only execute the assignments to \emph{z} and \emph{y} when \emph{w} is divisible by \emph{n}.
+
+Since the only restriction on \emph{n} is that they both sould be greater than 0, we can not be sure if the number of iterations will be the same for both sides, which excludes the possibility of providing an alignment based on pure lockstep.
+Therefore, we should only align iterations in lockstep when \emph{w mod n = 0} on both sides; in other words, when the assignments to \emph{z} and \emph{y} will be performed.
+For the other situations, when a side will not update those variables in the current iteration, the alignment of the iteration on the other side should be done with executing nothing, represented by the \emph{skip} command.
+With these two types of alignments, we are able to establish the invariant $\lhd$ z $\lhd$ > $\rhd$ z $\rhd$.
+
+This alignment is represented in terms of syntax by the \emph{ex\_bip} biprogram in \hyperref[fig:cond_align_loops_ex]{this} figure.
+Conditional alignment is captured using additional annotations, the \emph{alignment guards}.
+These annotations are general relation formulas that express conditions that cause the iterations to be either left-only, right-only or lockstep.
+In our example, the alignment guards are \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$ | $\rhd$ w mod n $\neq$ 0 $\rhd$}.
+Looking at the left alignment guard, \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$}, we understand that \emph{ex\_bip} executes left-only iterations when, on the left side, \emph{w} is \textbf{not} divisible by \emph{n}. 
+A left-only iteration means that only the left side statements inside the loop are executed: \emph{if (w mod n = 0) then (z := z*y; y := y-1) end; w := w+1}.
+The only assignment in this case is the increment of the \emph{w} variable, since the guard makes the if condition become false.
+This reasoning is similar to the right side, representing the right-only iterations.
+Finally, the lockstep iterations happen when both alignment guards are false; in this case, when \emph{w} is a multiple of \emph{n} on both sides.
+This alignment allows us to use the relational invariants in \emph{ex\_bip} to prove that the post-condition holds after the execution of the biprogram.
 
 
 \FloatBarrier
-\subsection{Translating biprograms to product programs}
+\subsection{Translating biprograms into product programs}
 \label{subsec:whyrel_translation}
-Regras de traducao
 
+One of the main goals of WhyRel (also one of our main goals) is translating biprograms into product programs.
+This tool achieves that through WhyML functions that act on a pair of states; WhyML functions that encode biprograms also act on a refperm, renaming references allocated in the two states being related.
+However, before the translation phase, WhyRel checks how adequate the biprogram in question is.
+At an intuition level, we can think that if the two unary programs are related in accord with a relational spec, then the biprogram is adequate if it satisfies that spec, which suggests that relatedness strongly impacts the correctness of the biprogram.
+
+In practice, WhyRel confirms the adequacy of the biprogram in two phases, by checking if it can cover all pairs of executions of its two source programs.
+The first phase is done by checking the syntax in order to ensure that the biprogram was really constructed from its underlying programs, through projection operations.
+Consider the following notation, where \emph{CC} represents a biprogram, $\wideleftharpoonup{CC}$ its left projection (the left unary program) and $\widerightharpoonup{CC}$ its right projection (the right unary program).
+As a simple example, the left projection of the following program is \textbf{x := 2; x := x + 1;} and the right projection is \textbf{x := x + 1;}.
+
+\begin{lstlisting}[style=while_lang, mathescape,
+                      emph={skip},
+                      emphstyle=\ttfamily\bfseries\color{myorange}]
+( x := 2 | skip);
+$\lfloor$ x := x + 1 $\rfloor$;
+\end{lstlisting}
+
+Considering the unary original programs \emph{C} and \emph{C'}, the corresponding biprogram \emph{CC} and $\equiv$ the symbol for syntactic equality, WhyRel checks $\wideleftharpoonup{CC}$ $\equiv$ \emph{C} and $\widerightharpoonup{CC}$ $\equiv$ \emph{C'}.
+The second phase consists in the introduction of annotations in the birpogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
+In an hypothetical case where a biprogram aligns two loops in lockstep, this tool would add, as relational loop invariant, the equivalence of the two loop guards.
+
+--- REGRAS ---
+\iffalse\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.99\linewidth}
+  \begin{lstlisting}
+BJC|C’K(Γl,Γr) =̂ UJCK(Γl); UJC’K(Γr)
+
+BJ⌊m(x|y)⌋K(Γl,Γr) =̂ Φ(m)(Γl.st,Γr.st, EJxK(Γl), EJyK(Γr))
+
+BJ⌊C⌋K(Γl,Γr) =̂ BJC|CK(Γl,Γr)
+
+BJCC; DDK(Γl,Γr) =̂ BJCCK(Γl,Γr); BJDDK(Γl,Γr)
+
+BJvar x:T|x:T’ in CCK(Γl,Γr) =̂ let xl = def(T) in let xr = def(T’) in
+BJCCK([Γl | x : xl], [Γr | x : xr])
+
+BJif E|E’ then CC else DDK(Γl,Γr) =̂ assert {EJEK(Γl) = EJE’K(Γr)};
+if EJEK(Γl) then BJCCK(Γl,Γr)
+else BJDDK(Γl,Γr)
+
+BJwhile E|E’ do DDK(Γl,Γr) =̂ while EJEK(Γl) do
+invariant {EJEK(Γl) = EJE’K(Γr)}
+BJCCK(Γl,Γr)
+
+BJwhile E|E’. P|P do DDK(Γl,Γr) =̂
+
+while (EJEK(Γl) ∨ EJE’K(Γr)) do invariant {A}
+if (EJEK(Γl) ∧ FJPK(Γl,Γr)) then UJ↼−CCK(Γl)
+
+else if (EJE’K(Γr) ∧ FJP ′K(Γl,Γr)) then UJ−⇀CCK(Γr) else BJCCK(Γl,Γr)
+
+where A ≡ (EJEK(Γl) ∧ FJPK(Γl,Γr)) ∨ (EJE′K(Γr) ∧ FJP ′K(Γl,Γr)) ∨
+(¬EJEK(Γl) ∧ ¬EJE′K(Γr)) ∨ (EJEK(Γl) ∧ EJE′K(Γr))
+  \end{lstlisting}
+  \end{minipage}
+  \caption{Translation of biprograms, excerpts.}
+  \label{fig:translation-biprograms-rules}
+\end{figure}
+\fi
+
+--- CONTINUE TEXT ---
 
 
 
