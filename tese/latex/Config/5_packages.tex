@@ -143,3 +143,15 @@
 \newcommand{\widerightharpoonup}[1]{%
   \accentset{\scalerel*{\rightharpoonup}{\ensuremath{#1}}}{#1}%
 }
+
+\usepackage{tabularx}          % <-- provides X column that wraps
+\usepackage{calc}              % for \widthof etc if you want to tweak widths
+\usepackage{array}
+
+% helper for coloring keywords (works inside math mode)
+\newcommand{\kw}[1]{\text{\ttfamily\bfseries\color{myorange}#1}}
+
+% left column type (fixed proportion) and right column X (wraps)
+\newcolumntype{L}{>{\raggedright\arraybackslash}p{0.45\linewidth}}
+\newcolumntype{R}{>{\raggedright\arraybackslash}X}
+

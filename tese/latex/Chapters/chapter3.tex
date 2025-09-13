@@ -833,45 +833,98 @@ Considering the unary original programs \emph{C} and \emph{C'}, the correspondin
 The second phase consists in the introduction of annotations in the birpogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
 In an hypothetical case where a biprogram aligns two loops in lockstep, this tool would add, as relational loop invariant, the equivalence of the two loop guards.
 
---- REGRAS ---
-\iffalse\begin{figure}[ht]
+\begin{figure}[ht]
   \centering
   \begin{minipage}{0.99\linewidth}
-  \begin{lstlisting}
-BJC|C’K(Γl,Γr) =̂ UJCK(Γl); UJC’K(Γr)
+  \begin{lstlisting}[escapeinside={(*}{*)},
+      style=while_lang, 
+      mathescape,
+      columns=fixed,
+      showspaces=false,       
+      showstringspaces=false, 
+      emph={var,in,let,if,then,else,while,do,invariant,assert},
+      emphstyle=\ttfamily\bfseries\color{myorange}]
+$\beta$$\llbracket C | C' \rrbracket$($\tau_l$,$\tau_r$)                      $\triangleq$ $\mu$$\llbracket C \rrbracket$($\tau_l$); $\mu$$\llbracket C' \rrbracket$($\tau_r$)
 
-BJ⌊m(x|y)⌋K(Γl,Γr) =̂ Φ(m)(Γl.st,Γr.st, EJxK(Γl), EJyK(Γr))
+$\beta$$\llbracket \lfloor m(x|y) \rfloor \rrbracket$($\tau_l$,$\tau_r$)                   $\triangleq$ $\phi$(m)($\tau_l$.st,$\tau_r$.st,$\epsilon\llbracket x \rrbracket(\tau_l)$,$\epsilon\llbracket y \rrbracket(\tau_r)$)
 
-BJ⌊C⌋K(Γl,Γr) =̂ BJC|CK(Γl,Γr)
+$\beta$$\llbracket \lfloor C \rfloor \rrbracket$($\tau_l$,$\tau_r$)                       $\triangleq$ $\beta$$\llbracket C | C \rrbracket$($\tau_l$,$\tau_r$)
 
-BJCC; DDK(Γl,Γr) =̂ BJCCK(Γl,Γr); BJDDK(Γl,Γr)
+$\beta\llbracket$CC; DD$\rrbracket$($\tau_l$,$\tau_r$)                    $\triangleq$ $\beta\llbracket CC \rrbracket$($\tau_l$,$\tau_r$); $\beta\llbracket DD \rrbracket$($\tau_l$,$\tau_r$)
 
-BJvar x:T|x:T’ in CCK(Γl,Γr) =̂ let xl = def(T) in let xr = def(T’) in
-BJCCK([Γl | x : xl], [Γr | x : xr])
+$\beta\llbracket$var x:T|x:T$'$ in CC$\rrbracket$($\tau_l$,$\tau_r$)        $\triangleq$ let $x_l$ = def(T) in 
+                                                                        $\qquad$ $\qquad$ $\qquad$ let $x_r$ = def(T$'$) in 
+                                                                        $\qquad$ $\qquad$ $\qquad$ $\beta\llbracket CC \rrbracket$([$\tau_l$ | x : $x_l$],[$\tau_r$ | x : $x_r$])
 
-BJif E|E’ then CC else DDK(Γl,Γr) =̂ assert {EJEK(Γl) = EJE’K(Γr)};
-if EJEK(Γl) then BJCCK(Γl,Γr)
-else BJDDK(Γl,Γr)
+$\beta\llbracket$if E|E$'$ then CC else DD$\rrbracket$($\tau_l$,$\tau_r$)  $\triangleq$ assert{$\epsilon\llbracket$E$\rrbracket$($\tau_l$) = $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)}; if $\epsilon\llbracket$E$\rrbracket$($\tau_l$) then $\beta\llbracket$CC$\rrbracket$($\tau_l$,$\tau_r$) else $\beta\llbracket$DD$\rrbracket$($\tau_l$,$\tau_r$)
 
-BJwhile E|E’ do DDK(Γl,Γr) =̂ while EJEK(Γl) do
-invariant {EJEK(Γl) = EJE’K(Γr)}
-BJCCK(Γl,Γr)
+$\beta\llbracket$while E|E$'$ do CC$\rrbracket$($\tau_l$,$\tau_r$)         $\triangleq$ while $\epsilon\llbracket$E$\rrbracket$($\tau_l$) do 
+                                                                                  invariant {$\epsilon\llbracket$E$\rrbracket$($\tau_l$) = $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)}
+                                                                                  $\beta\llbracket CC \rrbracket$($\tau_l$,$\tau_r$)
 
-BJwhile E|E’. P|P do DDK(Γl,Γr) =̂
-
-while (EJEK(Γl) ∨ EJE’K(Γr)) do invariant {A}
-if (EJEK(Γl) ∧ FJPK(Γl,Γr)) then UJ↼−CCK(Γl)
-
-else if (EJE’K(Γr) ∧ FJP ′K(Γl,Γr)) then UJ−⇀CCK(Γr) else BJCCK(Γl,Γr)
-
-where A ≡ (EJEK(Γl) ∧ FJPK(Γl,Γr)) ∨ (EJE′K(Γr) ∧ FJP ′K(Γl,Γr)) ∨
-(¬EJEK(Γl) ∧ ¬EJE′K(Γr)) ∨ (EJEK(Γl) ∧ EJE′K(Γr))
+$\beta\llbracket$while E|E$'$ . P|$P'$ do CC$\rrbracket$($\tau_l$,$\tau_r$)         $\triangleq$ while ($\epsilon\llbracket$E$\rrbracket$($\tau_l$) $\lor$ $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)) do invariant {$A$}
+                                                                                  if ($\epsilon\llbracket$E$\rrbracket$($\tau_l$) $\land$ $\digamma\llbracket P \rrbracket$($\tau_l$,$\tau_r$)) then $\mu$$\llbracket \wideleftharpoonup{CC} \rrbracket$($\tau_l$)
+                                                                                  else if ($\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$) $\land$ $\digamma\llbracket P$'$ \rrbracket$($\tau_l$,$\tau_r$)) then  $\mu$$\llbracket \widerightharpoonup{CC} \rrbracket$($\tau_r$) else $\beta\llbracket$CC$\rrbracket$($\tau_l$,$\tau_r$)
+                                                                            where $A$ $\equiv$ () $\lor$ () $\lor$ () $\lor$ () COMPLETE HERE!
   \end{lstlisting}
   \end{minipage}
-  \caption{Translation of biprograms, excerpts.}
+  \caption{Rules of translation of biprograms.}
   \label{fig:translation-biprograms-rules}
 \end{figure}
-\fi
+
+\begin{figure}[ht]
+  \centering
+  \begin{minipage}{0.99\linewidth}
+    \setlength{\tabcolsep}{6pt}
+    \begin{tabularx}{\linewidth}{@{}L R@{}}
+
+      $\beta\llbracket C \mid C' \rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{$\triangleq\ \mu\llbracket C\rrbracket(\tau_l);\ \mu\llbracket C'\rrbracket(\tau_r)$} \\[6pt]
+
+      $\beta\llbracket \lfloor m(x\mid y) \rfloor \rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{$\triangleq\ \phi(m)\big(\tau_l.\mathrm{st},\tau_r.\mathrm{st},
+      \epsilon\llbracket x\rrbracket(\tau_l),\epsilon\llbracket y\rrbracket(\tau_r)\big)$} \\[6pt]
+
+      $\beta\llbracket \lfloor C \rfloor \rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{$\triangleq\ \beta\llbracket C \mid C \rrbracket(\tau_l,\tau_r)$} \\[6pt]
+
+      $\beta\llbracket CC;\,DD\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{$\triangleq\ \beta\llbracket CC \rrbracket(\tau_l,\tau_r);\ \beta\llbracket DD \rrbracket(\tau_l,\tau_r)$} \\[6pt]
+
+      $\beta\llbracket \kw{var }x:T \mid x:T' \kw{ in } CC\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{%
+        $\triangleq\ \kw{let}\ x_l=\mathrm{def}(T)\ \kw{in}$\\[2pt]
+        \hspace{2.2em}$\kw{let}\ x_r=\mathrm{def}(T')\ \kw{in}$\\[2pt]
+        \hspace{2.2em}$\beta\llbracket CC \rrbracket\big([\tau_l\mid x:x_l],[\tau_r\mid x:x_r]\big)$
+      } \\[8pt]
+
+      $\beta\llbracket \kw{if } E\mid E' \ \kw{then}\ CC\ \kw{else}\ DD\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{%
+        $\triangleq\ \kw{assert}\{\ \epsilon\llbracket E\rrbracket(\tau_l)=\epsilon\llbracket E'\rrbracket(\tau_r)\ \};$\\[2pt]
+        \hspace{2.2em}$\kw{if}\ \epsilon\llbracket E\rrbracket(\tau_l)\ \kw{then}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)\ \kw{else}\ \beta\llbracket DD\rrbracket(\tau_l,\tau_r)$
+      } \\[8pt]
+
+      $\beta\llbracket \kw{while } E\mid E' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{%
+        $\triangleq\ \kw{while}\ \epsilon\llbracket E\rrbracket(\tau_l)\ \kw{do}$\\[2pt]
+        \hspace{2.2em}$\kw{invariant}\ \{\ \epsilon\llbracket E\rrbracket(\tau_l)=\epsilon\llbracket E'\rrbracket(\tau_r)\ \}$\\[2pt]
+        \hspace{2.2em}$\beta\llbracket CC\rrbracket(\tau_l,\tau_r)$
+      } \\[8pt]
+
+      $\beta\llbracket \kw{while } E\mid E' .\ P\mid P' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{%
+        $\triangleq\ \kw{while}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \lor\ \epsilon\llbracket E'\rrbracket(\tau_r))\ \kw{do}\ \kw{invariant}\ \{A\}$\\[2pt]
+        \hspace{2.2em}$\kw{if}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ $F$\llbracket P\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \wideleftharpoonup{CC}\rrbracket(\tau_l)$\\[2pt]
+        \hspace{2.2em}$\kw{else if}\ (\epsilon\llbracket E'\rrbracket(\tau_r)\ \land\ $F$\llbracket P'\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \widerightharpoonup{CC}\rrbracket(\tau_r)$\\[2pt]
+        \hspace{2.2em}$\kw{else}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)$\\[4pt]
+        \hspace{0.0em}\text{where } $A \equiv () \lor () \lor () \lor ()\ \text{COMPLETE HERE!}$
+      } \\
+
+    \end{tabularx}
+  \end{minipage}
+  \caption{Rules of translation of biprograms.}
+  \label{fig:translation-biprograms-rules}
+\end{figure}
 
 --- CONTINUE TEXT ---
 
