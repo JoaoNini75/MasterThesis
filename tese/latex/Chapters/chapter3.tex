@@ -835,102 +835,99 @@ In an hypothetical case where a biprogram aligns two loops in lockstep, this too
 
 \begin{figure}[ht]
   \centering
-  \begin{minipage}{0.99\linewidth}
-  \begin{lstlisting}[escapeinside={(*}{*)},
-      style=while_lang, 
-      mathescape,
-      columns=fixed,
-      showspaces=false,       
-      showstringspaces=false, 
-      emph={var,in,let,if,then,else,while,do,invariant,assert},
-      emphstyle=\ttfamily\bfseries\color{myorange}]
-$\beta$$\llbracket C | C' \rrbracket$($\tau_l$,$\tau_r$)                      $\triangleq$ $\mu$$\llbracket C \rrbracket$($\tau_l$); $\mu$$\llbracket C' \rrbracket$($\tau_r$)
-
-$\beta$$\llbracket \lfloor m(x|y) \rfloor \rrbracket$($\tau_l$,$\tau_r$)                   $\triangleq$ $\phi$(m)($\tau_l$.st,$\tau_r$.st,$\epsilon\llbracket x \rrbracket(\tau_l)$,$\epsilon\llbracket y \rrbracket(\tau_r)$)
-
-$\beta$$\llbracket \lfloor C \rfloor \rrbracket$($\tau_l$,$\tau_r$)                       $\triangleq$ $\beta$$\llbracket C | C \rrbracket$($\tau_l$,$\tau_r$)
-
-$\beta\llbracket$CC; DD$\rrbracket$($\tau_l$,$\tau_r$)                    $\triangleq$ $\beta\llbracket CC \rrbracket$($\tau_l$,$\tau_r$); $\beta\llbracket DD \rrbracket$($\tau_l$,$\tau_r$)
-
-$\beta\llbracket$var x:T|x:T$'$ in CC$\rrbracket$($\tau_l$,$\tau_r$)        $\triangleq$ let $x_l$ = def(T) in 
-                                                                        $\qquad$ $\qquad$ $\qquad$ let $x_r$ = def(T$'$) in 
-                                                                        $\qquad$ $\qquad$ $\qquad$ $\beta\llbracket CC \rrbracket$([$\tau_l$ | x : $x_l$],[$\tau_r$ | x : $x_r$])
-
-$\beta\llbracket$if E|E$'$ then CC else DD$\rrbracket$($\tau_l$,$\tau_r$)  $\triangleq$ assert{$\epsilon\llbracket$E$\rrbracket$($\tau_l$) = $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)}; if $\epsilon\llbracket$E$\rrbracket$($\tau_l$) then $\beta\llbracket$CC$\rrbracket$($\tau_l$,$\tau_r$) else $\beta\llbracket$DD$\rrbracket$($\tau_l$,$\tau_r$)
-
-$\beta\llbracket$while E|E$'$ do CC$\rrbracket$($\tau_l$,$\tau_r$)         $\triangleq$ while $\epsilon\llbracket$E$\rrbracket$($\tau_l$) do 
-                                                                                  invariant {$\epsilon\llbracket$E$\rrbracket$($\tau_l$) = $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)}
-                                                                                  $\beta\llbracket CC \rrbracket$($\tau_l$,$\tau_r$)
-
-$\beta\llbracket$while E|E$'$ . P|$P'$ do CC$\rrbracket$($\tau_l$,$\tau_r$)         $\triangleq$ while ($\epsilon\llbracket$E$\rrbracket$($\tau_l$) $\lor$ $\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$)) do invariant {$A$}
-                                                                                  if ($\epsilon\llbracket$E$\rrbracket$($\tau_l$) $\land$ $\digamma\llbracket P \rrbracket$($\tau_l$,$\tau_r$)) then $\mu$$\llbracket \wideleftharpoonup{CC} \rrbracket$($\tau_l$)
-                                                                                  else if ($\epsilon\llbracket$E$'$$\rrbracket$($\tau_r$) $\land$ $\digamma\llbracket P$'$ \rrbracket$($\tau_l$,$\tau_r$)) then  $\mu$$\llbracket \widerightharpoonup{CC} \rrbracket$($\tau_r$) else $\beta\llbracket$CC$\rrbracket$($\tau_l$,$\tau_r$)
-                                                                            where $A$ $\equiv$ () $\lor$ () $\lor$ () $\lor$ () COMPLETE HERE!
-  \end{lstlisting}
-  \end{minipage}
-  \caption{Rules of translation of biprograms.}
-  \label{fig:translation-biprograms-rules}
-\end{figure}
-
-\begin{figure}[ht]
-  \centering
-  \begin{minipage}{0.99\linewidth}
-    \setlength{\tabcolsep}{6pt}
+  \begin{minipage}{\linewidth}
+    \setlength{\tabcolsep}{8pt}
     \begin{tabularx}{\linewidth}{@{}L R@{}}
-
-      $\beta\llbracket C \mid C' \rrbracket(\tau_l,\tau_r)$ &
+      \textbf{1. } $\beta\llbracket C \mid C' \rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{$\triangleq\ \mu\llbracket C\rrbracket(\tau_l);\ \mu\llbracket C'\rrbracket(\tau_r)$} \\[6pt]
+      \\
 
-      $\beta\llbracket \lfloor m(x\mid y) \rfloor \rrbracket(\tau_l,\tau_r)$ &
+      \textbf{2. } $\beta\llbracket \lfloor m(x\mid y) \rfloor \rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{$\triangleq\ \phi(m)\big(\tau_l.\mathrm{st},\tau_r.\mathrm{st},
       \epsilon\llbracket x\rrbracket(\tau_l),\epsilon\llbracket y\rrbracket(\tau_r)\big)$} \\[6pt]
+      \\
 
-      $\beta\llbracket \lfloor C \rfloor \rrbracket(\tau_l,\tau_r)$ &
+      \textbf{3. } $\beta\llbracket \lfloor C \rfloor \rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{$\triangleq\ \beta\llbracket C \mid C \rrbracket(\tau_l,\tau_r)$} \\[6pt]
+      \\
 
-      $\beta\llbracket CC;\,DD\rrbracket(\tau_l,\tau_r)$ &
+      \textbf{4. } $\beta\llbracket CC;\,DD\rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{$\triangleq\ \beta\llbracket CC \rrbracket(\tau_l,\tau_r);\ \beta\llbracket DD \rrbracket(\tau_l,\tau_r)$} \\[6pt]
+      \\
 
-      $\beta\llbracket \kw{var }x:T \mid x:T' \kw{ in } CC\rrbracket(\tau_l,\tau_r)$ &
+      \textbf{5. } $\beta\llbracket \kw{var }x:T \mid x:T' \kw{ in } CC\rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{%
-        $\triangleq\ \kw{let}\ x_l=\mathrm{def}(T)\ \kw{in}$\\[2pt]
-        \hspace{2.2em}$\kw{let}\ x_r=\mathrm{def}(T')\ \kw{in}$\\[2pt]
-        \hspace{2.2em}$\beta\llbracket CC \rrbracket\big([\tau_l\mid x:x_l],[\tau_r\mid x:x_r]\big)$
+        $\triangleq\ \kw{let}\ x_l=\mathrm{def}(T)\ \kw{in}\ \kw{let}\ x_r=\mathrm{def}(T')\ \kw{in}$\\[2pt]
+        \hspace{2.2em}\text{  }\text{  }\text{  }\text{  } $\beta\llbracket CC \rrbracket\big([\tau_l\mid x:x_l],[\tau_r\mid x:x_r]\big)$
       } \\[8pt]
+      \\
 
-      $\beta\llbracket \kw{if } E\mid E' \ \kw{then}\ CC\ \kw{else}\ DD\rrbracket(\tau_l,\tau_r)$ &
+      \textbf{6. } $\beta\llbracket \kw{if } E\mid E' \ \kw{then}\ CC\ $ $\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{ } \kw{else}\ DD\rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{%
         $\triangleq\ \kw{assert}\{\ \epsilon\llbracket E\rrbracket(\tau_l)=\epsilon\llbracket E'\rrbracket(\tau_r)\ \};$\\[2pt]
-        \hspace{2.2em}$\kw{if}\ \epsilon\llbracket E\rrbracket(\tau_l)\ \kw{then}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)\ \kw{else}\ \beta\llbracket DD\rrbracket(\tau_l,\tau_r)$
+        \hspace{2.2em}\text{  }\text{  }\text{  }\text{  } $\kw{if}\ \epsilon\llbracket E\rrbracket(\tau_l)\ \ \kw{ then}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)$\\[2pt]
+        \hspace{2.2em}\text{  }\text{  }\text{  }\text{  } $\kw{ else}\ \beta\llbracket DD\rrbracket(\tau_l,\tau_r)$
       } \\[8pt]
+      \\
 
-      $\beta\llbracket \kw{while } E\mid E' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
+      \textbf{7. } $\beta\llbracket \kw{while } E\mid E' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{%
         $\triangleq\ \kw{while}\ \epsilon\llbracket E\rrbracket(\tau_l)\ \kw{do}$\\[2pt]
-        \hspace{2.2em}$\kw{invariant}\ \{\ \epsilon\llbracket E\rrbracket(\tau_l)=\epsilon\llbracket E'\rrbracket(\tau_r)\ \}$\\[2pt]
-        \hspace{2.2em}$\beta\llbracket CC\rrbracket(\tau_l,\tau_r)$
+        \hspace{2.2em}\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  } $\kw{invariant}\ \{\ \epsilon\llbracket E\rrbracket(\tau_l)=\epsilon\llbracket E'\rrbracket(\tau_r)\ \}$\\[2pt]
+        \hspace{2.2em}\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  } $\beta\llbracket CC\rrbracket(\tau_l,\tau_r)$
       } \\[8pt]
+      \\
 
-      $\beta\llbracket \kw{while } E\mid E' .\ P\mid P' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
-      \parbox[t]{\hsize}{%
-        $\triangleq\ \kw{while}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \lor\ \epsilon\llbracket E'\rrbracket(\tau_r))\ \kw{do}\ \kw{invariant}\ \{A\}$\\[2pt]
-        \hspace{2.2em}$\kw{if}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ $F$\llbracket P\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \wideleftharpoonup{CC}\rrbracket(\tau_l)$\\[2pt]
-        \hspace{2.2em}$\kw{else if}\ (\epsilon\llbracket E'\rrbracket(\tau_r)\ \land\ $F$\llbracket P'\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \widerightharpoonup{CC}\rrbracket(\tau_r)$\\[2pt]
-        \hspace{2.2em}$\kw{else}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)$\\[4pt]
-        \hspace{0.0em}\text{where } $A \equiv () \lor () \lor () \lor ()\ \text{COMPLETE HERE!}$
-      } \\
+      \textbf{8. } $\beta\llbracket \kw{while } E\mid E' .\ P\mid P' \ \kw{do}\ CC\rrbracket(\tau_l,\tau_r)$ &
+      \parbox[t]{\hsize}{$\triangleq$} \\[2pt]
+    \end{tabularx} 
 
-    \end{tabularx}
+    \vspace{2pt} 
+    \noindent\begin{minipage}[t]{\linewidth} 
+      \raggedright
+      \hspace{1.1em}$\kw{while}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \lor\ \epsilon\llbracket E'\rrbracket(\tau_r))\ \kw{do}\ \kw{invariant}\ \{A\}$\\[2pt]
+      \hspace{2.2em}$\kw{if}\ (\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ $F$\llbracket P\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \wideleftharpoonup{CC}\rrbracket(\tau_l)$\\[2pt]
+      \hspace{2.2em}$\kw{else if}\ (\epsilon\llbracket E'\rrbracket(\tau_r)\ \land\ $F$\llbracket P'\rrbracket(\tau_l,\tau_r))\ \kw{then}\ \mu\llbracket \widerightharpoonup{CC}\rrbracket(\tau_r)$\\[2pt]
+      \hspace{2.2em}$\kw{else}\ \beta\llbracket CC\rrbracket(\tau_l,\tau_r)$\\[2pt]
+      \hspace{1.2em}\text{where } $A \equiv (\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ $F$\llbracket P\rrbracket(\tau_l,\tau_r)) \lor (\epsilon\llbracket E'\rrbracket(\tau_r)\ \land\ $F$\llbracket P'\rrbracket(\tau_l,\tau_r))\ \lor$\\[2pt]
+      \hspace{4.0em}\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  }\text{  } $(\neg\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ \neg\epsilon\llbracket E'\rrbracket(\tau_r)) \lor (\epsilon\llbracket E\rrbracket(\tau_l)\ \land\ \epsilon\llbracket E'\rrbracket(\tau_r))$
+    \end{minipage}
+    \vspace{2pt}
+
   \end{minipage}
   \caption{Rules of translation of biprograms.}
   \label{fig:translation-biprograms-rules}
 \end{figure}
 
---- CONTINUE TEXT ---
+The rules of translation of biprograms into product programs are listed in \hyperref[fig:translation-biprograms-rules]{this} figure.
+$\beta$ receives a biprogram and a pair of contexts $(\tau_l,\tau_r)$ and transforms it into a WhyML program.
+Contexts map WhyRel identifiers to WhyML identifiers and store information about the state parameters that the generated WhyML will receive.
+In a similar way, $\mu$ translates unary programs into WhyML programs, $\epsilon$ map expressions into WhyML expressions and $F$ transforms a restricted set of relation formulas also into WhyML expressions.
+Unary programs are not restricted to operate on a disjoint set of variables but, if they do not, during translation, WhyRel naturally has to rename those variables' names. 
+Rule 5 performs this renaming, where context $\tau_l$ (and respectively $\tau_r$) is extended with the renaming of $x$ with its copy $x_l$ (and respectively $\tau_r$ is extended with the binding $x : x_r$).
 
+Rule 1 sequentially composes the unary translations of $C$ and $C'$.
+$\lfloor C \rfloor$ is simply syntactic sugar for ($C|C$) that are translated by rule 3, with the expection of method calls.
+Aligning method calls that establish that the relational spec associated with the method allow procedure-modular reasoning about relational properties.
+Using the $\phi$ symbol to represent a global method context, WhyRel translates these calls to calls to the correct WhyML product program (rule 2).
+
+Rule 4 simply represents that a sequence of commands in the biprogram is translated to also a sequence of commands in the product program.
+Control flow statements require the generation of more proof obligations: in the case of the $if...then...else$, in rule 6, it appears as a runtime assertion; in a lockstep aligned loop (rule 7), it takes the form of a loop invariant stating that the guards are in agreement.
+Regarding conditionally aligned loops, described by rule 8, the pattern shown by the alignment guards $P | P'$ are captured by the generated loop body.
+This means that if the left (resp. right) guard evalutes to true and $P$ (resp. $P'$) holds, a left-only (resp. right-only) iteration is executed; if not, a lockstep iteration is performed.
+
+The adequacy of the biprogram in this case is guaranteed by the requirement that $A$ must be an invariant.
+$A$ states that the loop can either perform a one-sided iteration or a lockstep until both sides finish.
+The alignment guards $P$ and $P'$ can be any relational formula, in the context of relational region logic.
+Nonetheless, the encoding of conditionally aligned loops regards a conditional that branches on these alignment guards.
+In Why3, $P$ and $P'$ have to be restricted for this to function correctly; they can not contain quantifiers, for example.
+WhyRel supports several types of elements to be in the alignment guards: the commonly used boolean connectives, one-sided boolean expressions, one-sided points-to-assertions and, as referred several times before, agreement formulas.
 
 
 \subsubsection{Translation example}
 \label{subsubsec:whyrel_translation_example}
-completar exemplo do mult com product program EM WHYML!!!
 
+Recall the multiplication \hyperref[fig:mult_source_programs]{unary programs} and their \hyperref[fig:mult_biprogram]{biprogram}.
+We now present its corresponding product program, after applying the translation rules described before.
+
+---mult product program EM WHYML---
