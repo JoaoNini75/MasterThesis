@@ -53,8 +53,8 @@ The syntaxes of the most relevant rules are given by the following extended BNF 
 Note that Biplang's keywords are written in bold.
 
 \begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
-                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include},
-                    emphstyle=\ttfamily\bfseries]
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
+                    emphstyle=\ttfamily\bfseries\color{myorange}]
 file ::= decl*
 
 decl ::= 
@@ -101,9 +101,9 @@ expr ::=
             | e && e
             | e || e 
             | let id = e in $\overrightarrow{e}$
-            | if $e_1$ then $e_2$ else $e_3$
-            | for id = $e_1$ to $e_2$ do spec? $e_3$ done 
-            | while $e_1$ do spec? $e_2$ done 
+            | if e then e else e
+            | for id = e to e do spec? e done 
+            | while e do spec? e done 
             | id := e
             | assert (e)
             | match id with ($\overrightarrow{case}$)
@@ -116,7 +116,7 @@ expr ::=
             $\emph{arrays}$
             | [| $\overrightarrow{e}$ |]
             | id.(e)
-            | id.($e_1$) <- $e_2$
+            | id.(e) <- e
 
             $\emph{lists}$
             | [ $\overrightarrow{e}$ ]
@@ -124,9 +124,9 @@ expr ::=
             | e @ [ $\overrightarrow{e}$ ]
 
             $\emph{introduced by BipLang}$
-            | $e_1$ <|> $e_2$ $\emph{(pipe)}$
+            | e <|> e $\emph{(pipe)}$
             | $\lfloor e \rfloor$ $\emph{(floors)}$
-            | while $e_1$ <|> $e_2$ . $e_3$ <|> $e_4$ do spec? $e_5$ done
+            | while e <|> e . e <|> e do spec? e done
             $\emph{(conditionally aligned loops)}$
 
 c ::=

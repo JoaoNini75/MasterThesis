@@ -18,7 +18,7 @@
 \chapter{State of the Art}
 \label{cha:state_of_the_art}
 
-\textbf{Definition: Structural equivalence.} We say that two programs are structurally equivalent if they present the same sequence statements/commands.
+\textbf{Definition: Structural equivalence -} we say that two programs are structurally equivalent if they present the same sequence of statements/commands.
 For example, a program \emph{$P_1$} that consists in two assignments and a while loop is not equivalent to another program program \emph{$P_2$} if the latter's structure is a single for loop.
 On the other hand, if \emph{$P_1$} and \emph{$P_2$} both contain, let us say, three assignments followed by a for loop (with a single assignment inside) that executes the same number of iterations, they are structurally equivalent, despite the values being assigned to the variables.
 
@@ -542,20 +542,27 @@ It also supports state-based encapsulation and dynamic framing.
 This tool appears in a context where there are two existing types of tools exist but are not powerful enough to reduce the gap between them.
 One of the types of tools are the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
 The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
-Note that we will purposefully omit a considerable part of the details about WhyRel, since the verification of pointer programs is out of the scope of this thesis.
+WhyRel is implemented in OCaml and relies on a library provided by Why3 for constructing and pretty-printing WhyML parse trees.
+This tool was evaluated by its authors through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
+
+WhyRel is the most important practical work for this thesis.
+Nevertheless, we will purposefully omit a considerable part of the details about WhyRel, since the verification of pointer programs is out of the scope of this thesis.
 
 
-\subsection{Implementation details}
-\label{subsec:whyrel_specifying}
-TODO:
-- importante do 2
-- importante do 4
-- maximal alignments
+\subsection{Design details}
+\label{subsec:whyrel_deisgn}
 
 Some of the most relevant relational properties are conditional program equivalence, non-interference and sensitivity~\cite{barthe2019verifying}.
 WhyRel addresses tooling that enables modular verification of relational properties of heap-manipulating programs, including the ones that act on differing data representations and involve dynamically allocated pointer structures.
 It reaches modular reasoning about programs that contain pointers through local reasoning, using frame conditions and procedural and data abstraction.
 Simpler relational invariants and specs can be achieved through the alignment of intermediate execution steps, a type of compositionality.
+
+There are two approaches to relational properties verification supported by WhyRel.
+One of them corresponds to the reduction of the verification to the proof of functional properties of the two source programs, but this method suffers from two problems.
+It does not adapt well to complex programs and relational properties; it also prevents us to exploit similarities between the programs involved or reason through relational specs in a modular way.
+The second technique uses appropriate program alignments to prove the desired relational property.
+WhyRel uses biprograms to represent those alignments, that point out similarities between the two programs so that we can reason about their effects jointly.
+Relational properties of a given alignment entail the corresponding relation between the source programs, in case the chosen aligment is adequate, i.e., it captures all pairs of executions of the two underlying programs.
 
 WhyRel invests a lot in encapsulation, as a way to hide internal representation details from clients and to verify the modular correctness of a client independently of its internal organization.
 Since this challenging on a technical level, WhyRel specifies encapsulation as a \emph{dynamic boundary}, a kind of dynamic frame.
@@ -563,11 +570,28 @@ A dynamic boundary captures the set of the module's internal locations.
 Therefore, enforcing encapsulation in practice requires making sure that clients do not modify any internal locations of a module.
 Relational logic has thorough soundness proofs~\cite{10.1145/3551497} and WhyRel, according to its authors, is an accurate implementation.
 
+
+
+\iffalse
+To ensure that clients of modules respect encapsulation, WhyRel performs an analysis
+on source programs. This analysis includes two parts: a static check to ensure client
+programs don’t directly write to variables in a module’s boundary; and the generation
+of intermediate assertions that express disjointness between the footprints of client heap
+updates and regions demarcated by module boundaries. An example is given in Fig. 13.
+For modules with public/private invariants, WhyRel additionally generates a lemma
+which states that the module’s boundary frames the invariant, i.e., the invariant only
+depends on locations expressed by the boundary. The same is done with coupling
+relations, for which we need to consider boundaries of both modules being related. A
+technical condition of relational region logic requiring boundaries grow monotonically
+as computation proceeds is also ensured by introducing appropriate postconditions in
+generated programs.
+\fi
+
 This tool should be interpreted as a front-end to Why3, where users provide the code, specifications and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
 After that, WhyRel translates these inputs into WhyML code, enconding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
-Fianlly, some VCs are added by WhyRel as intermediate assertions and lemmas for the user to confirm, and the verification itself is achieved mainly through the use of the Why3 IDE.
+Finally, some VCs are added by WhyRel as intermediate assertions and lemmas for the user to confirm, and the verification itself is achieved mainly through the use of the Why3 IDE.
 
-WhyRel was evaluated by its authors through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
+
 
 
 \subsection{Patterns of program alignment}
@@ -664,6 +688,10 @@ In order to prove equivalence, we verify the biprogram presented in \hyperref[fi
 To achieve that, the pre-relation (or pre-condition) should be \(n \doteq n \land m \doteq m \) and the post-relation (or post-condition) \(result \doteq result\).
 The $\doteq$ symbol means that the left side of the expression (only reasoning about the left program) is equal to the right side of the expression (this side also only reasons about the right program).
 Therefore, the specification above means that if the input variables have the same values, then the output will also be the same.
+
+The $|$ symbol means that the instructions on its left refer to the left program and the instructions at its right side refer to the right program.
+The $\lfloor$ and $\rfloor$ symbols mean that the instruction inside is to be executed in both programs.
+This means that if we have $C_1 | C_2$ and $C_1$ is exactly the same instruction as $C_2$, we can simply write $\lfloor C_1 \rfloor$.
 
 We call unary programs the source programs, in this case, \emph{mult1} and \emph{mult2} present in \hyperref[fig:mult_source_programs]{this} figure.
 We say that an alignment is maximal if every statement/command is the same for the two unary programs.
@@ -930,4 +958,86 @@ WhyRel supports several types of elements to be in the alignment guards: the com
 Recall the multiplication \hyperref[fig:mult_source_programs]{unary programs} and their \hyperref[fig:mult_biprogram]{biprogram}.
 We now present its corresponding product program, after applying the translation rules described before.
 
----mult product program EM WHYML---
+\begin{figure}[h]
+  \centering
+  \noindent
+  \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, mathescape,
+                      emph={module,use,let,requires,ensures,in,while,do,variant,invariant,done,return,label,end,assert},
+                      emphstyle=\ttfamily\bfseries\color{myorange}]
+module MultPP
+  use int.Int
+  use ref.Ref
+
+  let mult_pp (n_l m_l n_r m_r : int) : (result_l: int, result_r: int)
+    requires { n_l = n_r && m_l = m_r && m_l >= 0 }
+    ensures  { result_l = result_r }
+  =
+    let i_l = ref 0 in
+    let i_r = ref 0 in
+    let result_l = ref 0 in
+    let result_r = ref 0 in
+
+    while !i_l < n_l do
+      variant { n_l - !i_l }
+      invariant { !i_l = !i_r && !result_l = !result_r }
+
+      label Old in
+      let j = ref 0 in
+      
+      while !j < m_l do
+        variant { m_l - !j }
+        invariant { 0 <= !j <= m_l && !result_l = !result_r + !j }
+
+        result_l := !result_l + 1;
+        j := !j + 1
+      done;
+
+      result_r := !result_r + m_r;
+
+      assert { !result_l = (!result_l at Old) + m_l };
+      i_l := !i_l + 1;
+      i_r := !i_r + 1;
+    done;
+    
+    return !result_l, !result_r
+end
+  \end{lstlisting}
+  \caption{$mult$ product program (WhyML).}
+  \label{fig:translation_ex}
+\end{figure}
+
+It is important to note that this code and specification has been developed by us and not by WhyRel's authors, in order to demonstrate the expected output of the tool when we feed it with the \hyperref[fig:mult_biprogram]{biprogram}.
+Therefore, we had to add the pre-condition $m\_l >= 0$, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
+The additional pre-condition is necessary to stop $result\_r$ from eventually reaching its correct value (assuming $n\_r$ is positive) while $result\_l$'s value stays at 0 during the whole execution of the program.
+The $variant \{ n\_l - !i\_l \}$ and $variant \{ m\_l - !j \}$ are needed to prove termination of the outer and inner loops, respectively.
+The $invariant \{ 0 <= !j <= m\_l \&\& ! result\_l = ! result\_r + !j \}$ is also not dispensable, since Why3 is not able to reason automatically about how $result\_l$ varies during the inner loop.
+
+Additionally, because $old(result)$ in WhyRel's biprogram language means the value that the $result$ variable had in the previous loop iteration, but in WhyML it represents the value in the previous function call, we had to adapt this when translating.
+The best solution we found is the use of labels to capture the state of program before the execution of the inner while loop, therefore allowing us to access the value of $result$ in the previous iteration.
+Finally, with this specification, CVC5 was able to discharge all VCs automatically and the proof took 0.08 seconds to complete.
+
+\begin{table}[!h]
+\begin{center}
+  \begin{tabular}{|l|l|l|l|c|}
+    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+    \hline
+    \explanation{VC for mult\_pp}  & \explanation{loop invariant init} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{loop invariant init} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{loop variant decrease} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{loop invariant preservation} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{assertion} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{loop variant decrease} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{loop invariant preservation} & \valid{0.01} \\ 
+    \cline{2-3}
+    & \explanation{postcondition} & \valid{0.01} \\ 
+    \hline 
+  \end{tabular}
+  \caption{\hyperref[fig:translation_ex]{$mult\_pp$} verification results.}
+\end{center}
+\end{table} 
