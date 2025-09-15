@@ -92,9 +92,12 @@ More generally, this form of characterization allows us to use existing verifica
 \section{Cross-products} 
 \label{sec:cross_products}
 
+\subsection{Introduction} 
+\label{subsec:cross_products_intro}
+
 Cross-products~\cite{DBLP:conf/fm/ZaksP08} aim to prove program equivalence, with a strong focus on verifying compiler optimizations.
-Instead of proving that both programs are equivalent, the analysis is done by combining the two input programs into one: the cross-product.
-With them, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
+Instead of proving that the two input programs are equivalent, the analysis is done by combining them into one: the cross-product.
+With this, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
 Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint of this work.
 
 One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, is that it was made to validate program equivalence in general while balancing precision and efficiency.
@@ -104,6 +107,67 @@ This final part is based on assertion checking, a static program verification me
 
 The results presented on the cited work reveal that CoVaC was able to verify a very considerable set of optimizations of LLVM~\cite{llvm}, a complex modern compiler.
 Yet, the tool does not support verification of interprocedural optimizations or information flow policies, for example, but these are limitations that the authors showed interest in addressing.
+
+
+\subsection{A simple example} 
+\label{subsec:cross_products_ex}
+
+Consider the following example, composed by a source program and its optimized version:
+
+\begin{tabbing}
+  \hspace{2cm}\= \textbf{Source Program (S)} \hspace{2cm} \= \textbf{Optimized Program (T)} \\ 
+  \> \emph{entry} \> \emph{entry} \\
+  \> \emph{  read x} \> \emph{  read x} \\
+  \> \emph{  y := x + 0} \> \emph{  z := x} \\
+  \> \emph{  z := y * 1} \> \emph{  write z} \\
+  \> \emph{  write z} \> \emph{exit} \\
+  \> \emph{exit} \> \emph{} 
+  \label{tabbing:cross_products_example_code}
+\end{tabbing}
+
+This example is small but enough to demonstrate the idea of cross-products in practice.
+The transformation removes trivial arithmetic that does not change the final result and represents, actually, two optimizations: constant folding (\emph{y := x + 0; z := y * 1} becomes \emph{y := x; z := y}) followed by dead code elimination (\emph{y := x; z := y} becomes \emph{z := x}).
+
+Let us now informally model each program as a small transition graph with locations (nodes) and labeled edges.
+We mark $read$ and $write$ as observable transitions, while assigns are internal but still visible to the cross-product as assignment labels.
+Consider the source program ($S$) nodes: $S_0$ = entry, $S_1$ = after read, $S_2$ = after \emph{y := x + 0}, $S_3$ = after \emph{z := y * 1}, $S_4$ = exit.
+Therefore, the edges of $S$ can be described as:
+\begin{tabbing}
+  \emph{($S_0$ $\rightarrow$ $S_1$): read(x)} \\
+  \emph{($S_1$ $\rightarrow$ $S_2$): y := x + 0} \\
+  \emph{($S_2$ $\rightarrow$ $S_3$): z := y * 1} \\
+  \emph{($S_3$ $\rightarrow$ $S_4$): write(z)}
+  \label{tabbing:cross_products_transitions_s}
+\end{tabbing}
+
+Consider now the optimized program ($T$) nodes: $T_0$ = entry, $T_1$ = after read, $T_2$ = after \emph{z := x}, $T_3$ = before write, $T_4$ = exit.
+$T$'s edges are the following:
+\begin{tabbing}
+  \emph{($T_0$ $\rightarrow$ $T_1$): read(x)} \\
+  \emph{($T_1$ $\rightarrow$ $T_2$): z := x} \\
+  \emph{($T_2$ $\rightarrow$ $T_3$): $\epsilon$} \\
+  \emph{($T_3$ $\rightarrow$ $T_4$): write(z)}
+  \label{tabbing:cross_products_example_transitions_t}
+\end{tabbing}
+
+The $\epsilon$ steps are inserted as needed to align executions, as one can see in the transition between $T_2$ and $T_3$.
+Next, we construct the comparison graph \emph{C = S $\boxtimes$ T}.
+The nodes of $C$ are pairs of the type $<S_i, T_j>$ that start at $<S_0, T_0>$.
+There are 3 types of edge pairing: we match reads with reads, writes with writes (and then check the written values) and assignments with assignments.
+Regarding assignments, we only match them when both sides are at corresponding cutpoints, otherwise we allow an assignment to pair with an $\epsilon$ on the other side (source or target waits).
+Therefore, the constructed comparison graph C contains paths that execute the two programs in lockstep, allowing $\epsilon$-padding where needed.
+We will now showcase this using the example.
+
+When we start, at $<S_0, T_0>$, we see that both programs have the same instruction, $read(x)$, so we add an edge labeled $(read(x); read(x))$ to $<S_1, T_1>$.
+At $<S_1, T_1>$, the next instruction of the source program is \emph{y := x + 0}, while in the optimized program the next command is \emph{z := x}.
+Since they are both assignments, we simply compose them as in the previous edge, resulting in the addition of an edge with the label \emph{(y := x+0 ; z := x)} to $<S_2, T_2>$.
+Note that even though the expressions differ syntactically, the edge-matching logic in the compose algorithm allows pairing assignment edges.
+Later, the invariant generator / solver will establish if they compute the same value or not.
+From $<S_2, T_2>$, we get another assignment from the source program \emph{z := y * 1} but a $\epsilon$ from the optimized program.
+According to rules, we can pair the source assignment with an $\epsilon$ on the target, making the target wait, so we add an edge labeled \emph{(z := y * 1; $\epsilon$)} to $<S_3, T_3>$.
+Finally, from $<S_3, T_3>$ there is a \emph{write(z)} in both programs, which means we add the last edge, with the label \emph{(write(z); write(z))}, to the exit pair $<S_4, T_4>$.
+
+--- TODO: INVARIANT NETWORK, etc ---
 
 
 \FloatBarrier
