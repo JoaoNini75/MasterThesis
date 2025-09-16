@@ -13,44 +13,79 @@
 
 
 \FloatBarrier
-\section{Why WhyRel?}
-\label{sec:whyrel_why}
+\section{From WhyRel to bip2ml}
+\label{sec:whyrel_to_bip2ml}
 
-
-
-\subsection{Differences and similarities of our approach}
-\label{subsec:whyrel_diff_simil}
-
-
-
+WhyRel describes a pratical approach to the verification of program equivalence based on product programs.
+It also provides a set of \hyperref[fig:translation-biprograms-rules]{rules} that guides the translation, in the case of WhyRel, from the biprograms language to WhyML.
+Its authors deeply explore the problems that pointer based programs bring to the table, but this is not an objetive of this thesis.
+Instead, we defined and formalized a programming language called $BipLang$.
+BipLang's main purpose is writing biprograms and was based on the biprograms language used in WhyRel's work.
+BipLang was designed to accept Gospel annotations and to be as similar as possible to OCaml in terms of syntax and semantics.
+We did that in order to allow programmers that are used to that language to verify the equivalence of their programs without needing to learn a new language or completely rewrite their code or specification.
+Then, we translate/transpile the biprograms using the rules defined by WhyRel's authors to produce Gospel-annotated OCaml code.
 
 
 \FloatBarrier
 \section{bip2ml}
 \label{sec:bip2ml}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[max width=\textwidth]{transpiler+cameleer_pipeline}
-  \caption{Architecture and verification pipeline of our transpiler and Cameleer}
-  \label{fig:transpiler_cameleer_pipeline}
-\end{figure}
+\FloatBarrier
+\subsection{Overview and architecture}
+\label{subsec:bip2ml_overview}
+
+$bip2ml$ is a transpiler that takes Gospel-annotated BipLang code and outputs Gospel-annotated OCaml code.
+This tool brings the contributions of WhyRel into the world of OCaml, Gospel and Cameleer.
+
+We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipeline]{integrates} with Cameleer.
+The users are expected to start with two programs and aim to formally verify that they are equivalent.
+The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary Gospel annotations.
+After that, the user feeds bip2ml that .bip file to bip2ml and the transpiler starts its work to output the OCaml + Gospel program.
+That file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[max width=\textwidth]{transpiler_pipeline}
-  \caption{Architecture and pipeline of bip2ml}
-  \label{fig:transpiler_pipeline}
+  \includegraphics[max width=\textwidth]{bip2ml+cameleer_pipeline}
+  \caption{Architecture and verification pipeline of bip2ml and Cameleer.}
+  \label{fig:bip2ml_cameleer_pipeline}
 \end{figure}
+
+The bip2ml transpiler is itself also a \hyperref[fig:bip2ml_cameleer_pipeline]{pipeline}, that takes the input through four phases / components before terminating.
+The first component is the lexer, which defines what are the keywords and tokens accepted by BipLang; if any error occurs during this phase, bip2ml outputs \emph{"lexical error"} to the terminal.
+We used ocamllex~\cite{ocamllex} to develop our lexer.
+Representing the second part of the transpiler, we have the parser, that takes the lexer's output and, by comparing it with the rules we define that are valid BipLang constructions, determines if the source code's structure is valid or not.
+If it is not, it outputs \emph{"syntax error"} to the terminal.
+To program the parser, we utilized Menhir~\cite{menhir}.
+The output of the parser is an AST, the BipLang AST, which is the input of the next phase: the translator.
+This component is the one responsible for translating the BipLang AST into the OCaml AST, according to the 8 rules defined by WhyRel; this phase does not fail.
+Finally, we named the last part of our transpiler the printer, since its function is to receive the OCaml AST from the translator and outputting to the terminal or to a file the final OCaml code with all the Gospel specifications.
+Both the translator and the printer were implemented using OCaml directly.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[max width=\textwidth]{bip2ml_pipeline}
+  \caption{Architecture and pipeline of bip2ml.}
+  \label{fig:bip2ml_pipeline}
+\end{figure}
+
+We also developed a VSCode extension that provides syntax highlighting for BipLang.
+Although it is dispensable, it certainly was extremely helpful during the whole development and testing of bip2ml, and it may also be a relevant aid to anyone that programs in BipLang.
+It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform}, since the syntax of OCaml and BipLang are nearly identical.
 
 
 \FloatBarrier
-\subsection{Language Definition}
+\subsection{BipLang: language definition}
 \label{subsec:lang_def}
 
-We now present the grammar of our language.
+BipLang's syntax, semantics and AST are very similar to OCaml's.
+Although BipLang implements the most common OCaml language constructions, there are definitely some missing, such as exceptions and object-oriented features.
+Taking that into consideration, it is also important to remember that, regarding the scope of this thesis, these constructions can not be seen as having a high priority or relevance.
+On the other hand, our language adds 3 constructions that are not present in OCaml: the pipe, the floors and the conditionally aligned loops.
+Their semantics are the same as in WhyRel's work.
+
+We now present the grammar of our language, BipLang.
 The syntaxes of the most relevant rules are given by the following extended BNF definition.
-Note that Biplang's keywords are written in bold.
+Note that Biplang's keywords are written in orange.
 
 \begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
                     emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
@@ -137,25 +172,206 @@ c ::=
 
 \end{lstlisting}
 
-explicar: id, idc, bt, at, payload, constructor, parameter, fun\_ret, c, case
+We simplified some things for the sake of readibility and there are some omissions in the grammar, which we will explain now.
+Firstly, we use $c$ to simply represent a constant.
+Additionally, notice that we use $id$ and $idc$.
+They both refer to identifiers but $id$ refers to an all lowercase identifier, while $idc$ stands for "capitalized id", so its first letter is capital.
+This is important to distinguish since module calls and type constructors, for example, use capitalized names, but lowercase identifiers are the standard for the names of variables and functions, among others.
+Next, we have to show the difference between $bt$ (bip type) and $at$ (any type).
+$bt$ represents the basic types (bool, int, string, none), but $at$ extends that definition to also allow $id$.
+This is useful, for example, when we have a parameter of a user-defined type:
 
-FALAR DAS DIFERENÇAS E SEMELHANÇAS ENTRE BIPLANG E OCAML
+\begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
+                    emphstyle=\ttfamily\bfseries\color{myorange}]
+type advanced_number = 
+	| Pos of int
+	| Neg of int
+	| Zero
+
+let example (an : advanced_number) : advanced_number = begin
+	(...)
+end
+\end{lstlisting}
+
+Otherwise, we would be limited to parameters and function returns of the basic types ($bt$).
+$parameter$ is pretty straightforward: it represents a parameter, with all its possible variations, having pipe, floors or none, explicitly saying its type or not.
+$fun\_ret$ is optional and represents what the function returns, allowing explicit or implicit type definition and also pipe, floors or none of them.
+$constructor$ represents the definition of a constructor within a type defintion and $payload$ represents a type definition that has no constructors:
+
+\begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
+                    emphstyle=\ttfamily\bfseries\color{myorange}]
+type constructors_example = 
+	| Pos of int
+	| Neg of int
+	| Zero
+
+type payload_example = int * bool * string
+\end{lstlisting}
+
+$case$ represents a case of the \emph{match...with} construction when we do pattern matching.
+It is constituted by two parts, a pattern and an expression.
+The pattern represents the structure that each case will compare against the "parameter" of the \emph{match...with} constructor, i.e, the left side of the arrow.
+The expression corresponds to what gets executed if a given case is the chosen one, i.e, the right side of the arrow:
+
+\begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
+                    emphstyle=\ttfamily\bfseries\color{myorange}]
+let case_example (x : int) : int = begin
+  match x with
+  | 0 -> 10
+  | 1 -> 11
+  | _ -> -1 
+end
+\end{lstlisting}
 
 
 \FloatBarrier
-\subsection{Translator}
-\label{subsec:translator}
+\subsection{Translator and printer}
+\label{subsec:translator_printer}
+
+Before we demonstrate how our translator and printer work by applying WhyRel's translation \hyperref[fig:translation-biprograms-rules]{rules}, there are some details about our printer that we want to make clear.
+Adding $\_l$ to the left side program and $\_r$ to the right side program was a printing choice that could be changed to anything the reader prefers when identifying to what program a given identifier belongs to.
+Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read.
+bip2ml effectively prints OCaml code respecting general good indentation practices.
+The choice of using 2 whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
+
+We will present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
+Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
+We will omit the Gospel specifications in these examples, since it is not our focus in this subsection and to avoid overloading the reader with too much information at the same time.
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{biplangenv}
 
 
-\FloatBarrier
-\subsubsection{Printer}
-\label{subsubsec:printer}
+let invert_bip (x : int) = begin
+  -x
+end
+(*@ *)
+
+let first_bip () = begin
+  let number = 1 <|> 1 in
+  let message = |_ "Hello" _| in
+  let res = invert_bip (3) in
+  res <|> res
+end
+(*@ *)
+    \end{biplangenv}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{gospel}
 
 
-\FloatBarrier
-\subsection{Syntax Highlighter}
-\label{subsec:syntax_highlighter}
+let invert_ocaml (x : int) =
+  -x 
+(*@ *)
 
+let first_ocaml () = begin
+  let number_l = 1 in
+  let number_r = 1 in
+  let message_l = "Hello" in
+  let message_r = "Hello" in
+  let res = invert_ocaml (3) in
+  (res_l, res_r)
+end
+(*@ *)
+    \end{gospel}
+  \end{subfigure}
+  \caption{Translation example for rules 1, 2, 3 and 5.}
+  \label{fig:trans_ex_first}
+\end{figure}
+
+Before we explain the translations line by line, there are two notices.
+The names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
+Also, observe that each line of $first\_bip$ represents a different rule and the first two also represent rule 5.
+
+The first line of code of that function, \emph{let number = 1 <|> 1 in}, uses rule 5 to rename the variables declared inside a $let...in$, with the same identifier and separated by a pipe.
+Therefore, in the OCaml version, we get the lines \emph{let number\_l = 1 in let number\_r = 1 in}.
+The next line, \emph{let message = |\_ "Hello" \_| in}, makes use of rule number 3 to translate the expression inside the floors into a pipe with two equal expressions on each side.
+This shows that every floor is a pipe, but not every pipe can be a floor.
+This happens because if we have $C_1 | C_2$ and $C_1 \neq C_2$, we cannot "transform" the pipe into a floored expression; otherwise, with $C_1 = C_2$, we would be able to establish that $C_1 | C_2$ is the same as $\lfloor C_1 \rfloor$.
+So, bip2ml internally translates the original line to \emph{let message = "Hello" <|> "Hello" in} and finally outputs \emph{let message\_l = "Hello" in let message\_r = "Hello" in}, as we can see in the OCaml code.
+Rule 2 is the next being used, since we have a function call: \emph{let res = invert\_bip (3) in}.
+NAO TAMOS A USAR A REGRA 2 BEM??? SE PASSARMOS UM IDENTIFICADOR QUE EXISTE PARA OS DOIS PROGRAMAS, O QUE ACONTECE? DUPLICA SE A CHAMADA PARA CADA ARG?
+In this situation, the output is no different from the input.
+Finally, in the last line of $first\_bip$, \emph{res <|> res}, we utilized rule 1, which translates two expressions separated by a pipe into two sequential expressions in general.
+In this particular case, however, since this is the value returned by the function, it returns them as a binary tuple, with the adequate identifier renaming: \emph{(res\_l, res\_r)}.
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{biplangenv}
+
+      
+let second_bip (|_c : bool _|,
+  n : int) : |_int_| = begin
+
+  if |_c_| 
+  then begin |_1_| end
+  else begin 
+    let i = |_ ref 0 _| in
+    let res = |_ ref 0 _| in
+
+    while |_ !i < n _| do
+      i := |_ !i + 1 _|;
+      res := |_ !res * !i _|
+    done;
+
+    |_ !res _|
+  end
+end
+    \end{biplangenv}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+    \noindent
+    \begin{gospel}
+
+
+let second_ocaml (c_l : bool)
+  (c_r : bool) (n_l : int)
+  (n_r : int) : int * int =
+
+  assert ( (c_l) = (c_r) );
+  if c_l
+  then begin 
+    (1, 1)
+  end else begin 
+    let i_l = ref (0) in
+    let i_r = ref (0) in
+    let res_l = ref (0) in
+    let res_r = ref (0) in
+
+    while (!i_l < n_l) do
+      i_l := (!i_l + 1);
+      i_r := (!i_r + 1);
+      res_l := (!res_l * !i_l);
+      res_r := (!res_r * !i_r)
+    done;
+
+    (!res_l, !res_r)
+  end
+    \end{gospel}
+  \end{subfigure}
+  \caption{Translation example for rules 4, 6 and 7.}
+  \label{fig:trans_ex_second}
+\end{figure}
+
+TODO: continue here
+Attent to the use of floors in the parameters and on the type returned by the function.
 
 
 
