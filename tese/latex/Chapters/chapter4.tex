@@ -233,13 +233,13 @@ end
 
 Before we demonstrate how our translator and printer work by applying WhyRel's translation \hyperref[fig:translation-biprograms-rules]{rules}, there are some details about our printer that we want to make clear.
 Adding $\_l$ to the left side program and $\_r$ to the right side program was a printing choice that could be changed to anything the reader prefers when identifying to what program a given identifier belongs to.
-Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read.
+Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read, but only to fit .
 bip2ml effectively prints OCaml code respecting general good indentation practices.
 The choice of using 2 whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
 
 We will present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
 Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
-We will omit the Gospel specifications in these examples, since it is not our focus in this subsection and to avoid overloading the reader with too much information at the same time.
+We will omit the necessary Gospel specifications to prove these examples, since it is not our focus in this subsection.
 
 \begin{figure}[h]
   \centering
@@ -253,7 +253,6 @@ We will omit the Gospel specifications in these examples, since it is not our fo
 let invert_bip (x : int) = begin
   -x
 end
-(*@ *)
 
 let first_bip () = begin
   let number = 1 <|> 1 in
@@ -261,7 +260,6 @@ let first_bip () = begin
   let res = invert_bip (3) in
   res <|> res
 end
-(*@ *)
     \end{biplangenv}
   \end{subfigure}
   \hfill
@@ -272,8 +270,7 @@ end
 
 
 let invert_ocaml (x : int) =
-  -x 
-(*@ *)
+  -x
 
 let first_ocaml () = begin
   let number_l = 1 in
@@ -283,7 +280,6 @@ let first_ocaml () = begin
   let res = invert_ocaml (3) in
   (res_l, res_r)
 end
-(*@ *)
     \end{gospel}
   \end{subfigure}
   \caption{Translation example for rules 1, 2, 3 and 5.}
@@ -356,6 +352,8 @@ let second_ocaml (c_l : bool)
     let res_r = ref (0) in
 
     while (!i_l < n_l) do
+      (*@ invariant ((!i_l < n_l)) 
+                 <-> ((!i_r < n_r))*)
       i_l := (!i_l + 1);
       i_r := (!i_r + 1);
       res_l := (!res_l * !i_l);
@@ -367,11 +365,101 @@ let second_ocaml (c_l : bool)
     \end{gospel}
   \end{subfigure}
   \caption{Translation example for rules 4, 6 and 7.}
-  \label{fig:trans_ex_second}
+  \label{fig:trans-ex-second}
 \end{figure}
 
-TODO: continue here
-Attent to the use of floors in the parameters and on the type returned by the function.
+Moving on to the \hyperref[fig:trans-ex-second]{second} example, attent to the use of floors in the parameters and on the type returned by the second\_bip function.
+The first statements indicate the use of an \emph{if...then...else} block of code, which is translated by rule 6.
+Firstly, the rule introduces an assertion that makes the program fail its execution if the condition is not evaluated equally in both sides.
+After that, we use one of the conditions, in this case, WhyRel authors chose the left side one, but we could use the right side condition, since we just established that they are equal.
+The \emph{then} and \emph{else} branches will then get recursively translated, so we get this translated code: \emph{assert ( (c\_l) = (c\_r) ); if c\_l then begin (...) end else begin (...) end}. 
+Next, inside the \emph{else} there is a while loop, which is translated following rule number 7.
+Similarly to the \emph{if...then...else} block, we ignore the right side condition and use the left side one to limit the loop execution.
+However, contrary to the assertion used in rule 6, here a loop invariant is added so we guarantee that the condition on both sides is always evaluated to the same value during the whole execution of the \emph{while}.
+The body of the cycle will then get recursively translated, which gets us the following translated code (and specification): \emph{while (!i\_l < n\_l) do (*@ invariant ((!i\_l < n\_l)) <-> ((!i\_r < n\_r))*) (...) done}.
+Finally, we get to see rule 4 applied to the statements inside the while loop, translating sequential instructions in the BipLang program through the recursive transformation of individual instructions that are composed in sequence.
+The code lines we are mentioning are these: \emph{i := |\_ !i + 1 \_|; res := |\_ !res * !i \_|}.
+In practice, there is not a visual outcome of this rule, but, since we also are here applying rule 3 because of the floors, the output looks like this: \emph{i\_l := (!i\_l + 1); i\_r := (!i\_r + 1); res\_l := (!res\_l * !i\_l); res\_r := (!res\_r * !i\_r)}.
+
+\begin{figure}[h]
+  \centering
+
+  \begin{subfigure}[t]{\textwidth}
+    \noindent
+    \begin{biplangenv}
+
+
+let counting_bip (|_ target : int _|, |_ mult_of _|) : |_ int _| = begin
+  
+  let counter = |_ ref 0 _| in
+
+  while (!counter < target) <|> (!counter < target) .
+        (!counter mod mult_of = 0) <|> (!counter mod mult_of = 0) do
+    counter := |_ !counter + 1 _|
+  done;
+
+  |_ !counter _|
+end
+    \end{biplangenv}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[t]{\textwidth}
+    \centering
+    \noindent
+    \begin{gospel}
+
+
+let counting_ocaml (target_l : int) (target_r : int) (mult_of_l)
+  (mult_of_r) : int * int =
+
+  let counter_l = ref (0) in
+  let counter_r = ref (0) in
+
+  while ((!counter_l < target_l) || (!counter_r < target_r)) do
+    (*@ invariant  
+      (!counter_l < target_l && mod !counter_l mult_of_l = 0) ||
+      (!counter_r < target_r && mod !counter_r mult_of_r = 0) ||
+      (not (!counter_l < target_l) && not (!counter_r < target_r)) ||
+      (!counter_l < target_l && !counter_r < target_r) *)
+    
+    if ((!counter_l < target_l) && ((!counter_l mod mult_of_l) = 0))
+    then begin 
+      counter_l := (!counter_l + 1)
+    end else begin 
+      if ((!counter_r < target_r) && ((!counter_r mod mult_of_r) = 0))
+      then begin 
+        counter_r := (!counter_r + 1)
+      end else begin 
+        counter_l := (!counter_l + 1);
+        counter_r := (!counter_r + 1)
+      end
+    end
+  done;
+
+  (!counter_l, !counter_r)
+    \end{gospel}
+  \end{subfigure}
+  \caption{Translation example for rule 8.}
+  \label{fig:trans-ex-third}
+\end{figure}
+
+Let us look now at the \hyperref[fig:trans-ex-third]{third} and last example.
+This one showcases the use of rule 8, that translates conditionally aligned loops.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
