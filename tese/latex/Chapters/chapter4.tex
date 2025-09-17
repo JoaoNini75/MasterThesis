@@ -8,7 +8,7 @@
 
 \typeout{NT FILE chapter4.tex}%
 
-\chapter{Methodology}
+\chapter{From Biprograms to OCaml -- Methodology and Tool}
 \label{cha:methodology}
 
 
@@ -135,6 +135,7 @@ expr ::=
             | e != e
             | e && e
             | e || e 
+            | e ^ e
             | let id = e in $\overrightarrow{e}$
             | if e then e else e
             | for id = e to e do spec? e done 
@@ -254,11 +255,18 @@ let invert_bip (x : int) = begin
   -x
 end
 
+let triple_bip (|_ s : string _|,
+  n) = begin
+  |_ s ^ s ^ s _|
+end
+
 let first_bip () = begin
   let number = 1 <|> 1 in
   let message = |_ "Hello" _| in
-  let res = invert_bip (3) in
-  res <|> res
+  let app_res = invert_bip (3) in
+  let triple_res = |_ triple_bip
+    (message, number) _| in
+  message <|> message
 end
     \end{biplangenv}
   \end{subfigure}
@@ -272,35 +280,45 @@ end
 let invert_ocaml (x : int) =
   -x
 
-let first_ocaml () = begin
+let triple_ocaml (s_l : string)
+  (s_r : string) (n_l) (n_r) =
+  (((s_l ^ s_l) ^ s_l),
+   ((s_r ^ s_r) ^ s_r))
+
+let first_ocaml () =
   let number_l = 1 in
   let number_r = 1 in
   let message_l = "Hello" in
   let message_r = "Hello" in
-  let res = invert_ocaml (3) in
-  (res_l, res_r)
-end
+  let app_res = invert_bip (3) in
+  let triple_res = triple_bip
+    (message_l) (message_r)
+    (number_l) (number_r) in
+  (message_l, message_r)
     \end{gospel}
   \end{subfigure}
   \caption{Translation example for rules 1, 2, 3 and 5.}
   \label{fig:trans_ex_first}
 \end{figure}
 
-Before we explain the translations line by line, there are two notices.
-The names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
-Also, observe that each line of $first\_bip$ represents a different rule and the first two also represent rule 5.
+Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
 
-The first line of code of that function, \emph{let number = 1 <|> 1 in}, uses rule 5 to rename the variables declared inside a $let...in$, with the same identifier and separated by a pipe.
+The first line of code of \hyperref[fig:trans_ex_first]{$first\_bip$}, \emph{let number = 1 <|> 1 in}, uses rule 5 to rename the variables declared inside a $let...in$, with the same identifier and separated by a pipe.
 Therefore, in the OCaml version, we get the lines \emph{let number\_l = 1 in let number\_r = 1 in}.
+
 The next line, \emph{let message = |\_ "Hello" \_| in}, makes use of rule number 3 to translate the expression inside the floors into a pipe with two equal expressions on each side.
 This shows that every floor is a pipe, but not every pipe can be a floor.
 This happens because if we have $C_1 | C_2$ and $C_1 \neq C_2$, we cannot "transform" the pipe into a floored expression; otherwise, with $C_1 = C_2$, we would be able to establish that $C_1 | C_2$ is the same as $\lfloor C_1 \rfloor$.
 So, bip2ml internally translates the original line to \emph{let message = "Hello" <|> "Hello" in} and finally outputs \emph{let message\_l = "Hello" in let message\_r = "Hello" in}, as we can see in the OCaml code.
-Rule 2 is the next being used, since we have a function call: \emph{let res = invert\_bip (3) in}.
-NAO TAMOS A USAR A REGRA 2 BEM??? SE PASSARMOS UM IDENTIFICADOR QUE EXISTE PARA OS DOIS PROGRAMAS, O QUE ACONTECE? DUPLICA SE A CHAMADA PARA CADA ARG?
-In this situation, the output is no different from the input.
-Finally, in the last line of $first\_bip$, \emph{res <|> res}, we utilized rule 1, which translates two expressions separated by a pipe into two sequential expressions in general.
-In this particular case, however, since this is the value returned by the function, it returns them as a binary tuple, with the adequate identifier renaming: \emph{(res\_l, res\_r)}.
+
+The third line of $first\_bip$ is a binding to a function call: \emph{let res = invert\_bip (3) in}.
+In this case, no rule is being used since the function call is not inside floors, therefore the input and output are the same.
+However, in the next line, \emph{let triple\_res = |\_ triple\_bip (message, number) \_| in}, that is case, so rule 2 is applied here.
+This rule interpolates the arguments of the function call so that we get the first argument for the left side, then that same argument for the right side, and all the other possible other ones, respecting the order defined in the biprogram and interpolating the left and right sides.
+So, we get the output \emph{let triple\_res = triple\_bip (message\_l) (message\_r) (number\_l) (number\_r) in}.
+
+Finally, in the last line of $first\_bip$, \emph{message <|> message}, we utilized rule 1, which translates two expressions separated by a pipe into two sequential expressions in general.
+In this particular case, however, since this is the value returned by the function, it returns them as a binary tuple, with the adequate identifier renaming: \emph{(message\_l, message\_r)}.
 
 \begin{figure}[h]
   \centering
@@ -390,7 +408,6 @@ In practice, there is not a visual outcome of this rule, but, since we also are 
 
 
 let counting_bip (|_ target : int _|, |_ mult_of _|) : |_ int _| = begin
-  
   let counter = |_ ref 0 _| in
 
   while (!counter < target) <|> (!counter < target) .
@@ -445,9 +462,15 @@ let counting_ocaml (target_l : int) (target_r : int) (mult_of_l)
 
 Let us look now at the \hyperref[fig:trans-ex-third]{third} and last example.
 This one showcases the use of rule 8, that translates conditionally aligned loops.
+This rules takes as input a while loop with two alignment guards and outputs a while loop with a complex predictable invariant and an adapted body.
 
+The invariant's structure is defined by the rule, varying only in the values that each expression is evaluated to.
+Nevertheless, our transpiler allows the user to add Gospel specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
 
-
+The body becomes a \emph{if...then...else if...then...else} block, so there are three possible outcomes for each iteration of the cycle.
+The first occurs when the loop condition for the left program and the left aligment guard are both evaluated to true, therefore executing only the instructions that refer to the left side.
+The second branch works in a very similar way to the previous, but applied to the right side program.
+The third case happens when the loop condition (on the left side) is respected but none of the alignment guards are, resulting in the execution of all the instructions inside the original biprogram's cycle.
 
 
 

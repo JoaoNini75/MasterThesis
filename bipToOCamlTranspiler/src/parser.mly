@@ -15,7 +15,7 @@
 %token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW CONCAT PREPEND
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
-%token PLUS MINUS TIMES DIV MOD
+%token PLUS MINUS TIMES DIV MOD CONCAT_STR
 
 /* priorities and associativities */
 %nonassoc ARROW
@@ -31,7 +31,7 @@
 %right CONCAT
 %right PREPEND
 %left PLUS MINUS
-%left TIMES DIV MOD
+%left TIMES DIV MOD CONCAT_STR
 %nonassoc CASE
 %nonassoc unary_minus
 %nonassoc REF DEREF
@@ -341,14 +341,15 @@ bip_type:
 ;
 
 %inline binop:
-| PLUS      { Badd }
-| MINUS     { Bsub }
-| TIMES     { Bmul }
-| DIV       { Bdiv }
-| MOD       { Bmod }
-| c=CMP     { c    }
-| LOGICAND  { Band }
-| LOGICOR   { Bor  }
+| PLUS          { Badd }
+| MINUS         { Bsub }
+| TIMES         { Bmul }
+| DIV           { Bdiv }
+| MOD           { Bmod }
+| c=CMP         { c    }
+| LOGICAND      { Band }
+| LOGICOR       { Bor  }
+| CONCAT_STR    { Bconcat }
 ;
 
 ident:

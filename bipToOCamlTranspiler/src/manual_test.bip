@@ -1,11 +1,18 @@
-let counting_bip (|_ target : int _|, |_ multiple_of _|) : |_ int _| = begin
-  let counter = |_ ref 0 _| in
-
-  while (!counter < target) <|> (!counter < target) .
-        (!counter mod multiple_of = 0) <|> (!counter mod multiple_of = 0) do
-    counter := |_ !counter + 1 _|
-  done;
-
-  |_ !counter _|
+let invert_bip (x : int) = begin
+  -x
 end
-(*@ *)
+(*@*)
+
+let triple_bip (|_ s : string _|) = begin
+  |_ s ^ s ^ s _|
+end
+(*@*)
+
+let first_bip () = begin
+  let number = 1 <|> 1 in
+  let message = |_ "Hello" _| in
+  let app_res = invert_bip (3) in
+  let triple_res = |_ triple_bip (message) _| in
+  message <|> message
+end
+(*@*)

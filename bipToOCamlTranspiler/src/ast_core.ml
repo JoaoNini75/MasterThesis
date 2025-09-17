@@ -32,9 +32,9 @@ type unop =
   | Uderef  (* !e *)
 
 type binop =
-  | Badd | Bsub | Bmul | Bdiv | Bmod    (* + - * / mod *)
-  | Beq | Bneq | Blt | Ble | Bgt | Bge  (* = <> < <= > >= *)
-  | Band | Bor | Beqphy | Bneqphy       (* && || == != *)
+  | Badd | Bsub | Bmul | Bdiv | Bmod        (* + - * / mod *)
+  | Beq | Bneq | Blt | Ble | Bgt | Bge      (* = <> < <= > >= *)
+  | Band | Bor | Beqphy | Bneqphy | Bconcat (* && || == != ^ *)
 
 type constant =
   | Cnone

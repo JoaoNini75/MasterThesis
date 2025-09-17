@@ -108,12 +108,13 @@ rule next_tokens = parse
   | ":="    { ASSIGN }
   | "!"     { DEREF }
   | "()"    { UNIT }
-
   | '|'     { CASE }  
+
   | "<|>"   { PIPE }     
   | "|_"    { LFLOOR }      
   | "_|"    { RFLOOR }      
   | "."     { DOT }
+
   | "->"    { ARROW }
   | "_"     { WILDCARD }
   | "["     { LSQBR }
@@ -121,6 +122,7 @@ rule next_tokens = parse
   | "<-"    { INVARROW }
   | "@"     { CONCAT }
   | "::"    { PREPEND }
+  | "^"     { CONCAT_STR }
 
   | eof     { EOF }
   | _ as c  { raise (Lexing_error ("Illegal character: " ^ String.make 1 c)) }
@@ -251,6 +253,7 @@ and string = parse
     | INVARROW -> fprintf fmt "<-"
     | CONCAT -> fprintf fmt "@"
     | PREPEND -> fprintf fmt "::"
+    | CONCAT_STR -> fprintf fmt "^"
 
   let () =
     let fname = Sys.argv.(1) in

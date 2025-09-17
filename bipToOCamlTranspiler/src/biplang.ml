@@ -101,6 +101,7 @@ let get_binop_str (binop : binop) =
   | Bor -> "||"
   | Beqphy -> "=="
   | Bneqphy -> "!=" 
+  | Bconcat -> "^"
 
 let get_type_str bt =
   match bt with
@@ -145,6 +146,19 @@ let remove_whitespace s =
   ) s;
   
   Buffer.contents b
+
+let rec interpolate_aux l1 l2 add_left =
+  if add_left then 
+    match l1 with
+    | [] -> l2
+    | h :: t -> h :: (interpolate_aux t l2 false)
+  else
+    match l2 with
+    | [] -> l1
+    | h :: t -> h :: (interpolate_aux l1 t true)
+
+let interpolate_lists l1 l2 =
+  interpolate_aux l1 l2 true
 
 let indent depth =
   String.make (depth * indent_spaces) ' '
@@ -308,6 +322,14 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
 
   | Ebinop (op, e1, e2) -> 
     Obinop (op, (bip_to_ml e1 id_side gen_side), (bip_to_ml e2 id_side gen_side))
+
+  | Elet (ident, Efloor (Eapp (id, el)), body) ->
+      Olet (
+        ident,
+        Oapp (id, interpolate_lists
+          (List.map (fun e -> bip_to_ml e (Some Left) gen_side) el)
+          (List.map (fun e -> bip_to_ml e (Some Right) gen_side) el)),
+        bip_to_ml body None gen_side) 
 
   | Elet (ident, Efloor e, body) ->
     ( match gen_side with
@@ -602,7 +624,12 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     (* rev because of the way ppd elems are collected in the parser *)
     Olist_prepend (List.rev ppdl,
       List.map (fun ld -> bip_to_ml_list_def ld id_side gen_side) ldl)
-     
+
+  | Efloor (Eapp (id, el)) ->
+    Oapp (id, interpolate_lists 
+      (List.map (fun e -> bip_to_ml e (Some Left) gen_side) el)
+      (List.map (fun e -> bip_to_ml e (Some Right) gen_side) el))
+
   | Efloor e -> bip_to_ml (Epipe (e, e)) None gen_side 
   
   | Epipe (e1, e2) -> 

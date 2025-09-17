@@ -1,23 +1,18 @@
-let pow_major (target_l : int) (target_r : int) (multiple_of_l) (multiple_of_r) : int * int =
-  let counter_l = ref (0) in
-  let counter_r = ref (0) in
+let invert_bip (x : int) =
+  -x
 
-  while ((!counter_l < target_l) || (!counter_r < target_r)) do
-    (*@ invariant (!counter_l < target_l && mod !counter_l multiple_of_l = 0) || (!counter_r < target_r && mod !counter_r multiple_of_r = 0) || (not (!counter_l < target_l) && not (!counter_r < target_r)) || (!counter_l < target_l && !counter_r < target_r) *)
-    if ((!counter_l < target_l) && ((!counter_l mod multiple_of_l) = 0))
-    then begin 
-      counter_l := (!counter_l + 1)
-    end else begin 
-      if ((!counter_r < target_r) && ((!counter_r mod multiple_of_r) = 0))
-      then begin 
-        counter_r := (!counter_r + 1)
-      end else begin 
-        counter_l := (!counter_l + 1);
-        counter_r := (!counter_r + 1)
-      end
-    end
-  done;
 
-  (!counter_l, !counter_r)
-(*@ *)
+let triple_bip (s_l : string) (s_r : string) =
+  (((s_l ^ s_l) ^ s_l), ((s_r ^ s_r) ^ s_r))
+
+
+let first_bip () =
+  let number_l = 1 in
+  let number_r = 1 in
+  let message_l = "Hello" in
+  let message_r = "Hello" in
+  let app_res = invert_bip (3) in
+  let triple_res = triple_bip (message_l) (message_r) in
+  (message_l, message_r)
+
 
