@@ -26,7 +26,7 @@ and expr =
   | Ecst of           constant
   | Eunop of          unop * expr
   | Ebinop of         binop * expr * expr
-  | Elet of           ident * expr * expr
+  | Elet of           ident option * ident * expr * expr
   | Eletpipe of       ident * expr * ident * expr * expr
   | Efun of           ident * bool (* rec *) * parameter list * fun_ret * expr list * spec * expr
   | Eapp of           ident * expr list

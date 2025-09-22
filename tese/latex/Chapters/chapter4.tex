@@ -31,11 +31,12 @@ Then, we translate/transpile the biprograms using the rules defined by WhyRel's 
 \label{sec:bip2ml}
 
 \FloatBarrier
-\subsection{Overview and architecture}
+\subsection{Overview and Architecture}
 \label{subsec:bip2ml_overview}
 
 $bip2ml$ is a transpiler that takes Gospel-annotated BipLang code and outputs Gospel-annotated OCaml code.
 This tool brings the contributions of WhyRel into the world of OCaml, Gospel and Cameleer.
+All of the work done on this thesis is available at https://github.com/JoaoNini75/MasterThesis, which includes bip2ml's code, this thesis' LateX code and others.
 
 We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipeline]{integrates} with Cameleer.
 The users are expected to start with two programs and aim to formally verify that they are equivalent.
@@ -67,6 +68,9 @@ Both the translator and the printer were implemented using OCaml directly.
   \caption{Architecture and pipeline of bip2ml.}
   \label{fig:bip2ml_pipeline}
 \end{figure}
+
+bip2ml was tested with several examples that were separated into different files depending on the features they target.
+These tests were automated using Dune~\cite{dune}.
 
 We also developed a VSCode extension that provides syntax highlighting for BipLang.
 Although it is dispensable, it certainly was extremely helpful during the whole development and testing of bip2ml, and it may also be a relevant aid to anyone that programs in BipLang.
@@ -229,8 +233,11 @@ end
 
 
 \FloatBarrier
-\subsection{Translator and printer}
+\subsection{Translator and Printer}
 \label{subsec:translator_printer}
+
+\subsubsection{Design Choices and Implementation Details}
+\label{subsubsec:translator_printer_details}
 
 Before we demonstrate how our translator and printer work by applying WhyRel's translation \hyperref[fig:translation-biprograms-rules]{rules}, there are some details about our printer that we want to make clear.
 Adding $\_l$ to the left side program and $\_r$ to the right side program was a printing choice that could be changed to anything the reader prefers when identifying to what program a given identifier belongs to.
@@ -238,9 +245,26 @@ Additionally, it is relevant to mention that the output code you will read below
 bip2ml effectively prints OCaml code respecting general good indentation practices.
 The choice of using 2 whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
 
+As a way to make the Gospel specifications coherent with the generated OCaml code and make sure which variable the user refers to, we require the user to write the specification using $\_l$ when reasoning about the left side and $\_r$ for the right side.
+Additionally, as a parser design choice, we also require that each function has a Gospel specification immediately after its declaration.
+If you do not want to write the specification in a given moment but want bip2ml to execute without a parsing error, you can simply do the following:
+\begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
+                    emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
+                    emphstyle=\ttfamily\bfseries\color{myorange}]
+let your_function () = begin
+  (your code...)
+end
+(*@*)
+\end{lstlisting}
+
+
+\subsubsection{Demonstrating translation through examples}
+\label{subsubsec:translator_printer_examples}
+
 We will present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
 Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
 We will omit the necessary Gospel specifications to prove these examples, since it is not our focus in this subsection.
+Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
 
 \begin{figure}[h]
   \centering
@@ -300,8 +324,6 @@ let first_ocaml () =
   \caption{Translation example for rules 1, 2, 3 and 5.}
   \label{fig:trans_ex_first}
 \end{figure}
-
-Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
 
 The first line of code of \hyperref[fig:trans_ex_first]{$first\_bip$}, \emph{let number = 1 <|> 1 in}, uses rule 5 to rename the variables declared inside a $let...in$, with the same identifier and separated by a pipe.
 Therefore, in the OCaml version, we get the lines \emph{let number\_l = 1 in let number\_r = 1 in}.

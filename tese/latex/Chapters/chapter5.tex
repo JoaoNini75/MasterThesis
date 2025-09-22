@@ -19,18 +19,12 @@
 \chapter{Case Studies}
 \label{cha:case_studies}
 
-In this chapter, we showcase several case studies that we used to explore the capabilities of the transpiler developed in this thesis.
-We start by analyzing case studies in which BipLang has no significant difference from other programming languages other than syntax.
-Then, we present some examples of what BipLang adds that OCaml cannot do.
-Finally, we focus on case studies that are more complex and, therefore, demonstrate the real potential of our tool.
-TODO: WRITE PROOF AND ADD ITS BENCHMARK FOR ALL OF THE CODE EXAMPLES. 
+In this chapter, we showcase several case studies that demonstrate the capabilities of the tool developed in this thesis.
+We start by presenting some examples of what BipLang adds that OCaml cannot do.
+Then, we focus on case studies that are more complex and, therefore, demonstrate the real potential of bip2ml.
 
 
-\section{The Foundations}
-\label{sec:foundations}
 
-This section lists some simple programs that could be written in any other 
-programming language, but shows how it is done in BipLang.
 
 %Multiplies two non-negative numbers using nested loops.
 \begin{figure}
@@ -63,7 +57,7 @@ programming language, but shows how it is done in BipLang.
       ensures  result = n * m *)
 \end{biplangenv}
 \end{minipage}
-\caption{Using nested loops to multiply two (non-negative) numbers (BipLang)}
+\caption{Using nested loops to multiply two (non-negative) numbers (BipLang).}
 \end{figure}
 % TODO: put more space
 
@@ -95,7 +89,7 @@ programming language, but shows how it is done in BipLang.
       ensures  result = n * m *)
 \end{gospel}
 \end{minipage}
-\caption{Using nested loops to multiply two (non-negative) numbers (OCaml)}
+\caption{Using nested loops to multiply two (non-negative) numbers (OCaml).}
 \end{figure}
 
 \begin{table}[!h]
@@ -130,7 +124,7 @@ programming language, but shows how it is done in BipLang.
  & \explanation{VC for mult\_ocaml} & \valid{0.03} \\ 
 \hline 
 \end{tabular}
-\caption{Multiply two (non-negative) numbers (OCaml) verification results}
+\caption{Multiply two (non-negative) numbers (OCaml) verification results.}
 \end{center}
 \end{table}
 
@@ -169,7 +163,7 @@ programming language, but shows how it is done in BipLang.
       ensures x < 0 -> result = x * 2 *)
 \end{biplangenv}
 \end{minipage}
-\caption{The match, assert and type constructions (BipLang)}
+\caption{The match, assert and type constructions (BipLang).}
 \end{figure}
 % TODO: put more space
 
@@ -209,7 +203,7 @@ programming language, but shows how it is done in BipLang.
       ensures x < 0 -> result = x * 2 *)
 \end{gospel}
 \end{minipage}
-\caption{The match, assert and type constructions (OCaml)}
+\caption{The match, assert and type constructions (OCaml).}
 \end{figure}
 % TODO: put more space
 
@@ -227,7 +221,7 @@ programming language, but shows how it is done in BipLang.
  & \explanation{postcondition} & \valid{0.05} \\ 
 \hline
 \end{tabular}
-\caption{The match, assert and type constructions (OCaml) verification results}
+\caption{The match, assert and type constructions (OCaml) verification results.}
 \end{center}
 \end{table}
 
@@ -250,7 +244,7 @@ programming language, but shows how it is done in BipLang.
   (*@ ensures result = 50 * arg *)  
 \end{biplangenv}
 \end{minipage}
-\caption{Nested functions and function applying (BipLang)}
+\caption{Nested functions and function applying (BipLang).}
 \end{figure}
 % TODO: put more space
 
@@ -269,7 +263,7 @@ programming language, but shows how it is done in BipLang.
   (*@ ensures result = 50 * arg *)  
 \end{gospel}
 \end{minipage}
-\caption{Nested functions and function applying (OCaml)}
+\caption{Nested functions and function applying (OCaml).}
 \end{figure}
 % TODO: put more space
 
@@ -283,7 +277,7 @@ programming language, but shows how it is done in BipLang.
  & \explanation{postcondition} & \valid{0.03} \\ 
 \hline
 \end{tabular}
-\caption{Nested functions and function applying (OCaml) verification results}
+\caption{Nested functions and function applying (OCaml) verification results.}
 \end{center}
 \end{table}
 
@@ -311,7 +305,7 @@ We also present our tool outputs so we can compare the differences between writi
                 (l_res = r_res && l_res = x_l * 100) *)
 \end{biplangenv}
 \end{minipage}
-\caption{Showcasing the use of the pipe symbol (BipLang)}
+\caption{Showcasing the use of the pipe symbol (BipLang).}
 \end{figure}
 
 \begin{figure}
@@ -330,7 +324,7 @@ We also present our tool outputs so we can compare the differences between writi
                 (l_res = r_res && l_res = x_l * 100) *)
 \end{gospel}
 \end{minipage}
-\caption{Showcasing the use of the pipe symbol (OCaml)}
+\caption{Showcasing the use of the pipe symbol (OCaml).}
 \end{figure}
 
 \begin{table}[!h]
@@ -341,7 +335,7 @@ We also present our tool outputs so we can compare the differences between writi
 \explanation{VC for pipe\_ocaml}  & \explanation{postcondition} & \valid{0.03} \\ 
 \hline
 \end{tabular}
-\caption{Showcasing the use of the pipe symbol (OCaml) verification results}
+\caption{Showcasing the use of the pipe symbol (OCaml) verification results.}
 \end{center}
 \end{table}
 
@@ -369,7 +363,7 @@ We also present our tool outputs so we can compare the differences between writi
                   else arg1_l * 2 - arg2_l)) *)
 \end{biplangenv}
 \end{minipage}
-\caption{Demonstrating the use of the floor symbols (BipLang)}
+\caption{Demonstrating the use of the floor symbols (BipLang).}
 \end{figure}
 
 \begin{figure}
@@ -398,7 +392,7 @@ We also present our tool outputs so we can compare the differences between writi
                   else arg1_l * 2 - arg2_l)) *)
 \end{gospel}
 \end{minipage}
-\caption{Demonstrating the use of the floor symbols (OCaml)}
+\caption{Demonstrating the use of the floor symbols (OCaml).}
 \end{figure}
 
 \begin{table}[!h]
@@ -411,22 +405,20 @@ We also present our tool outputs so we can compare the differences between writi
  & \explanation{postcondition} & \valid{0.05} \\ 
 \hline
 \end{tabular}
-\caption{Demonstrating the use of the floor symbols (OCaml) verification results}
+\caption{Demonstrating the use of the floor symbols (OCaml) verification results.}
 \end{center}
 \end{table}
 
 
 \FloatBarrier
-\section{Demonstrating the Usefulness}
+\section{Real World Cases}
 \label{sec:usefulness}
 
 This section illustrates the applicability of our tool through some more complex examples.
 As we did in the previous section, we present these programs written in BipLang versus OCaml.
 
-LIST: mais?
-factiter, gcditer, inducvarstrengthred, condalignloops, condalignloopsnested
-
-REFERENCIAR FIGURE 3.4 COM O CODIGO ORIGINAL DA inducvarstrengthred
+The first example is a common compiler optimization, the induction variable strength reduction.
+Recall the source, optimized and product \hyperref[fig:induction_var_strength_red]{programs}, presented earlier.
 
 \begin{figure}
 \begin{minipage}{\linewidth}
@@ -456,7 +448,7 @@ REFERENCIAR FIGURE 3.4 COM O CODIGO ORIGINAL DA inducvarstrengthred
       ensures  match result with (l_res, r_res) -> l_res = r_res *) 
 \end{biplangenv}
 \end{minipage}
-\caption{Induction variable strength reduction (BipLang)}
+\caption{Induction variable strength reduction (BipLang).}
 \end{figure}
 
 \begin{figure}
@@ -493,8 +485,25 @@ REFERENCIAR FIGURE 3.4 COM O CODIGO ORIGINAL DA inducvarstrengthred
       ensures  match result with (l_res, r_res) -> l_res = r_res *)
 \end{gospel}
 \end{minipage}
-\caption{Induction variable strength reduction (OCaml)}
+\caption{Induction variable strength reduction (OCaml).}
 \end{figure}
+
+We start by initializing the $i$, $j$ and $x$ variables.
+We use the floors for $i$ and $x$, since both sides of the program bind to them the same value (\emph{ref 0}, for both variables).
+To initialize $j$, on the other hand, we use the pipe, since one side binds to it \emph{ref 0} and the other \emph{ref c}.
+
+We then have the main part of the program: the floored while loop.
+The condition of the cycle indicates that as long as \emph{!i < n} is true for both left and right, it keeps executing.
+This gets translated to only the left side condition and the first invariant in the loop of the generated program, automatically introduced by our tool.
+The other invariants and the variant had to be added by us.
+Then, inside the loop, we have two assignments to different identifiers, which explains the slightly different syntax of the form \emph{id1 := value1 <|> id2 := value2}.
+The last instruction of the while is an equal assign to both sides of the program.
+
+Finally, we return the value inside the $x$ reference, for the left and right sides equally, which gets translated to the return of a binary tuple.
+The pre-conditions and post-conditions are also provided by the user.
+In this case, we are simply saying that agreement on the input results in agreement of the output.
+
+Regarding the proof duration, CVC5 was able to discharge all VCs automatically in 0.37 seconds.
 
 \begin{table}[!h]
 \begin{center}
@@ -526,11 +535,12 @@ REFERENCIAR FIGURE 3.4 COM O CODIGO ORIGINAL DA inducvarstrengthred
  & \explanation{postcondition} & \valid{0.03} \\ 
 \hline
 \end{tabular}
-\caption{Induction variable strength reduction (OCaml) verification results}
+\caption{Induction variable strength reduction (OCaml) verification results.}
 \end{center}
 \end{table}
 
 
+The second real world example is not exactly a proof of equivalence, but rather a proof that the left program's output is always larger than the right side program's output, given the same inputs and \emph{x >= 4}.
 REFERENCIAR FIGURE DO CODIGO DOS 
 condalignloops DA SECCAO DO WHYREL
 
@@ -569,7 +579,7 @@ condalignloops DA SECCAO DO WHYREL
       ensures  match result with (l_res, r_res) -> l_res > r_res *)  
 \end{biplangenv}
 \end{minipage}
-\caption{Conditionally aligned loops (BipLang)}
+\caption{Conditionally aligned loops (BipLang).}
 \end{figure}
 % TODO: put more space
 
@@ -645,7 +655,7 @@ condalignloops DA SECCAO DO WHYREL
       ensures  match result with (l_res, r_res) -> l_res > r_res *) 
 \end{gospel}
 \end{minipage}
-\caption{Conditionally aligned loops (OCaml)}
+\caption{Conditionally aligned loops (OCaml).}
 \end{figure}
 % TODO: put more space
 
@@ -653,7 +663,7 @@ condalignloops DA SECCAO DO WHYREL
 \begin{center}
 
 \end{tabular}
-\caption{Conditionally aligned loops (OCaml) verification results}
+\caption{Conditionally aligned loops (OCaml) verification results.}
 \end{center}
 \end{table}
 \fi

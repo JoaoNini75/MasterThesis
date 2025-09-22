@@ -8,13 +8,13 @@ file' -> . file [ # ]
 -- On SPEC shift to state 31
 -- On OPEN shift to state 32
 -- On LET shift to state 34
--- On INCLUDE shift to state 288
--- On type_def shift to state 290
--- On spec shift to state 291
--- On list(decl) shift to state 292
--- On file shift to state 294
--- On def_outer shift to state 295
--- On decl shift to state 296
+-- On INCLUDE shift to state 297
+-- On type_def shift to state 299
+-- On spec shift to state 300
+-- On list(decl) shift to state 301
+-- On file shift to state 303
+-- On def_outer shift to state 304
+-- On decl shift to state 305
 ## Reductions:
 -- On EOF
 --   reduce production list(decl) ->
@@ -34,10 +34,10 @@ State 2:
 ## Known stack suffix:
 ## IDENT
 ## LR(1) items:
-ident -> IDENT . [ WITH UNIT TYPE TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PREPEND PLUS PIPE OPEN MOD MINUS LP LOGICOR LOGICAND LET INCLUDE IN IDENT EQUAL EOF END DOT DONE DO DIV CONCAT_STR CONCAT COMMA COLON CMP CASE ASSIGN ARROW AND ]
+ident -> IDENT . [ WITH UNIT TYPE TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PREPEND PLUS PIPE OPEN MOD MINUS LP LOGICOR LOGICAND LET INCLUDE IN IDENT EQUAL EOF END DOT DONE DO DIV CONCAT_STR COMMA COLON CMP CASE AT ASSIGN ARROW AND ]
 ## Transitions:
 ## Reductions:
--- On WITH UNIT TYPE TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PREPEND PLUS PIPE OPEN MOD MINUS LP LOGICOR LOGICAND LET INCLUDE IN IDENT EQUAL EOF END DOT DONE DO DIV CONCAT_STR CONCAT COMMA COLON CMP CASE ASSIGN ARROW AND
+-- On WITH UNIT TYPE TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PREPEND PLUS PIPE OPEN MOD MINUS LP LOGICOR LOGICAND LET INCLUDE IN IDENT EQUAL EOF END DOT DONE DO DIV CONCAT_STR COMMA COLON CMP CASE AT ASSIGN ARROW AND
 --   reduce production ident -> IDENT
 
 State 3:
@@ -401,7 +401,7 @@ def_outer -> LET . ident param_list option(fun_ret) EQUAL block spec [ TYPE SPEC
 ## Transitions:
 -- On REC shift to state 35
 -- On IDENT shift to state 2
--- On ident shift to state 282
+-- On ident shift to state 291
 ## Reductions:
 
 State 35:
@@ -828,7 +828,7 @@ State 71:
 def_outer -> LET REC ident param_list option(fun_ret) EQUAL . block spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On BEGIN shift to state 72
--- On block shift to state 280
+-- On block shift to state 289
 ## Reductions:
 
 State 72:
@@ -863,7 +863,7 @@ block -> BEGIN . block_core END [ TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR P
 -- On ident shift to state 150
 -- On expr shift to state 210
 -- On def_inner shift to state 156
--- On block_core shift to state 278
+-- On block_core shift to state 287
 ## Reductions:
 
 State 73:
@@ -897,7 +897,7 @@ expr -> WHILE . expr PIPE expr DOT expr PIPE expr DO option(spec) block_core DON
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 263
+-- On expr shift to state 272
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -941,7 +941,7 @@ expr -> REF . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 262
+-- On expr shift to state 271
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -975,7 +975,7 @@ expr -> NOT . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 261
+-- On expr shift to state 270
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -1009,7 +1009,7 @@ expr -> MINUS . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MIN
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 260
+-- On expr shift to state 269
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -1039,8 +1039,8 @@ State 80:
 expr -> MATCH ident WITH . case_list [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On CASE shift to state 81
--- On case_list shift to state 257
--- On case shift to state 259
+-- On case_list shift to state 266
+-- On case shift to state 268
 ## Reductions:
 
 State 81:
@@ -1057,11 +1057,11 @@ case -> CASE . pattern ARROW expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS
 -- On separated_nonempty_list(PREPEND,pattern_elem) shift to state 96
 -- On pattern_elem shift to state 97
 -- On pattern shift to state 100
--- On list_ptrn_prepend shift to state 252
--- On list_ptrn_fixed_len shift to state 253
--- On ident_cap shift to state 254
+-- On list_ptrn_prepend shift to state 261
+-- On list_ptrn_fixed_len shift to state 262
+-- On ident_cap shift to state 263
 -- On ident shift to state 90
--- On array_ptrn shift to state 256
+-- On array_ptrn shift to state 265
 ## Reductions:
 
 State 82:
@@ -1308,7 +1308,7 @@ case -> CASE pattern ARROW . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 251
+-- On expr shift to state 260
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -1317,7 +1317,7 @@ State 102:
 ## LSQBR
 ## LR(1) items:
 expr -> LSQBR . CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-list_std -> LSQBR . loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_std -> LSQBR . loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -1335,7 +1335,7 @@ list_std -> LSQBR . loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR [ TO 
 -- On FOR shift to state 115
 -- On DEREF shift to state 118
 -- On CST shift to state 119
--- On CASE shift to state 247
+-- On CASE shift to state 256
 -- On ASSERT shift to state 121
 -- On two_plus_tuple shift to state 123
 -- On separated_nonempty_list(SEMICOLON,expr) shift to state 126
@@ -1384,7 +1384,7 @@ two_plus_tuple -> LP . expr COMMA loption(separated_nonempty_list(COMMA,expr)) R
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 242
+-- On expr shift to state 251
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -1418,7 +1418,7 @@ expr -> LFLOOR . expr RFLOOR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 240
+-- On expr shift to state 249
 -- On def_inner shift to state 156
 ## Reductions:
 
@@ -1428,12 +1428,14 @@ State 105:
 ## LR(1) items:
 def_inner -> LET . REC ident param_list option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 def_inner -> LET . ident param_list option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET . LSQBR AT ident RSQBR ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> LET . ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> LET . ident EQUAL expr PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On REC shift to state 106
+-- On LSQBR shift to state 222
 -- On IDENT shift to state 2
--- On ident shift to state 222
+-- On ident shift to state 231
 ## Reductions:
 
 State 106:
@@ -1748,7 +1750,7 @@ prepend_seq -> prepend_seq . prepend_elem [ LSQBR IDENT CST ]
 -- On LSQBR shift to state 125
 -- On IDENT shift to state 2
 -- On CST shift to state 197
--- On separated_nonempty_list(CONCAT,list_def) shift to state 133
+-- On separated_nonempty_list(AT,list_def) shift to state 133
 -- On prepend_elem shift to state 198
 -- On list_std shift to state 134
 -- On list_def shift to state 135
@@ -1760,7 +1762,7 @@ State 125:
 ## Known stack suffix:
 ## LSQBR
 ## LR(1) items:
-list_std -> LSQBR . loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_std -> LSQBR . loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -1818,7 +1820,7 @@ State 128:
 ## Known stack suffix:
 ## LSQBR loption(separated_nonempty_list(SEMICOLON,expr))
 ## LR(1) items:
-list_std -> LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) . RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_std -> LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) . RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 -- On RSQBR shift to state 129
 ## Reductions:
@@ -1827,10 +1829,10 @@ State 129:
 ## Known stack suffix:
 ## LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR
 ## LR(1) items:
-list_std -> LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_std -> LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 ## Reductions:
--- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE
+-- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT
 --   reduce production list_std -> LSQBR loption(separated_nonempty_list(SEMICOLON,expr)) RSQBR
 
 State 130:
@@ -1838,32 +1840,32 @@ State 130:
 ## list_std
 ## LR(1) items:
 expr -> list_std . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-list_def -> list_std . [ CONCAT ]
+list_def -> list_std . [ AT ]
 ## Transitions:
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> list_std
--- On CONCAT
+-- On AT
 --   reduce production list_def -> list_std
 
 State 131:
 ## Known stack suffix:
 ## list_def
 ## LR(1) items:
-expr -> list_def . CONCAT list_concat [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> list_def . AT list_concat [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On CONCAT shift to state 132
+-- On AT shift to state 132
 ## Reductions:
 
 State 132:
 ## Known stack suffix:
-## list_def CONCAT
+## list_def AT
 ## LR(1) items:
-expr -> list_def CONCAT . list_concat [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> list_def AT . list_concat [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On LSQBR shift to state 125
 -- On IDENT shift to state 2
--- On separated_nonempty_list(CONCAT,list_def) shift to state 133
+-- On separated_nonempty_list(AT,list_def) shift to state 133
 -- On list_std shift to state 134
 -- On list_def shift to state 135
 -- On list_concat shift to state 139
@@ -1872,45 +1874,45 @@ expr -> list_def CONCAT . list_concat [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR 
 
 State 133:
 ## Known stack suffix:
-## separated_nonempty_list(CONCAT,list_def)
+## separated_nonempty_list(AT,list_def)
 ## LR(1) items:
-list_concat -> separated_nonempty_list(CONCAT,list_def) . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+list_concat -> separated_nonempty_list(AT,list_def) . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
---   reduce production list_concat -> separated_nonempty_list(CONCAT,list_def)
+--   reduce production list_concat -> separated_nonempty_list(AT,list_def)
 
 State 134:
 ## Known stack suffix:
 ## list_std
 ## LR(1) items:
-list_def -> list_std . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_def -> list_std . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 ## Reductions:
--- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE
+-- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT
 --   reduce production list_def -> list_std
 
 State 135:
 ## Known stack suffix:
 ## list_def
 ## LR(1) items:
-separated_nonempty_list(CONCAT,list_def) -> list_def . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-separated_nonempty_list(CONCAT,list_def) -> list_def . CONCAT separated_nonempty_list(CONCAT,list_def) [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+separated_nonempty_list(AT,list_def) -> list_def . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+separated_nonempty_list(AT,list_def) -> list_def . AT separated_nonempty_list(AT,list_def) [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On CONCAT shift to state 136
+-- On AT shift to state 136
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
---   reduce production separated_nonempty_list(CONCAT,list_def) -> list_def
+--   reduce production separated_nonempty_list(AT,list_def) -> list_def
 
 State 136:
 ## Known stack suffix:
-## list_def CONCAT
+## list_def AT
 ## LR(1) items:
-separated_nonempty_list(CONCAT,list_def) -> list_def CONCAT . separated_nonempty_list(CONCAT,list_def) [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+separated_nonempty_list(AT,list_def) -> list_def AT . separated_nonempty_list(AT,list_def) [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On LSQBR shift to state 125
 -- On IDENT shift to state 2
--- On separated_nonempty_list(CONCAT,list_def) shift to state 137
+-- On separated_nonempty_list(AT,list_def) shift to state 137
 -- On list_std shift to state 134
 -- On list_def shift to state 135
 -- On ident shift to state 138
@@ -1918,33 +1920,33 @@ separated_nonempty_list(CONCAT,list_def) -> list_def CONCAT . separated_nonempty
 
 State 137:
 ## Known stack suffix:
-## list_def CONCAT separated_nonempty_list(CONCAT,list_def)
+## list_def AT separated_nonempty_list(AT,list_def)
 ## LR(1) items:
-separated_nonempty_list(CONCAT,list_def) -> list_def CONCAT separated_nonempty_list(CONCAT,list_def) . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+separated_nonempty_list(AT,list_def) -> list_def AT separated_nonempty_list(AT,list_def) . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
---   reduce production separated_nonempty_list(CONCAT,list_def) -> list_def CONCAT separated_nonempty_list(CONCAT,list_def)
+--   reduce production separated_nonempty_list(AT,list_def) -> list_def AT separated_nonempty_list(AT,list_def)
 
 State 138:
 ## Known stack suffix:
 ## ident
 ## LR(1) items:
-list_def -> ident . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_def -> ident . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 ## Transitions:
 ## Reductions:
--- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE
+-- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT
 --   reduce production list_def -> ident
 
 State 139:
 ## Known stack suffix:
-## list_def CONCAT list_concat
+## list_def AT list_concat
 ## LR(1) items:
-expr -> list_def CONCAT list_concat . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> list_def AT list_concat . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
---   reduce production expr -> list_def CONCAT list_concat
+--   reduce production expr -> list_def AT list_concat
 
 State 140:
 ## Known stack suffix:
@@ -2007,7 +2009,7 @@ expr -> ident . ASSIGN expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CON
 expr -> ident . app_body [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR COMMA CMP ]
 expr -> ident . DOT LP expr RP [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR COMMA CMP ]
 expr -> ident . DOT LP expr RP INVARROW expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR COMMA CMP ]
-list_def -> ident . [ CONCAT ]
+list_def -> ident . [ AT ]
 prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
 tuple -> LP ident . RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ARROW ]
 ## Transitions:
@@ -2021,7 +2023,7 @@ tuple -> LP ident . RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD M
 ## Reductions:
 -- On TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR COMMA CMP
 --   reduce production expr -> ident
--- On CONCAT
+-- On AT
 --   reduce production list_def -> ident
 
 State 143:
@@ -2130,7 +2132,7 @@ expr -> ident . ASSIGN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE 
 expr -> ident . app_body [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> ident . DOT LP expr RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> ident . DOT LP expr RP INVARROW expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-list_def -> ident . [ CONCAT ]
+list_def -> ident . [ AT ]
 prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
 ## Transitions:
 -- On UNIT shift to state 143
@@ -2142,7 +2144,7 @@ prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> ident
--- On CONCAT
+-- On AT
 --   reduce production list_def -> ident
 
 State 151:
@@ -3286,12 +3288,12 @@ State 200:
 ## Known stack suffix:
 ## ident
 ## LR(1) items:
-list_def -> ident . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE ]
+list_def -> ident . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT ]
 prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
 ## Transitions:
 -- On PREPEND shift to state 145
 ## Reductions:
--- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR CONCAT COMMA CMP CASE
+-- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE AT
 --   reduce production list_def -> ident
 
 State 201:
@@ -3709,149 +3711,56 @@ option(fun_ret) -> fun_ret . [ EQUAL ]
 
 State 222:
 ## Known stack suffix:
-## LET ident
+## LET LSQBR
 ## LR(1) items:
-def_inner -> LET ident . param_list option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident . EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident . EQUAL expr PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR . AT ident RSQBR ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On UNIT shift to state 37
--- On LP shift to state 38
--- On EQUAL shift to state 223
--- On param_list shift to state 233
+-- On AT shift to state 223
 ## Reductions:
 
 State 223:
 ## Known stack suffix:
-## LET ident EQUAL
+## LET LSQBR AT
 ## LR(1) items:
-expr -> LET ident EQUAL . expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident EQUAL . expr PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR AT . ident RSQBR ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On WHILE shift to state 73
--- On UNIT shift to state 74
--- On REF shift to state 75
--- On NOT shift to state 76
--- On MINUS shift to state 77
--- On MATCH shift to state 78
--- On LSQBR shift to state 102
--- On LP shift to state 103
--- On LFLOOR shift to state 104
--- On LET shift to state 105
--- On IF shift to state 114
--- On IDENT_CAP shift to state 10
 -- On IDENT shift to state 2
--- On FOR shift to state 115
--- On DEREF shift to state 118
--- On CST shift to state 119
--- On ASSERT shift to state 121
--- On two_plus_tuple shift to state 123
--- On prepend_seq shift to state 124
--- On prepend_elem shift to state 127
--- On list_std shift to state 130
--- On list_def shift to state 131
--- On ident_cap shift to state 140
--- On ident shift to state 150
--- On expr shift to state 224
--- On def_inner shift to state 156
+-- On ident shift to state 224
 ## Reductions:
 
 State 224:
 ## Known stack suffix:
-## LET ident EQUAL expr
+## LET LSQBR AT ident
 ## LR(1) items:
-expr -> expr . PLUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . MINUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . TIMES expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . DIV expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . MOD expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . CMP expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . LOGICAND expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . LOGICOR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> expr . CONCAT_STR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> LET ident EQUAL expr . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident EQUAL expr . PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> LET LSQBR AT ident . RSQBR ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On TIMES shift to state 154
--- On PLUS shift to state 160
--- On PIPE shift to state 225
--- On MOD shift to state 162
--- On MINUS shift to state 168
--- On LOGICOR shift to state 172
--- On LOGICAND shift to state 176
--- On IN shift to state 231
--- On DIV shift to state 164
--- On CONCAT_STR shift to state 166
--- On CMP shift to state 174
+-- On RSQBR shift to state 225
 ## Reductions:
 
 State 225:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE
+## LET LSQBR AT ident RSQBR
 ## LR(1) items:
-expr -> LET ident EQUAL expr PIPE . ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr PIPE . expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> LET LSQBR AT ident RSQBR . ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On WHILE shift to state 73
--- On UNIT shift to state 74
--- On REF shift to state 75
--- On NOT shift to state 76
--- On MINUS shift to state 77
--- On MATCH shift to state 78
--- On LSQBR shift to state 102
--- On LP shift to state 103
--- On LFLOOR shift to state 104
--- On LET shift to state 105
--- On IF shift to state 114
--- On IDENT_CAP shift to state 10
 -- On IDENT shift to state 2
--- On FOR shift to state 115
--- On DEREF shift to state 118
--- On CST shift to state 119
--- On ASSERT shift to state 121
--- On two_plus_tuple shift to state 123
--- On prepend_seq shift to state 124
--- On prepend_elem shift to state 127
--- On list_std shift to state 130
--- On list_def shift to state 131
--- On ident_cap shift to state 140
 -- On ident shift to state 226
--- On expr shift to state 171
--- On def_inner shift to state 156
 ## Reductions:
 
 State 226:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE ident
+## LET LSQBR AT ident RSQBR ident
 ## LR(1) items:
-expr -> ident . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> LET ident EQUAL expr PIPE ident . EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> ident . ASSIGN expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> ident . app_body [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> ident . DOT LP expr RP [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> ident . DOT LP expr RP INVARROW expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-list_def -> ident . [ CONCAT ]
-prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
+expr -> LET LSQBR AT ident RSQBR ident . EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On UNIT shift to state 143
--- On PREPEND shift to state 145
--- On LP shift to state 146
 -- On EQUAL shift to state 227
--- On DOT shift to state 151
--- On ASSIGN shift to state 178
--- On app_body shift to state 180
 ## Reductions:
--- On TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP
---   reduce production expr -> ident
--- On CONCAT
---   reduce production list_def -> ident
 
 State 227:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE ident EQUAL
+## LET LSQBR AT ident RSQBR ident EQUAL
 ## LR(1) items:
-expr -> LET ident EQUAL expr PIPE ident EQUAL . expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR AT ident RSQBR ident EQUAL . expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -3883,7 +3792,7 @@ expr -> LET ident EQUAL expr PIPE ident EQUAL . expr IN expr [ TO TIMES THEN SEM
 
 State 228:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE ident EQUAL expr
+## LET LSQBR AT ident RSQBR ident EQUAL expr
 ## LR(1) items:
 expr -> expr . PLUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
 expr -> expr . MINUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
@@ -3894,7 +3803,7 @@ expr -> expr . CMP expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONC
 expr -> expr . LOGICAND expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
 expr -> expr . LOGICOR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
 expr -> expr . CONCAT_STR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
-expr -> LET ident EQUAL expr PIPE ident EQUAL expr . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR AT ident RSQBR ident EQUAL expr . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
 ## Transitions:
 -- On TIMES shift to state 154
@@ -3912,9 +3821,9 @@ expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CON
 
 State 229:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE ident EQUAL expr IN
+## LET LSQBR AT ident RSQBR ident EQUAL expr IN
 ## LR(1) items:
-expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR AT ident RSQBR ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -3946,7 +3855,7 @@ expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN . expr [ TO TIMES THEN SEM
 
 State 230:
 ## Known stack suffix:
-## LET ident EQUAL expr PIPE ident EQUAL expr IN expr
+## LET LSQBR AT ident RSQBR ident EQUAL expr IN expr
 ## LR(1) items:
 expr -> expr . PLUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> expr . MINUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
@@ -3957,7 +3866,7 @@ expr -> expr . CMP expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD 
 expr -> expr . LOGICAND expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> expr . LOGICOR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> expr . CONCAT_STR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET LSQBR AT ident RSQBR ident EQUAL expr IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On TIMES shift to state 154
@@ -3972,13 +3881,28 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On CMP shift to state 174
 ## Reductions:
 -- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
---   reduce production expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN expr
+--   reduce production expr -> LET LSQBR AT ident RSQBR ident EQUAL expr IN expr
 
 State 231:
 ## Known stack suffix:
-## LET ident EQUAL expr IN
+## LET ident
 ## LR(1) items:
-expr -> LET ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+def_inner -> LET ident . param_list option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident . EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident . EQUAL expr PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On UNIT shift to state 37
+-- On LP shift to state 38
+-- On EQUAL shift to state 232
+-- On param_list shift to state 242
+## Reductions:
+
+State 232:
+## Known stack suffix:
+## LET ident EQUAL
+## LR(1) items:
+expr -> LET ident EQUAL . expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident EQUAL . expr PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -4004,25 +3928,150 @@ expr -> LET ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 232
+-- On expr shift to state 233
 -- On def_inner shift to state 156
 ## Reductions:
 
-State 232:
+State 233:
 ## Known stack suffix:
-## LET ident EQUAL expr IN expr
+## LET ident EQUAL expr
 ## LR(1) items:
-expr -> expr . PLUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . MINUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . TIMES expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . DIV expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . MOD expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . CMP expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . LOGICAND expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . LOGICOR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . CONCAT_STR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> LET ident EQUAL expr IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . PLUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . MINUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . TIMES expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . DIV expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . MOD expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . CMP expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . LOGICAND expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . LOGICOR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . CONCAT_STR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> LET ident EQUAL expr . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident EQUAL expr . PIPE ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+## Transitions:
+-- On TIMES shift to state 154
+-- On PLUS shift to state 160
+-- On PIPE shift to state 234
+-- On MOD shift to state 162
+-- On MINUS shift to state 168
+-- On LOGICOR shift to state 172
+-- On LOGICAND shift to state 176
+-- On IN shift to state 240
+-- On DIV shift to state 164
+-- On CONCAT_STR shift to state 166
+-- On CMP shift to state 174
+## Reductions:
+
+State 234:
+## Known stack suffix:
+## LET ident EQUAL expr PIPE
+## LR(1) items:
+expr -> LET ident EQUAL expr PIPE . ident EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr PIPE . expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+## Transitions:
+-- On WHILE shift to state 73
+-- On UNIT shift to state 74
+-- On REF shift to state 75
+-- On NOT shift to state 76
+-- On MINUS shift to state 77
+-- On MATCH shift to state 78
+-- On LSQBR shift to state 102
+-- On LP shift to state 103
+-- On LFLOOR shift to state 104
+-- On LET shift to state 105
+-- On IF shift to state 114
+-- On IDENT_CAP shift to state 10
+-- On IDENT shift to state 2
+-- On FOR shift to state 115
+-- On DEREF shift to state 118
+-- On CST shift to state 119
+-- On ASSERT shift to state 121
+-- On two_plus_tuple shift to state 123
+-- On prepend_seq shift to state 124
+-- On prepend_elem shift to state 127
+-- On list_std shift to state 130
+-- On list_def shift to state 131
+-- On ident_cap shift to state 140
+-- On ident shift to state 235
+-- On expr shift to state 171
+-- On def_inner shift to state 156
+## Reductions:
+
+State 235:
+## Known stack suffix:
+## LET ident EQUAL expr PIPE ident
+## LR(1) items:
+expr -> ident . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> LET ident EQUAL expr PIPE ident . EQUAL expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> ident . ASSIGN expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> ident . app_body [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> ident . DOT LP expr RP [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> ident . DOT LP expr RP INVARROW expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+list_def -> ident . [ AT ]
+prepend_elem -> ident . PREPEND [ LSQBR IDENT CST ]
+## Transitions:
+-- On UNIT shift to state 143
+-- On PREPEND shift to state 145
+-- On LP shift to state 146
+-- On EQUAL shift to state 236
+-- On DOT shift to state 151
+-- On ASSIGN shift to state 178
+-- On app_body shift to state 180
+## Reductions:
+-- On TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP
+--   reduce production expr -> ident
+-- On AT
+--   reduce production list_def -> ident
+
+State 236:
+## Known stack suffix:
+## LET ident EQUAL expr PIPE ident EQUAL
+## LR(1) items:
+expr -> LET ident EQUAL expr PIPE ident EQUAL . expr IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On WHILE shift to state 73
+-- On UNIT shift to state 74
+-- On REF shift to state 75
+-- On NOT shift to state 76
+-- On MINUS shift to state 77
+-- On MATCH shift to state 78
+-- On LSQBR shift to state 102
+-- On LP shift to state 103
+-- On LFLOOR shift to state 104
+-- On LET shift to state 105
+-- On IF shift to state 114
+-- On IDENT_CAP shift to state 10
+-- On IDENT shift to state 2
+-- On FOR shift to state 115
+-- On DEREF shift to state 118
+-- On CST shift to state 119
+-- On ASSERT shift to state 121
+-- On two_plus_tuple shift to state 123
+-- On prepend_seq shift to state 124
+-- On prepend_elem shift to state 127
+-- On list_std shift to state 130
+-- On list_def shift to state 131
+-- On ident_cap shift to state 140
+-- On ident shift to state 150
+-- On expr shift to state 237
+-- On def_inner shift to state 156
+## Reductions:
+
+State 237:
+## Known stack suffix:
+## LET ident EQUAL expr PIPE ident EQUAL expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . MINUS expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . TIMES expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . DIV expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . MOD expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . CMP expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . LOGICAND expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . LOGICOR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> expr . CONCAT_STR expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
+expr -> LET ident EQUAL expr PIPE ident EQUAL expr . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND IN DIV CONCAT_STR CMP ]
 ## Transitions:
 -- On TIMES shift to state 154
 -- On PLUS shift to state 160
@@ -4031,69 +4080,17 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
 -- On LOGICAND shift to state 176
+-- On IN shift to state 238
 -- On DIV shift to state 164
 -- On CONCAT_STR shift to state 166
 -- On CMP shift to state 174
 ## Reductions:
--- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
---   reduce production expr -> LET ident EQUAL expr IN expr
-
-State 233:
-## Known stack suffix:
-## LET ident param_list
-## LR(1) items:
-def_inner -> LET ident param_list . option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-## Transitions:
--- On COLON shift to state 59
--- On option(fun_ret) shift to state 234
--- On fun_ret shift to state 221
-## Reductions:
--- On EQUAL
---   reduce production option(fun_ret) ->
-
-State 234:
-## Known stack suffix:
-## LET ident param_list option(fun_ret)
-## LR(1) items:
-def_inner -> LET ident param_list option(fun_ret) . EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-## Transitions:
--- On EQUAL shift to state 235
-## Reductions:
-
-State 235:
-## Known stack suffix:
-## LET ident param_list option(fun_ret) EQUAL
-## LR(1) items:
-def_inner -> LET ident param_list option(fun_ret) EQUAL . block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-## Transitions:
--- On BEGIN shift to state 72
--- On block shift to state 236
-## Reductions:
-
-State 236:
-## Known stack suffix:
-## LET ident param_list option(fun_ret) EQUAL block
-## LR(1) items:
-def_inner -> LET ident param_list option(fun_ret) EQUAL block . spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-## Transitions:
--- On SPEC shift to state 31
--- On spec shift to state 237
-## Reductions:
-
-State 237:
-## Known stack suffix:
-## LET ident param_list option(fun_ret) EQUAL block spec
-## LR(1) items:
-def_inner -> LET ident param_list option(fun_ret) EQUAL block spec . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
-## Transitions:
--- On IN shift to state 238
-## Reductions:
 
 State 238:
 ## Known stack suffix:
-## LET ident param_list option(fun_ret) EQUAL block spec IN
+## LET ident EQUAL expr PIPE ident EQUAL expr IN
 ## LR(1) items:
-def_inner -> LET ident param_list option(fun_ret) EQUAL block spec IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On WHILE shift to state 73
 -- On UNIT shift to state 74
@@ -4125,6 +4122,185 @@ def_inner -> LET ident param_list option(fun_ret) EQUAL block spec IN . expr [ T
 
 State 239:
 ## Known stack suffix:
+## LET ident EQUAL expr PIPE ident EQUAL expr IN expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . MINUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . TIMES expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . DIV expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . MOD expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . CMP expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . LOGICAND expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . LOGICOR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . CONCAT_STR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On TIMES shift to state 154
+-- On PLUS shift to state 160
+-- On PIPE shift to state 170
+-- On MOD shift to state 162
+-- On MINUS shift to state 168
+-- On LOGICOR shift to state 172
+-- On LOGICAND shift to state 176
+-- On DIV shift to state 164
+-- On CONCAT_STR shift to state 166
+-- On CMP shift to state 174
+## Reductions:
+-- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
+--   reduce production expr -> LET ident EQUAL expr PIPE ident EQUAL expr IN expr
+
+State 240:
+## Known stack suffix:
+## LET ident EQUAL expr IN
+## LR(1) items:
+expr -> LET ident EQUAL expr IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On WHILE shift to state 73
+-- On UNIT shift to state 74
+-- On REF shift to state 75
+-- On NOT shift to state 76
+-- On MINUS shift to state 77
+-- On MATCH shift to state 78
+-- On LSQBR shift to state 102
+-- On LP shift to state 103
+-- On LFLOOR shift to state 104
+-- On LET shift to state 105
+-- On IF shift to state 114
+-- On IDENT_CAP shift to state 10
+-- On IDENT shift to state 2
+-- On FOR shift to state 115
+-- On DEREF shift to state 118
+-- On CST shift to state 119
+-- On ASSERT shift to state 121
+-- On two_plus_tuple shift to state 123
+-- On prepend_seq shift to state 124
+-- On prepend_elem shift to state 127
+-- On list_std shift to state 130
+-- On list_def shift to state 131
+-- On ident_cap shift to state 140
+-- On ident shift to state 150
+-- On expr shift to state 241
+-- On def_inner shift to state 156
+## Reductions:
+
+State 241:
+## Known stack suffix:
+## LET ident EQUAL expr IN expr
+## LR(1) items:
+expr -> expr . PLUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . MINUS expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . TIMES expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . DIV expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . MOD expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . CMP expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . LOGICAND expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . LOGICOR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . CONCAT_STR expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> LET ident EQUAL expr IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On TIMES shift to state 154
+-- On PLUS shift to state 160
+-- On PIPE shift to state 170
+-- On MOD shift to state 162
+-- On MINUS shift to state 168
+-- On LOGICOR shift to state 172
+-- On LOGICAND shift to state 176
+-- On DIV shift to state 164
+-- On CONCAT_STR shift to state 166
+-- On CMP shift to state 174
+## Reductions:
+-- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
+--   reduce production expr -> LET ident EQUAL expr IN expr
+
+State 242:
+## Known stack suffix:
+## LET ident param_list
+## LR(1) items:
+def_inner -> LET ident param_list . option(fun_ret) EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On COLON shift to state 59
+-- On option(fun_ret) shift to state 243
+-- On fun_ret shift to state 221
+## Reductions:
+-- On EQUAL
+--   reduce production option(fun_ret) ->
+
+State 243:
+## Known stack suffix:
+## LET ident param_list option(fun_ret)
+## LR(1) items:
+def_inner -> LET ident param_list option(fun_ret) . EQUAL block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On EQUAL shift to state 244
+## Reductions:
+
+State 244:
+## Known stack suffix:
+## LET ident param_list option(fun_ret) EQUAL
+## LR(1) items:
+def_inner -> LET ident param_list option(fun_ret) EQUAL . block spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On BEGIN shift to state 72
+-- On block shift to state 245
+## Reductions:
+
+State 245:
+## Known stack suffix:
+## LET ident param_list option(fun_ret) EQUAL block
+## LR(1) items:
+def_inner -> LET ident param_list option(fun_ret) EQUAL block . spec IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On SPEC shift to state 31
+-- On spec shift to state 246
+## Reductions:
+
+State 246:
+## Known stack suffix:
+## LET ident param_list option(fun_ret) EQUAL block spec
+## LR(1) items:
+def_inner -> LET ident param_list option(fun_ret) EQUAL block spec . IN expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On IN shift to state 247
+## Reductions:
+
+State 247:
+## Known stack suffix:
+## LET ident param_list option(fun_ret) EQUAL block spec IN
+## LR(1) items:
+def_inner -> LET ident param_list option(fun_ret) EQUAL block spec IN . expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
+## Transitions:
+-- On WHILE shift to state 73
+-- On UNIT shift to state 74
+-- On REF shift to state 75
+-- On NOT shift to state 76
+-- On MINUS shift to state 77
+-- On MATCH shift to state 78
+-- On LSQBR shift to state 102
+-- On LP shift to state 103
+-- On LFLOOR shift to state 104
+-- On LET shift to state 105
+-- On IF shift to state 114
+-- On IDENT_CAP shift to state 10
+-- On IDENT shift to state 2
+-- On FOR shift to state 115
+-- On DEREF shift to state 118
+-- On CST shift to state 119
+-- On ASSERT shift to state 121
+-- On two_plus_tuple shift to state 123
+-- On prepend_seq shift to state 124
+-- On prepend_elem shift to state 127
+-- On list_std shift to state 130
+-- On list_def shift to state 131
+-- On ident_cap shift to state 140
+-- On ident shift to state 150
+-- On expr shift to state 248
+-- On def_inner shift to state 156
+## Reductions:
+
+State 248:
+## Known stack suffix:
 ## LET ident param_list option(fun_ret) EQUAL block spec IN expr
 ## LR(1) items:
 def_inner -> LET ident param_list option(fun_ret) EQUAL block spec IN expr . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
@@ -4153,7 +4329,7 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
 --   reduce production def_inner -> LET ident param_list option(fun_ret) EQUAL block spec IN expr
 
-State 240:
+State 249:
 ## Known stack suffix:
 ## LFLOOR expr
 ## LR(1) items:
@@ -4170,7 +4346,7 @@ expr -> LFLOOR expr . RFLOOR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE
 expr -> expr . PIPE expr [ TIMES RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR CMP ]
 ## Transitions:
 -- On TIMES shift to state 154
--- On RFLOOR shift to state 241
+-- On RFLOOR shift to state 250
 -- On PLUS shift to state 160
 -- On PIPE shift to state 170
 -- On MOD shift to state 162
@@ -4182,7 +4358,7 @@ expr -> expr . PIPE expr [ TIMES RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV
 -- On CMP shift to state 174
 ## Reductions:
 
-State 241:
+State 250:
 ## Known stack suffix:
 ## LFLOOR expr RFLOOR
 ## LR(1) items:
@@ -4192,7 +4368,7 @@ expr -> LFLOOR expr RFLOOR . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> LFLOOR expr RFLOOR
 
-State 242:
+State 251:
 ## Known stack suffix:
 ## LP expr
 ## LR(1) items:
@@ -4211,21 +4387,21 @@ expr -> LP expr . RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MIN
 two_plus_tuple -> LP expr . COMMA loption(separated_nonempty_list(COMMA,expr)) RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On TIMES shift to state 154
--- On RP shift to state 243
+-- On RP shift to state 252
 -- On PLUS shift to state 160
 -- On PIPE shift to state 170
 -- On MOD shift to state 162
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
 -- On LOGICAND shift to state 176
--- On EQUAL shift to state 244
+-- On EQUAL shift to state 253
 -- On DIV shift to state 164
 -- On CONCAT_STR shift to state 166
 -- On COMMA shift to state 185
 -- On CMP shift to state 174
 ## Reductions:
 
-State 243:
+State 252:
 ## Known stack suffix:
 ## LP expr RP
 ## LR(1) items:
@@ -4235,7 +4411,7 @@ expr -> LP expr RP . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MIN
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> LP expr RP
 
-State 244:
+State 253:
 ## Known stack suffix:
 ## LP expr EQUAL
 ## LR(1) items:
@@ -4265,11 +4441,11 @@ expr -> LP expr EQUAL . expr RP [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS P
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 245
+-- On expr shift to state 254
 -- On def_inner shift to state 156
 ## Reductions:
 
-State 245:
+State 254:
 ## Known stack suffix:
 ## LP expr EQUAL expr
 ## LR(1) items:
@@ -4286,7 +4462,7 @@ expr -> expr . CONCAT_STR expr [ TIMES RP PLUS PIPE MOD MINUS LOGICOR LOGICAND D
 expr -> expr . PIPE expr [ TIMES RP PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT_STR CMP ]
 ## Transitions:
 -- On TIMES shift to state 154
--- On RP shift to state 246
+-- On RP shift to state 255
 -- On PLUS shift to state 160
 -- On PIPE shift to state 170
 -- On MOD shift to state 162
@@ -4298,7 +4474,7 @@ expr -> expr . PIPE expr [ TIMES RP PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CON
 -- On CMP shift to state 174
 ## Reductions:
 
-State 246:
+State 255:
 ## Known stack suffix:
 ## LP expr EQUAL expr RP
 ## LR(1) items:
@@ -4308,7 +4484,7 @@ expr -> LP expr EQUAL expr RP . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS P
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> LP expr EQUAL expr RP
 
-State 247:
+State 256:
 ## Known stack suffix:
 ## LSQBR CASE
 ## LR(1) items:
@@ -4335,7 +4511,7 @@ expr -> LSQBR CASE . loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR
 -- On separated_nonempty_list(SEMICOLON,expr) shift to state 126
 -- On prepend_seq shift to state 124
 -- On prepend_elem shift to state 127
--- On loption(separated_nonempty_list(SEMICOLON,expr)) shift to state 248
+-- On loption(separated_nonempty_list(SEMICOLON,expr)) shift to state 257
 -- On list_std shift to state 130
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
@@ -4346,25 +4522,25 @@ expr -> LSQBR CASE . loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR
 -- On CASE
 --   reduce production loption(separated_nonempty_list(SEMICOLON,expr)) ->
 
-State 248:
+State 257:
 ## Known stack suffix:
 ## LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr))
 ## LR(1) items:
 expr -> LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) . CASE RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On CASE shift to state 249
+-- On CASE shift to state 258
 ## Reductions:
 
-State 249:
+State 258:
 ## Known stack suffix:
 ## LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE
 ## LR(1) items:
 expr -> LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE . RSQBR [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On RSQBR shift to state 250
+-- On RSQBR shift to state 259
 ## Reductions:
 
-State 250:
+State 259:
 ## Known stack suffix:
 ## LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR
 ## LR(1) items:
@@ -4374,7 +4550,7 @@ expr -> LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR .
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> LSQBR CASE loption(separated_nonempty_list(SEMICOLON,expr)) CASE RSQBR
 
-State 251:
+State 260:
 ## Known stack suffix:
 ## CASE pattern ARROW expr
 ## LR(1) items:
@@ -4404,7 +4580,7 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On TO THEN SEMICOLON RSQBR RP RFLOOR IN EQUAL END DOT DONE DO COMMA CASE
 --   reduce production case -> CASE pattern ARROW expr
 
-State 252:
+State 261:
 ## Known stack suffix:
 ## list_ptrn_prepend
 ## LR(1) items:
@@ -4414,7 +4590,7 @@ pattern -> list_ptrn_prepend . [ ARROW ]
 -- On ARROW
 --   reduce production pattern -> list_ptrn_prepend
 
-State 253:
+State 262:
 ## Known stack suffix:
 ## list_ptrn_fixed_len
 ## LR(1) items:
@@ -4424,7 +4600,7 @@ pattern -> list_ptrn_fixed_len . [ ARROW ]
 -- On ARROW
 --   reduce production pattern -> list_ptrn_fixed_len
 
-State 254:
+State 263:
 ## Known stack suffix:
 ## ident_cap
 ## LR(1) items:
@@ -4433,13 +4609,13 @@ pattern -> ident_cap . tuple [ ARROW ]
 -- On LP shift to state 141
 -- On IDENT shift to state 2
 -- On two_plus_tuple shift to state 191
--- On tuple shift to state 255
+-- On tuple shift to state 264
 -- On ident shift to state 193
 ## Reductions:
 -- On ARROW
 --   reduce production tuple ->
 
-State 255:
+State 264:
 ## Known stack suffix:
 ## ident_cap tuple
 ## LR(1) items:
@@ -4449,7 +4625,7 @@ pattern -> ident_cap tuple . [ ARROW ]
 -- On ARROW
 --   reduce production pattern -> ident_cap tuple
 
-State 256:
+State 265:
 ## Known stack suffix:
 ## array_ptrn
 ## LR(1) items:
@@ -4459,7 +4635,7 @@ pattern -> array_ptrn . [ ARROW ]
 -- On ARROW
 --   reduce production pattern -> array_ptrn
 
-State 257:
+State 266:
 ## Known stack suffix:
 ## MATCH ident WITH case_list
 ## LR(1) items:
@@ -4467,12 +4643,12 @@ case_list -> case_list . case [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIP
 expr -> MATCH ident WITH case_list . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
 -- On CASE shift to state 81
--- On case shift to state 258
+-- On case shift to state 267
 ## Reductions:
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP
 --   reduce production expr -> MATCH ident WITH case_list
 
-State 258:
+State 267:
 ## Known stack suffix:
 ## case_list case
 ## LR(1) items:
@@ -4482,7 +4658,7 @@ case_list -> case_list case . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIP
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production case_list -> case_list case
 
-State 259:
+State 268:
 ## Known stack suffix:
 ## case
 ## LR(1) items:
@@ -4492,7 +4668,7 @@ case_list -> case . [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINU
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production case_list -> case
 
-State 260:
+State 269:
 ## Known stack suffix:
 ## MINUS expr
 ## LR(1) items:
@@ -4512,7 +4688,7 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> MINUS expr
 
-State 261:
+State 270:
 ## Known stack suffix:
 ## NOT expr
 ## LR(1) items:
@@ -4539,7 +4715,7 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On TO THEN SEMICOLON RSQBR RP RFLOOR PIPE LOGICOR LOGICAND IN EQUAL END DOT DONE DO COMMA CASE
 --   reduce production expr -> NOT expr
 
-State 262:
+State 271:
 ## Known stack suffix:
 ## REF expr
 ## LR(1) items:
@@ -4559,7 +4735,7 @@ expr -> expr . PIPE expr [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> REF expr
 
-State 263:
+State 272:
 ## Known stack suffix:
 ## WHILE expr
 ## LR(1) items:
@@ -4578,18 +4754,18 @@ expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DO DIV CON
 ## Transitions:
 -- On TIMES shift to state 154
 -- On PLUS shift to state 160
--- On PIPE shift to state 264
+-- On PIPE shift to state 273
 -- On MOD shift to state 162
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
 -- On LOGICAND shift to state 176
--- On DO shift to state 274
+-- On DO shift to state 283
 -- On DIV shift to state 164
 -- On CONCAT_STR shift to state 166
 -- On CMP shift to state 174
 ## Reductions:
 
-State 264:
+State 273:
 ## Known stack suffix:
 ## WHILE expr PIPE
 ## LR(1) items:
@@ -4620,11 +4796,11 @@ expr -> expr PIPE . expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DO DIV CON
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 265
+-- On expr shift to state 274
 -- On def_inner shift to state 156
 ## Reductions:
 
-State 265:
+State 274:
 ## Known stack suffix:
 ## WHILE expr PIPE expr
 ## LR(1) items:
@@ -4647,7 +4823,7 @@ expr -> expr PIPE expr . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DO DIV CON
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
 -- On LOGICAND shift to state 176
--- On DOT shift to state 266
+-- On DOT shift to state 275
 -- On DIV shift to state 164
 -- On CONCAT_STR shift to state 166
 -- On CMP shift to state 174
@@ -4655,7 +4831,7 @@ expr -> expr PIPE expr . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DO DIV CON
 -- On PIPE DO
 --   reduce production expr -> expr PIPE expr
 
-State 266:
+State 275:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT
 ## LR(1) items:
@@ -4685,11 +4861,11 @@ expr -> WHILE expr PIPE expr DOT . expr PIPE expr DO option(spec) block_core DON
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 267
+-- On expr shift to state 276
 -- On def_inner shift to state 156
 ## Reductions:
 
-State 267:
+State 276:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr
 ## LR(1) items:
@@ -4707,7 +4883,7 @@ expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT
 ## Transitions:
 -- On TIMES shift to state 154
 -- On PLUS shift to state 160
--- On PIPE shift to state 268
+-- On PIPE shift to state 277
 -- On MOD shift to state 162
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
@@ -4717,7 +4893,7 @@ expr -> expr . PIPE expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT
 -- On CMP shift to state 174
 ## Reductions:
 
-State 268:
+State 277:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE
 ## LR(1) items:
@@ -4748,11 +4924,11 @@ expr -> expr PIPE . expr [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT
 -- On list_def shift to state 131
 -- On ident_cap shift to state 140
 -- On ident shift to state 150
--- On expr shift to state 269
+-- On expr shift to state 278
 -- On def_inner shift to state 156
 ## Reductions:
 
-State 269:
+State 278:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE expr
 ## LR(1) items:
@@ -4775,7 +4951,7 @@ expr -> expr PIPE expr . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT
 -- On MINUS shift to state 168
 -- On LOGICOR shift to state 172
 -- On LOGICAND shift to state 176
--- On DO shift to state 270
+-- On DO shift to state 279
 -- On DIV shift to state 164
 -- On CONCAT_STR shift to state 166
 -- On CMP shift to state 174
@@ -4783,7 +4959,7 @@ expr -> expr PIPE expr . [ TIMES PLUS PIPE MOD MINUS LOGICOR LOGICAND DIV CONCAT
 -- On PIPE
 --   reduce production expr -> expr PIPE expr
 
-State 270:
+State 279:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE expr DO
 ## LR(1) items:
@@ -4791,12 +4967,12 @@ expr -> WHILE expr PIPE expr DOT expr PIPE expr DO . option(spec) block_core DON
 ## Transitions:
 -- On SPEC shift to state 31
 -- On spec shift to state 208
--- On option(spec) shift to state 271
+-- On option(spec) shift to state 280
 ## Reductions:
 -- On WHILE UNIT REF NOT MINUS MATCH LSQBR LP LFLOOR LET IF IDENT_CAP IDENT FOR DEREF CST ASSERT
 --   reduce production option(spec) ->
 
-State 271:
+State 280:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE expr DO option(spec)
 ## LR(1) items:
@@ -4828,19 +5004,19 @@ expr -> WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) . block_core DON
 -- On ident shift to state 150
 -- On expr shift to state 210
 -- On def_inner shift to state 156
--- On block_core shift to state 272
+-- On block_core shift to state 281
 ## Reductions:
 
-State 272:
+State 281:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) block_core
 ## LR(1) items:
 expr -> WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) block_core . DONE [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On DONE shift to state 273
+-- On DONE shift to state 282
 ## Reductions:
 
-State 273:
+State 282:
 ## Known stack suffix:
 ## WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) block_core DONE
 ## LR(1) items:
@@ -4850,7 +5026,7 @@ expr -> WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) block_core DONE 
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> WHILE expr PIPE expr DOT expr PIPE expr DO option(spec) block_core DONE
 
-State 274:
+State 283:
 ## Known stack suffix:
 ## WHILE expr DO
 ## LR(1) items:
@@ -4858,12 +5034,12 @@ expr -> WHILE expr DO . option(spec) block_core DONE [ TO TIMES THEN SEMICOLON R
 ## Transitions:
 -- On SPEC shift to state 31
 -- On spec shift to state 208
--- On option(spec) shift to state 275
+-- On option(spec) shift to state 284
 ## Reductions:
 -- On WHILE UNIT REF NOT MINUS MATCH LSQBR LP LFLOOR LET IF IDENT_CAP IDENT FOR DEREF CST ASSERT
 --   reduce production option(spec) ->
 
-State 275:
+State 284:
 ## Known stack suffix:
 ## WHILE expr DO option(spec)
 ## LR(1) items:
@@ -4895,19 +5071,19 @@ expr -> WHILE expr DO option(spec) . block_core DONE [ TO TIMES THEN SEMICOLON R
 -- On ident shift to state 150
 -- On expr shift to state 210
 -- On def_inner shift to state 156
--- On block_core shift to state 276
+-- On block_core shift to state 285
 ## Reductions:
 
-State 276:
+State 285:
 ## Known stack suffix:
 ## WHILE expr DO option(spec) block_core
 ## LR(1) items:
 expr -> WHILE expr DO option(spec) block_core . DONE [ TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On DONE shift to state 277
+-- On DONE shift to state 286
 ## Reductions:
 
-State 277:
+State 286:
 ## Known stack suffix:
 ## WHILE expr DO option(spec) block_core DONE
 ## LR(1) items:
@@ -4917,16 +5093,16 @@ expr -> WHILE expr DO option(spec) block_core DONE . [ TO TIMES THEN SEMICOLON R
 -- On TO TIMES THEN SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production expr -> WHILE expr DO option(spec) block_core DONE
 
-State 278:
+State 287:
 ## Known stack suffix:
 ## BEGIN block_core
 ## LR(1) items:
 block -> BEGIN block_core . END [ TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END ELSE DOT DONE DO DIV CONCAT_STR COMMA CMP CASE ]
 ## Transitions:
--- On END shift to state 279
+-- On END shift to state 288
 ## Reductions:
 
-State 279:
+State 288:
 ## Known stack suffix:
 ## BEGIN block_core END
 ## LR(1) items:
@@ -4936,17 +5112,17 @@ block -> BEGIN block_core END . [ TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR P
 -- On TO TIMES THEN SPEC SEMICOLON RSQBR RP RFLOOR PLUS PIPE MOD MINUS LOGICOR LOGICAND IN EQUAL END ELSE DOT DONE DO DIV CONCAT_STR COMMA CMP CASE
 --   reduce production block -> BEGIN block_core END
 
-State 280:
+State 289:
 ## Known stack suffix:
 ## LET REC ident param_list option(fun_ret) EQUAL block
 ## LR(1) items:
 def_outer -> LET REC ident param_list option(fun_ret) EQUAL block . spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On SPEC shift to state 31
--- On spec shift to state 281
+-- On spec shift to state 290
 ## Reductions:
 
-State 281:
+State 290:
 ## Known stack suffix:
 ## LET REC ident param_list option(fun_ret) EQUAL block spec
 ## LR(1) items:
@@ -4956,7 +5132,7 @@ def_outer -> LET REC ident param_list option(fun_ret) EQUAL block spec . [ TYPE 
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production def_outer -> LET REC ident param_list option(fun_ret) EQUAL block spec
 
-State 282:
+State 291:
 ## Known stack suffix:
 ## LET ident
 ## LR(1) items:
@@ -4964,52 +5140,52 @@ def_outer -> LET ident . param_list option(fun_ret) EQUAL block spec [ TYPE SPEC
 ## Transitions:
 -- On UNIT shift to state 37
 -- On LP shift to state 38
--- On param_list shift to state 283
+-- On param_list shift to state 292
 ## Reductions:
 
-State 283:
+State 292:
 ## Known stack suffix:
 ## LET ident param_list
 ## LR(1) items:
 def_outer -> LET ident param_list . option(fun_ret) EQUAL block spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On COLON shift to state 59
--- On option(fun_ret) shift to state 284
+-- On option(fun_ret) shift to state 293
 -- On fun_ret shift to state 221
 ## Reductions:
 -- On EQUAL
 --   reduce production option(fun_ret) ->
 
-State 284:
+State 293:
 ## Known stack suffix:
 ## LET ident param_list option(fun_ret)
 ## LR(1) items:
 def_outer -> LET ident param_list option(fun_ret) . EQUAL block spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
--- On EQUAL shift to state 285
+-- On EQUAL shift to state 294
 ## Reductions:
 
-State 285:
+State 294:
 ## Known stack suffix:
 ## LET ident param_list option(fun_ret) EQUAL
 ## LR(1) items:
 def_outer -> LET ident param_list option(fun_ret) EQUAL . block spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On BEGIN shift to state 72
--- On block shift to state 286
+-- On block shift to state 295
 ## Reductions:
 
-State 286:
+State 295:
 ## Known stack suffix:
 ## LET ident param_list option(fun_ret) EQUAL block
 ## LR(1) items:
 def_outer -> LET ident param_list option(fun_ret) EQUAL block . spec [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On SPEC shift to state 31
--- On spec shift to state 287
+-- On spec shift to state 296
 ## Reductions:
 
-State 287:
+State 296:
 ## Known stack suffix:
 ## LET ident param_list option(fun_ret) EQUAL block spec
 ## LR(1) items:
@@ -5019,17 +5195,17 @@ def_outer -> LET ident param_list option(fun_ret) EQUAL block spec . [ TYPE SPEC
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production def_outer -> LET ident param_list option(fun_ret) EQUAL block spec
 
-State 288:
+State 297:
 ## Known stack suffix:
 ## INCLUDE
 ## LR(1) items:
 decl -> INCLUDE . ident_cap [ TYPE SPEC OPEN LET INCLUDE EOF ]
 ## Transitions:
 -- On IDENT_CAP shift to state 10
--- On ident_cap shift to state 289
+-- On ident_cap shift to state 298
 ## Reductions:
 
-State 289:
+State 298:
 ## Known stack suffix:
 ## INCLUDE ident_cap
 ## LR(1) items:
@@ -5039,7 +5215,7 @@ decl -> INCLUDE ident_cap . [ TYPE SPEC OPEN LET INCLUDE EOF ]
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production decl -> INCLUDE ident_cap
 
-State 290:
+State 299:
 ## Known stack suffix:
 ## type_def
 ## LR(1) items:
@@ -5049,7 +5225,7 @@ decl -> type_def . [ TYPE SPEC OPEN LET INCLUDE EOF ]
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production decl -> type_def
 
-State 291:
+State 300:
 ## Known stack suffix:
 ## spec
 ## LR(1) items:
@@ -5059,16 +5235,16 @@ decl -> spec . [ TYPE SPEC OPEN LET INCLUDE EOF ]
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production decl -> spec
 
-State 292:
+State 301:
 ## Known stack suffix:
 ## list(decl)
 ## LR(1) items:
 file -> list(decl) . EOF [ # ]
 ## Transitions:
--- On EOF shift to state 293
+-- On EOF shift to state 302
 ## Reductions:
 
-State 293:
+State 302:
 ## Known stack suffix:
 ## list(decl) EOF
 ## LR(1) items:
@@ -5078,7 +5254,7 @@ file -> list(decl) EOF . [ # ]
 -- On #
 --   reduce production file -> list(decl) EOF
 
-State 294:
+State 303:
 ## Known stack suffix:
 ## file
 ## LR(1) items:
@@ -5088,7 +5264,7 @@ file' -> file . [ # ]
 -- On #
 --   accept file
 
-State 295:
+State 304:
 ## Known stack suffix:
 ## def_outer
 ## LR(1) items:
@@ -5098,7 +5274,7 @@ decl -> def_outer . [ TYPE SPEC OPEN LET INCLUDE EOF ]
 -- On TYPE SPEC OPEN LET INCLUDE EOF
 --   reduce production decl -> def_outer
 
-State 296:
+State 305:
 ## Known stack suffix:
 ## decl
 ## LR(1) items:
@@ -5108,17 +5284,17 @@ list(decl) -> decl . list(decl) [ EOF ]
 -- On SPEC shift to state 31
 -- On OPEN shift to state 32
 -- On LET shift to state 34
--- On INCLUDE shift to state 288
--- On type_def shift to state 290
--- On spec shift to state 291
--- On list(decl) shift to state 297
--- On def_outer shift to state 295
--- On decl shift to state 296
+-- On INCLUDE shift to state 297
+-- On type_def shift to state 299
+-- On spec shift to state 300
+-- On list(decl) shift to state 306
+-- On def_outer shift to state 304
+-- On decl shift to state 305
 ## Reductions:
 -- On EOF
 --   reduce production list(decl) ->
 
-State 297:
+State 306:
 ## Known stack suffix:
 ## decl list(decl)
 ## LR(1) items:

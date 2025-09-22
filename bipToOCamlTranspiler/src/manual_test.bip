@@ -1,18 +1,20 @@
-let invert_bip (x : int) = begin
-  -x
-end
-(*@*)
+let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 <|> ref 16 in 
+	let w = |_ ref 0 _| in
 
-let triple_bip (|_ s : string _|) = begin
-  |_ s ^ s ^ s _|
-end
-(*@*)
+	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
+		(*@ invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 *)
 
-let first_bip () = begin
-  let number = 1 <|> 1 in
-  let message = |_ "Hello" _| in
-  let app_res = invert_bip (3) in
-  let triple_res = |_ triple_bip (message) _| in
-  message <|> message
+		if (((!w mod n) = 0) <|> ((!w mod n) = 0)) then begin
+			z := (!z * !y <|> !z * 2);
+			y := |_ !y - 1 _|
+		end else begin () end;
+
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
 end
-(*@*)
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 

@@ -120,7 +120,7 @@ rule next_tokens = parse
   | "["     { LSQBR }
   | "]"     { RSQBR }
   | "<-"    { INVARROW }
-  | "@"     { CONCAT }
+  | "@"     { AT }
   | "::"    { PREPEND }
   | "^"     { CONCAT_STR }
 
@@ -251,7 +251,7 @@ and string = parse
     | LSQBR -> fprintf fmt "["
     | RSQBR -> fprintf fmt "]"
     | INVARROW -> fprintf fmt "<-"
-    | CONCAT -> fprintf fmt "@"
+    | AT -> fprintf fmt "@"
     | PREPEND -> fprintf fmt "::"
     | CONCAT_STR -> fprintf fmt "^"
 

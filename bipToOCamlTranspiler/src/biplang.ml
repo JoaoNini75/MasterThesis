@@ -323,15 +323,14 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
   | Ebinop (op, e1, e2) -> 
     Obinop (op, (bip_to_ml e1 id_side gen_side), (bip_to_ml e2 id_side gen_side))
 
-  | Elet (ident, Efloor (Eapp (id, el)), body) ->
-      Olet (
-        ident,
+  | Elet (attr_id_opt, ident, Efloor (Eapp (id, el)), body) ->
+      Olet (attr_id_opt, ident,
         Oapp (id, interpolate_lists
           (List.map (fun e -> bip_to_ml e (Some Left) gen_side) el)
           (List.map (fun e -> bip_to_ml e (Some Right) gen_side) el)),
         bip_to_ml body None gen_side) 
 
-  | Elet (ident, Efloor e, body) ->
+  | Elet (attr_id_opt, ident, Efloor e, body) ->
     ( match gen_side with
       | None ->
         let ident_l = { ident with id = ident.id ^ "_l"} 
@@ -339,22 +338,22 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
         and oe1_l = bip_to_ml e (Some Left) gen_side
         and oe1_r = bip_to_ml e (Some Right) gen_side
         and oe2 = bip_to_ml body None gen_side in
-        Olet (ident_l, oe1_l, Olet (ident_r, oe1_r, oe2))
+        Olet (attr_id_opt, ident_l, oe1_l, Olet (attr_id_opt, ident_r, oe1_r, oe2))
 
       | Some Left -> 
         let ident_l = { ident with id = ident.id ^ "_l"}
         and oe_l = bip_to_ml e (Some Left) (Some Left)
         and oebody = bip_to_ml body None gen_side in
-        Olet (ident_l, oe_l, oebody)
+        Olet (attr_id_opt, ident_l, oe_l, oebody)
 
       | Some Right ->
         let ident_r = { ident with id = ident.id ^ "_r"}
         and oe_r = bip_to_ml e (Some Right) (Some Right)
         and oebody = bip_to_ml body None gen_side in
-        Olet (ident_r, oe_r, oebody)
+        Olet (attr_id_opt, ident_r, oe_r, oebody)
     )
 
-  | Elet (ident, Epipe (e1, e2), e_body) ->
+  | Elet (attr_id_opt, ident, Epipe (e1, e2), e_body) ->
     ( match gen_side with
       | None ->
         let ident_l = { ident with id = ident.id ^ "_l"} in
@@ -362,23 +361,23 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
         let oe1 = bip_to_ml e1 (Some Left) gen_side in
         let oe2 = bip_to_ml e2 (Some Right) gen_side in
         let oe_body = bip_to_ml e_body None gen_side in
-        Olet (ident_l, oe1, Olet (ident_r, oe2, oe_body))
+        Olet (attr_id_opt, ident_l, oe1, Olet (attr_id_opt, ident_r, oe2, oe_body))
       
       | Some Left -> 
         let ident_l = { ident with id = ident.id ^ "_l"} in
         let oe1 = bip_to_ml e1 (Some Left) (Some Left) in
         let oe_body = bip_to_ml e_body None (Some Left) in
-        Olet (ident_l, oe1, oe_body)
+        Olet (attr_id_opt, ident_l, oe1, oe_body)
 
       | Some Right ->
         let ident_r = { ident with id = ident.id ^ "_r"} in
         let oe2 = bip_to_ml e1 (Some Right) (Some Right) in
         let oe_body = bip_to_ml e_body None (Some Right) in
-        Olet (ident_r, oe2, oe_body)
+        Olet (attr_id_opt, ident_r, oe2, oe_body)
     )
 
-  | Elet (x, e1, e2) -> 
-    Olet (x, bip_to_ml e1 None gen_side, bip_to_ml e2 None gen_side)
+  | Elet (attr_id_opt, x, e1, e2) -> 
+    Olet (attr_id_opt, x, bip_to_ml e1 None gen_side, bip_to_ml e2 None gen_side)
 
   | Eletpipe (id1, val1, id2, val2, body) -> 
     ( match gen_side with
@@ -388,19 +387,19 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
         let oe1 = bip_to_ml val1 (Some Left) gen_side in
         let oe2 = bip_to_ml val2 (Some Right) gen_side in
         let oe_body = bip_to_ml body None gen_side in
-        Olet (ident_l, oe1, Olet(ident_r, oe2, oe_body))
+        Olet (None, ident_l, oe1, Olet(None, ident_r, oe2, oe_body))
 
       | Some Left -> 
         let ident_l = { id1 with id = id1.id ^ "_l"} in
         let oe1 = bip_to_ml val1 (Some Left) (Some Left) in
         let oe_body = bip_to_ml body None (Some Left) in
-        Olet (ident_l, oe1, oe_body)
+        Olet (None, ident_l, oe1, oe_body)
 
       | Some Right ->
         let ident_r = { id1 with id = id2.id ^ "_r"} in
         let oe2 = bip_to_ml val1 (Some Right) (Some Right) in
         let oe_body = bip_to_ml body None (Some Right) in
-        Olet (ident_r, oe2, oe_body)
+        Olet (None, ident_r, oe2, oe_body)
     )
 
   | Efun (id, is_rec, param_list, fun_ret, expr_list, spec_opt, after) ->
@@ -769,9 +768,15 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
       (get_binop_str op)
       (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2;
 
-  | Olet (id, value, body) -> 
+  | Olet (attr_id_opt, id, value, body) -> 
     let indentation = indent depth in
     
+    let attr_str = (
+      match attr_id_opt with
+      | None -> ""
+      | Some atid -> "[@" ^ atid.id ^ "] "
+    ) in
+
     let is_oif = (
       match value with 
       | Oif (_, _, _, _) -> true
@@ -780,7 +785,7 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
 
     let is_oif_str = if is_oif then "\n" ^ (indent (depth+1)) else "" in
 
-    fprintf fmt "let %s = %s" id.id is_oif_str;
+    fprintf fmt "let %s%s = %s" attr_str id.id is_oif_str;
 
     ( match value with 
       | Oapp (id, oexpr_list) -> 
