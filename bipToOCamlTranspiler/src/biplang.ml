@@ -508,8 +508,8 @@ and bip_to_ml (e: Ast_bip.expr) (id_side: side option)
     )
 
   | Ewhile (e_cnd, spec, el_body) ->
-    let oe_cnd = bip_to_ml e_cnd None gen_side
-    and oel_body = List.map (fun e -> bip_to_ml e None gen_side) el_body in
+    let oe_cnd = bip_to_ml e_cnd id_side gen_side
+    and oel_body = List.map (fun e -> bip_to_ml e id_side gen_side) el_body in
     Owhile (oe_cnd, Onone, spec, oel_body)
 
   | Ewhilecnd (cnd1, cnd2, ag1, ag2, spec, body) -> 
@@ -874,8 +874,8 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
     let indentation = (indent depth) in
     let spec = pp_spec_opt spec_opt in
 
-    ( match cnd_r with (* simple and conditionally aligned loops *)
-      | Onone ->
+    ( match cnd_r with 
+      | Onone -> (* simple and conditionally aligned loops *)
         let indented_spec = indent_spec_if_cond_align (depth) spec in
         let is_cond_align_loop = not (indented_spec = spec) in
         let indented_spec = 
@@ -1046,11 +1046,20 @@ and pp_oexpr fmt (oexpr : Ast_ml.oexpr) (depth : int) (format : print_format) =
       pp_oexpr fmt e2 depth format
 
     | _ -> 
-      fprintf fmt "\n%s(%a, %a)"
-        (indent depth)
-        (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
-        (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2
+      let indentation = indent depth in
 
+      if format = Final then begin
+        fprintf fmt "\n%s(%a, %a)"
+          indentation
+          (fun fmt _ -> pp_oexpr fmt e1 depth Inline) e1
+          (fun fmt _ -> pp_oexpr fmt e2 depth Inline) e2
+      end else begin
+        fprintf fmt "%s%a%s%a"
+          indentation
+          (fun fmt _ -> pp_oexpr fmt e1 depth Middle) e1
+          indentation
+          (fun fmt _ -> pp_oexpr fmt e2 depth Middle) e2
+      end
 
 and pp_def_ml_core fmt id is_rec param_list ret_type_opt ret_pair oexpr_list spec depth = 
   let fun_type_str = 

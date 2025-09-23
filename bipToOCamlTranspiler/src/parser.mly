@@ -12,7 +12,7 @@
 %token <string> SPEC
 %token <string> IDENT_CAP
 %token CASE
-%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW AT PREPEND
+%token LET REC ASSERT MATCH WITH ARROW WILDCARD IN REF IF THEN ELSE FOR WHILE TO DO DONE NOT INT BOOL STRING UNIT LOGICAND LOGICOR NONE ASSIGN DEREF PIPE LFLOOR RFLOOR TYPE OF AND OPEN INCLUDE LSQBR RSQBR INVARROW AT_SYM PREPEND
 %token EOF
 %token LP RP COMMA EQUAL COLON SEMICOLON DOT BEGIN END
 %token PLUS MINUS TIMES DIV MOD CONCAT_STR
@@ -28,7 +28,7 @@
 %nonassoc CMP
 %nonassoc TUPLE_REDUCE
 %nonassoc IDENT_REDUCE
-%right AT
+%right AT_SYM
 %right PREPEND
 %left PLUS MINUS
 %left TIMES DIV MOD CONCAT_STR
@@ -134,7 +134,7 @@ expr:
     { Ebinop (Beq, e1, e2) }
 | e1 = expr op = binop e2 = expr
     { Ebinop (op, e1, e2) }
-| LET LSQBR AT attr_id = ident RSQBR id = ident EQUAL value = expr IN body = expr
+| LET LSQBR AT_SYM attr_id = ident RSQBR id = ident EQUAL value = expr IN body = expr
     { Elet (Some attr_id, id, value, body) }
 | LET id = ident EQUAL value = expr IN body = expr
     { Elet (None, id, value, body) }
@@ -172,7 +172,7 @@ expr:
 
 | lstd = list_std
     { Elist_new lstd }
-| l1 = list_def AT l2 = list_concat
+| l1 = list_def AT_SYM l2 = list_concat
     { Elist_concat (l1, l2) }
 | ppd_elems = prepend_seq lc = list_concat
     { Elist_prepend (ppd_elems, lc) }
@@ -196,7 +196,7 @@ list_def:
 ;
 
 list_concat:
-| lds = separated_nonempty_list(AT, list_def)
+| lds = separated_nonempty_list(AT_SYM, list_def)
     { lds }
 ;
 

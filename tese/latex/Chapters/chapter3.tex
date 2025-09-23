@@ -1004,7 +1004,7 @@ $\beta$ receives a biprogram and a pair of contexts $(\tau_l,\tau_r)$ and transf
 Contexts map WhyRel identifiers to WhyML identifiers and store information about the state parameters that the generated WhyML will receive.
 In a similar way, $\mu$ translates unary programs into WhyML programs, $\epsilon$ map expressions into WhyML expressions and $F$ transforms a restricted set of relation formulas also into WhyML expressions.
 Unary programs are not restricted to operate on a disjoint set of variables but, if they do not, during translation, WhyRel naturally has to rename those variables' names. 
-Rule 5 performs this renaming, where context $\tau_l$ (and respectively $\tau_r$) is extended with the renaming of $x$ with its copy $x_l$ (and respectively $\tau_r$ is extended with the binding $x : x_r$).
+Rule 5 performs this renaming, where context $\tau_l$ (and respectively $\tau_r$) is extended with the renaming of $x$ with its copy $x_l$ (and respectively $\tau_r$ is extended with the binding \emph{x : x\_r}).
 
 Rule 1 sequentially composes the unary translations of $C$ and $C'$.
 $\lfloor C \rfloor$ is simply syntactic sugar for ($C|C$) that are translated by rule 3, with the expection of method calls.
@@ -1012,7 +1012,7 @@ Aligning method calls that establish that the relational spec associated with th
 Using the $\phi$ symbol to represent a global method context, WhyRel translates these calls to calls to the correct WhyML product program (rule 2).
 
 Rule 4 simply represents that a sequence of commands in the biprogram is translated to also a sequence of commands in the product program.
-Control flow statements require the generation of more proof obligations: in the case of the $if...then...else$, in rule 6, it appears as a runtime assertion; in a lockstep aligned loop (rule 7), it takes the form of a loop invariant stating that the guards are in agreement.
+Control flow statements require the generation of more proof obligations: in the case of the \emph{if...then...else}, in rule 6, it appears as a runtime assertion; in a lockstep aligned loop (rule 7), it takes the form of a loop invariant stating that the guards are in agreement.
 Regarding conditionally aligned loops, described by rule 8, the pattern shown by the alignment guards $P | P'$ are captured by the generated loop body.
 This means that if the left (resp. right) guard evalutes to true and $P$ (resp. $P'$) holds, a left-only (resp. right-only) iteration is executed; if not, a lockstep iteration is performed.
 
@@ -1034,7 +1034,7 @@ We now present its corresponding product program, after applying the translation
   \centering
   \noindent
   \begin{lstlisting}[escapeinside={(*}{*)}, style=while_lang, mathescape,
-                      emph={module,use,let,requires,ensures,in,while,do,variant,invariant,done,return,label,end,assert},
+                      emph={module,use,let,requires,ensures,in,while,do,variant,invariant,done,return,label,end,assert,at},
                       emphstyle=\ttfamily\bfseries\color{myorange}]
 module MultPP
   use int.Int
@@ -1079,12 +1079,12 @@ end
 \end{figure}
 
 It is important to note that this code and specification has been developed by us and not by WhyRel's authors, in order to demonstrate the expected output of the tool when we feed it with the \hyperref[fig:mult_biprogram]{biprogram}.
-Therefore, we had to add the pre-condition $m\_l >= 0$, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
+Therefore, we had to add the pre-condition \emph{m\_l >= 0}, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
 The additional pre-condition is necessary to stop $result\_r$ from eventually reaching its correct value (assuming $n\_r$ is positive) while $result\_l$'s value stays at 0 during the whole execution of the program.
-The $variant \{ n\_l - !i\_l \}$ and $variant \{ m\_l - !j \}$ are needed to prove termination of the outer and inner loops, respectively.
-The $invariant \{ 0 <= !j <= m\_l \&\& ! result\_l = ! result\_r + !j \}$ is also not dispensable, since Why3 is not able to reason automatically about how $result\_l$ varies during the inner loop.
+The \emph{variant \{ n\_l - !i\_l \}$ and $variant \{ m\_l - !j \}} are needed to prove termination of the outer and inner loops, respectively.
+The \emph{invariant \{ 0 <= !j <= m\_l \&\& ! result\_l = ! result\_r + !j \}} is also not dispensable, since Why3 is not able to reason automatically about how $result\_l$ varies during the inner loop.
 
-Additionally, because $old(result)$ in WhyRel's biprogram language means the value that the $result$ variable had in the previous loop iteration, but in WhyML it represents the value in the previous function call, we had to adapt this when translating.
+Additionally, because \emph{old(result)} in WhyRel's biprogram language means the value that the $result$ variable had in the previous loop iteration, but in WhyML it represents the value in the previous function call, we had to adapt this when translating.
 The best solution we found is the use of labels to capture the state of program before the execution of the inner while loop, therefore allowing us to access the value of $result$ in the previous iteration.
 Finally, with this specification, CVC5 was able to discharge all VCs automatically and the proof took 0.08 seconds to complete.
 
