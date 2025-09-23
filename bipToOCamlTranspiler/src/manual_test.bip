@@ -1,30 +1,19 @@
-let mult_biplang (|_ n: int _|, |_ m: int _|) : |_ int _| = begin
-  let i = |_ ref 0 _| in
-	let res = |_ ref 0 _| in
-	
-  while |_ !i < n _| do
-    (*@ variant   n_l - !i_l
-				invariant !i_l = !i_r && !res_l = ! res_r *)
+let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+	let i = |_ ref 0 _| in
+	let j = ref 0 <|> ref c in
+	let x = |_ ref 0 _| in
 
-		let previous_res_l = !res_l in
-    let j = |_ ref 0 _| in
+	while |_ !i < n _| do
+		(*@ variant   n_l - !i_l
+        invariant !i_l = !i_r 
+				invariant !x_l = !x_r
+        invariant !j_r = !i_r * b_r + c_r *)
+		j := !i * b + c <|> x := !x + !j;
+		x := !x + !j    <|> j := !j + b;
+		i := |_ !i + 1 _|
+	done;
 
-		(( 
-			while (!j < m) do
-				(*@ variant   m_l - !j_l
-						invariant 0 <= !j_l <= m_l && !res_l = !res_r + !j_l *)
-				res := !res + 1;
-				j := !j + 1
-			done
-		)
-    <|>
-    (res := !res + m));
-    
-    assert ((!res_l = previous_res_l + m_l));
-    i := |_ !i + 1 _|
-  done;
-
-	|_ !res _|
+	|_ !x _|
 end
-(*@ requires n_l = n_r && m_l = m_r && m_l >= 0 
-		ensures  match result with (l_res, r_res) -> l_res = r_res *)
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *) 

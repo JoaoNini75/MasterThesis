@@ -490,7 +490,7 @@ The invariant's structure is defined by the rule, varying only in the values tha
 Nevertheless, our transpiler allows the user to add Gospel specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
 
 The body becomes a \emph{if...then...else if...then...else} block, so there are three possible outcomes for each iteration of the cycle.
-The first occurs when the loop condition for the left program and the left aligment guard are both evaluated to true, therefore executing only the instructions that refer to the left side.
+The first occurs when the loop condition for the left program and the left alignment guard are both evaluated to true, therefore executing only the instructions that refer to the left side.
 The second branch works in a very similar way to the previous, but applied to the right side program.
 The third case happens when the loop condition (on the left side) is respected but none of the alignment guards are, resulting in the execution of all the instructions inside the original biprogram's cycle.
 

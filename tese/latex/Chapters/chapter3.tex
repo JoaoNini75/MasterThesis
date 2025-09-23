@@ -653,7 +653,7 @@ One of them corresponds to the reduction of the verification to the proof of fun
 It does not adapt well to complex programs and relational properties; it also prevents us to exploit similarities between the programs involved or reason through relational specs in a modular way.
 The second technique uses appropriate program alignments to prove the desired relational property.
 WhyRel uses biprograms to represent those alignments, that point out similarities between the two programs so that we can reason about their effects jointly.
-Relational properties of a given alignment entail the corresponding relation between the source programs, in case the chosen aligment is adequate, i.e., it captures all pairs of executions of the two underlying programs.
+Relational properties of a given alignment entail the corresponding relation between the source programs, in case the chosen alignment is adequate, i.e., it captures all pairs of executions of the two underlying programs.
 
 WhyRel invests a lot in encapsulation, as a way to hide internal representation details from clients and to verify the modular correctness of a client independently of its internal organization.
 Since this challenging on a technical level, WhyRel specifies encapsulation as a \emph{dynamic boundary}, a kind of dynamic frame.
@@ -723,7 +723,7 @@ meth mult2(n: int, m: int) : int =
 \end{figure}
 
 In this~\cite{DBLP:conf/pldi/ChurchillP0A19} work, the authors developed a way to establish program equivalence through state-dependent alignments of program traces.
-They identified a challenge when trying to confirm the equivalence of two programs that multiply two integer numbers using different control flow, as shown in \hyperref[fig:mult_source_programs]{the} figure.
+They identified a challenge when trying to confirm the equivalence of two programs that multiply two non-negative integer numbers using different control flow, as shown in \hyperref[fig:mult_source_programs]{the} figure.
 The challenge arises in the context of automated approaches to relational verification specifically, because of the necessity of aligning an unbounded number \emph{m} of loop iterations on the left (\emph{mult1}) with a single iteration on the right (\emph{mult2}).
 
 \begin{figure}[h]
@@ -1040,7 +1040,7 @@ module MultPP
   use int.Int
   use ref.Ref
 
-  let mult_pp (n_l m_l n_r m_r : int) : (result_l: int, result_r: int)
+  let mult_whyml (n_l m_l n_r m_r : int) : (result_l: int, result_r: int)
     requires { n_l = n_r && m_l = m_r && m_l >= 0 }
     ensures  { result_l = result_r }
   =
@@ -1078,7 +1078,7 @@ end
   \label{fig:translation_ex}
 \end{figure}
 
-It is important to note that this code and specification has been developed by us and not by WhyRel's authors, in order to demonstrate the expected output of the tool when we feed it with the \hyperref[fig:mult_biprogram]{biprogram}.
+It is important to note that this code and specification has been developed by us and not by WhyRel's authors, in order to demonstrate what would be the expected output of the tool when we feed it with the \hyperref[fig:mult_biprogram]{biprogram}.
 Therefore, we had to add the pre-condition \emph{m\_l >= 0}, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
 The additional pre-condition is necessary to stop $result\_r$ from eventually reaching its correct value (assuming $n\_r$ is positive) while $result\_l$'s value stays at 0 during the whole execution of the program.
 The \emph{variant \{ n\_l - !i\_l \}$ and $variant \{ m\_l - !j \}} are needed to prove termination of the outer and inner loops, respectively.
