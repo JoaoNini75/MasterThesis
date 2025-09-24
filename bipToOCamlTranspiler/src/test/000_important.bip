@@ -20,10 +20,10 @@ let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = b
 	let x = |_ ref 0 _| in
 
 	while |_ !i < n _| do
-		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-        invariant !j_r = !i_r * b_r + c_r
-        invariant !x_l = !x_r 
-        variant n_l - !i_l *)
+		(*@ variant   n_l - !i_l
+        invariant !i_l = !i_r 
+				invariant !x_l = !x_r
+        invariant !j_r = !i_r * b_r + c_r *)
 		j := !i * b + c <|> x := !x + !j;
 		x := !x + !j    <|> j := !j + b;
 		i := |_ !i + 1 _|
@@ -37,15 +37,17 @@ end
 
 (*@ axiom mult: forall a:int, b:int, c:int, d:int.
    0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
-   
+
 let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in
 	let z = ref 24 <|> ref 16 in 
 	let w = |_ ref 0 _| in
 
-	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
-		(*@ variant   !y_l + !y_r
-				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+	while !y > 4 <|> !y > 4 . (!w mod n <> 0) <|> (!w mod n <> 0) do
+		(*@ invariant !y_l = !y_r && !y_l >= 4
+        invariant !z_r > 0
+        invariant !z_l * !y_l > !z_r * 2
+				invariant !z_l > !z_r *)
 
 		if (((!w mod n) = 0) <|> ((!w mod n) = 0)) then begin
 			z := (!z * !y <|> !z * 2);
@@ -57,8 +59,10 @@ let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
 
 	|_ !z _|
 end
-(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
-    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+(*@ requires x_l = x_r && x_l >= 4 && n_l = n_r && n_l > 0
+    diverges
+    ensures  match result with (l_res, r_res) -> l_res > r_res *)
+
 
 let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
 	let y = |_ ref x _| in

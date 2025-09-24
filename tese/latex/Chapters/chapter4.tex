@@ -36,10 +36,11 @@ Then, we translate/transpile the biprograms using the rules defined by WhyRel's 
 
 $bip2ml$ is a transpiler that takes Gospel-annotated BipLang code and outputs Gospel-annotated OCaml code.
 This tool brings the contributions of WhyRel into the world of OCaml, Gospel and Cameleer.
-All of the work done on this thesis is available at https://github.com/JoaoNini75/MasterThesis, which includes bip2ml's code, this thesis' LateX code and others.
+All of the work done on this thesis is available at \url{https://github.com/JoaoNini75/MasterThesis}, which includes bip2ml's code, this thesis' LateX code and other related material.
 
 We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipeline]{integrates} with Cameleer.
 The users are expected to start with two programs and aim to formally verify that they are equivalent.
+There may be some exceptions to this that we will discuss later in the \hyperref[cha:case_studies]{case studies} chapter, but this is our starting point and main objective.
 The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary Gospel annotations.
 After that, the user feeds bip2ml that .bip file to bip2ml and the transpiler starts its work to output the OCaml + Gospel program.
 That file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
