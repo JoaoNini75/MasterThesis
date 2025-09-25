@@ -24,265 +24,6 @@ We start by presenting a simple example of what BipLang can do that OCaml cannot
 Then, we focus on 3 case studies that are more complex and, therefore, demonstrate the real potential of bip2ml.
 
 
-
-\iffalse
-%Multiplies two non-negative numbers using nested loops.
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{biplangenv}
-  let mult_biplang (n : int, m : int) = begin
-    let res = ref 0 in
-    let j = ref 0 in
-
-    for i = 0 to n-1 do
-      (*@ invariant 0 <= i && i <= n
-          invariant !j = 0
-          invariant !res = m * i + !j *)
-
-      while !j < m do
-        (*@ invariant 0 <= !j && !j <= m
-            invariant !res = m * i + !j
-            variant   m - !j *)
-
-        res := !res + 1;
-        j := !j + 1
-      done;
-
-      j := 0
-    done;
-    
-    !res
-  end
-  (*@ requires n >= 0 && m >= 0
-      ensures  result = n * m *)
-\end{biplangenv}
-\end{minipage}
-\caption{Using nested loops to multiply two (non-negative) numbers (BipLang).}
-\end{figure}
-% TODO: put more space
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{gospel}
-  let mult_ocaml (n : int) (m : int) =
-    let res = ref (0) in
-    let j = ref (0) in
-
-    for i = 0 to (n - 1) do
-      (*@ invariant 0 <= i && i <= n
-          invariant !j = 0
-          invariant !res = m * i + !j *)
-
-      while (!j < m) do
-        (*@ invariant 0 <= !j && !j <= m
-            invariant !res = m * i + !j
-            variant   m - !j *)
-        res := (!res + 1);
-        j := (!j + 1)
-      done;
-
-      j := 0
-    done;
-
-    !res
-  (*@ requires n >= 0 && m >= 0
-      ensures  result = n * m *)
-\end{gospel}
-\end{minipage}
-\caption{Using nested loops to multiply two (non-negative) numbers (OCaml).}
-\end{figure}
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{|l|l|l|l|c|}
-\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
-\hline
-\explanation{VC for mult\_ocaml}  & \explanation{loop invariant init} & \valid{0.02} \\ 
-\cline{2-3}
- & \explanation{loop invariant init} & \valid{0.03} \\ 
-\cline{2-3}
- & \explanation{loop invariant init} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{loop invariant init} & \valid{0.06} \\ 
-\cline{2-3}
- & \explanation{loop invariant init} & \valid{0.03} \\ 
-\cline{2-3}
- & \explanation{loop variant decrease} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{loop invariant preservation} & \valid{0.03} \\ 
-\cline{2-3}
- & \explanation{loop invariant preservation} & \valid{0.02} \\ 
-\cline{2-3}
- & \explanation{loop invariant preservation} & \valid{0.05} \\ 
-\cline{2-3}
- & \explanation{loop invariant preservation} & \valid{0.03} \\ 
-\cline{2-3}
- & \explanation{loop invariant preservation} & \valid{0.05} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{VC for mult\_ocaml} & \valid{0.03} \\ 
-\hline 
-\end{tabular}
-\caption{Multiply two (non-negative) numbers (OCaml) verification results.}
-\end{center}
-\end{table}
-
-
-%Demonstrating the use of the match and assert constructions.
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{biplangenv}
-  type number = 
-    | Pos of int
-    | Neg of int
-    | Zero
-
-  let match_assert_type_biplang (x : int) : int = begin
-    let y = 
-      if x > 0 then begin Pos (x) end
-      else begin
-        if x < 0 then begin Neg x end
-        else begin Zero end
-      end
-    in  
-
-    let res = (
-      match y with
-      | Pos n -> (n * 10)
-      | Neg (n) -> (n * 2)
-      | Zero -> 0
-    ) in
-    
-    let expr_to_assert = (res == (x * 2)) || (res == (x * 10)) in
-    assert (expr_to_assert);
-    res
-  end
-  (*@ ensures x > 0 -> result = x * 10
-      ensures x = 0 -> result = 0
-      ensures x < 0 -> result = x * 2 *)
-\end{biplangenv}
-\end{minipage}
-\caption{The match, assert and type constructions (BipLang).}
-\end{figure}
-% TODO: put more space
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{gospel}
-  type number =
-    | Pos of int
-    | Neg of int
-    | Zero
-
-  let match_assert_type_ocaml (x : int) : int =
-    let y = 
-      if (x > 0)
-      then begin 
-        Pos (x)
-      end else begin 
-        if (x < 0)
-        then begin 
-          Neg (x)
-        end else begin 
-          Zero
-        end
-      end
-    in
-    let res = (
-      match y with
-      | Pos (n) -> (n * 10)
-      | Neg (n) -> (n * 2)
-      | Zero -> 0
-    ) in
-    let expr_to_assert = ((res = (x * 2)) || (res = (x * 10))) in
-    assert (expr_to_assert);
-    res
-  (*@ ensures x > 0 -> result = x * 10
-      ensures x = 0 -> result = 0
-      ensures x < 0 -> result = x * 2 *)
-\end{gospel}
-\end{minipage}
-\caption{The match, assert and type constructions (OCaml).}
-\end{figure}
-% TODO: put more space
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{|l|l|l|l|c|}
-\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
-\hline
-\explanation{VC for match\_assert\_type\_ocaml}  & \explanation{assertion} & \valid{0.06} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.05} \\ 
-\hline
-\end{tabular}
-\caption{The match, assert and type constructions (OCaml) verification results.}
-\end{center}
-\end{table}
-
-
-%Showcasing the presence of nested functions through the use of function applying.
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{biplangenv}
-  let nested_funs_biplang (arg) : int = begin
-    let x = 10 in
-
-    let inner_fun (i : int) : int = begin
-      x * i 
-    end
-    (*@ ensures result = x * i *)
-    in
-
-    inner_fun (arg * 5) 
-  end
-  (*@ ensures result = 50 * arg *)  
-\end{biplangenv}
-\end{minipage}
-\caption{Nested functions and function applying (BipLang).}
-\end{figure}
-% TODO: put more space
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{gospel}
-  let nested_funs_ocaml (arg) : int =
-    let x = 10 in
-
-    let inner_fun (i : int) : int =
-      (x * i)
-    (*@ ensures result = x * i *)
-    in
-      
-    inner_fun ((arg * 5))
-  (*@ ensures result = 50 * arg *)  
-\end{gospel}
-\end{minipage}
-\caption{Nested functions and function applying (OCaml).}
-\end{figure}
-% TODO: put more space
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{|l|l|l|l|c|}
-\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
-\hline
-\explanation{VC for nested\_funs\_ocaml}  & \explanation{postcondition} & \valid{0.02} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.03} \\ 
-\hline
-\end{tabular}
-\caption{Nested functions and function applying (OCaml) verification results.}
-\end{center}
-\end{table}
-\fi
-
-
 \section{Incremeting OCaml}
 \label{sec:incrementing}
 
@@ -422,129 +163,6 @@ let mult_ocaml (n_l : int) (n_r : int) (m_l : int) (m_r : int) :
 \caption{$mult$ product program (OCaml) verification results.}
 \end{center}
 \end{table}
-
-
-
-\iffalse
-% TODO why does this figure appear before the text above??
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{biplangenv}
-  let pipe_biplang (x : int <|> x : int) = begin
-    let y = 10 <|> 1 in
-    let z = 10 <|> 100 in
-    let res = x * y * z <|> x * y * z in
-    res <|> res
-  end
-  (*@ requires x_l = x_r
-      ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = x_l * 100) *)
-\end{biplangenv}
-\end{minipage}
-\caption{Showcasing the use of the pipe symbol (BipLang).}
-\end{figure}
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{gospel}
-  let pipe_ocaml (x_l : int) (x_r : int) =
-    let y_l = 10 in
-    let y_r = 1 in
-    let z_l = 10 in
-    let z_r = 100 in
-    let res_l = ((x_l * y_l) * z_l) in
-    let res_r = ((x_r * y_r) * z_r) in
-    (res_l, res_r)
-  (*@ requires x_l = x_r
-      ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = x_l * 100) *)
-\end{gospel}
-\end{minipage}
-\caption{Showcasing the use of the pipe symbol (OCaml).}
-\end{figure}
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{|l|l|l|l|c|}
-\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
-\hline
-\explanation{VC for pipe\_ocaml}  & \explanation{postcondition} & \valid{0.03} \\ 
-\hline
-\end{tabular}
-\caption{Showcasing the use of the pipe symbol (OCaml) verification results.}
-\end{center}
-\end{table}
-
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{biplangenv}
-  let floors_biplang (|_ arg1 : int _|, |_ arg2 : int _|)
-    : |_ int _| = begin
-
-    let x = |_ arg1 * 2 _| in
-    let y = |_ arg2 _| in
-
-    if |_ y > x _| then begin
-      |_ x + y _|
-    end else begin
-      |_ x - y _|
-    end
-  end
-  (*@ requires arg1_l = arg1_r && arg2_l = arg2_r
-      ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = (
-                  if arg2_l > arg1_l * 2
-                  then arg1_l * 2 + arg2_l
-                  else arg1_l * 2 - arg2_l)) *)
-\end{biplangenv}
-\end{minipage}
-\caption{Demonstrating the use of the floor symbols (BipLang).}
-\end{figure}
-
-\begin{figure}
-\begin{minipage}{\linewidth}
-\begin{gospel}
-  let floors_ocaml (arg1_l : int) (arg1_r : int)
-    (arg2_l : int) (arg2_r : int) : int * int =
-    
-    let x_l = (arg1_l * 2) in
-    let x_r = (arg1_r * 2) in
-    let y_l = arg2_l in
-    let y_r = arg2_r in
-    assert ( ((y_l > x_l)) = ((y_r > x_r)) );
-
-    if (y_l > x_l)
-    then begin 
-      ((x_l + y_l), (x_r + y_r))
-    end else begin 
-      ((x_l - y_l), (x_r - y_r))
-    end
-  (*@ requires arg1_l = arg1_r && arg2_l = arg2_r
-      ensures  match result with (l_res, r_res) -> 
-                (l_res = r_res && l_res = (
-                  if arg2_l > arg1_l * 2
-                  then arg1_l * 2 + arg2_l
-                  else arg1_l * 2 - arg2_l)) *)
-\end{gospel}
-\end{minipage}
-\caption{Demonstrating the use of the floor symbols (OCaml).}
-\end{figure}
-
-\begin{table}[!h]
-\begin{center}
-\begin{tabular}{|l|l|l|l|c|}
-\hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
-\hline
-\explanation{VC for floors\_ocaml}  & \explanation{assertion} & \valid{0.04} \\ 
-\cline{2-3}
- & \explanation{postcondition} & \valid{0.05} \\ 
-\hline
-\end{tabular}
-\caption{Demonstrating the use of the floor symbols (OCaml) verification results.}
-\end{center}
-\end{table}
-\fi
 
 
 \FloatBarrier
@@ -696,7 +314,8 @@ Regarding the \hyperref[fig:ivsr-verif-res]{proof} duration, CVC5 was able to di
 \label{subsec:rwc-la}
 
 The second case study is about another compiler optimization, the loop alignment.
-Contrarily to the previous example, this one is not exactly a proof that the programs' output the same for the same input, but rather that, after the execution, a part of the memory of both programs is equal.
+Contrarily to the previous example, this one is not exactly a proof that the programs' output are the same for the same input.
+In this case, we prove that, after the execution, a part of the memory of both programs is equal.
 Recall the source, optimized and product \hyperref[fig:loop_alignment]{programs}, presented earlier.
 
 \begin{figure}
@@ -714,9 +333,8 @@ let loop_alignment_biplang (|_ n : int _|, |_ a : int array _|,
   i_l := !i_l + 1;
   d_r.(1) <- b_r.(0);
 
-  while !i_l < n_l do
+  while !i < n <|> !i < n - 1 do
     (*@ variant   n_l - !i_l
-        invariant (!i_l < n_l) <-> (!i_r < n_r - 1)
         invariant !i_r >= 0 && !i_l = !i_r + 1
         invariant b_l.(!i_r) = a_l.(!i_r)
         invariant b_l.(!i_r - 1) = b_r.(!i_r - 1) 
@@ -767,8 +385,8 @@ let loop_alignment_ocaml (n_l : int) (n_r : int)
   d_r.(1) <- b_r.(0);
 
   while (!i_l < n_l) do
-    (*@ variant   n_l - !i_l
-        invariant (!i_l < n_l) <-> (!i_r < n_r - 1)
+    (*@ invariant (!i_l < n_l) <-> (!i_r < n_r - 1)
+        variant   n_l - !i_l
         invariant !i_r >= 0 && !i_l = !i_r + 1
         invariant b_l.(!i_r) = a_l.(!i_r)
         invariant b_l.(!i_r - 1) = b_r.(!i_r - 1) 
@@ -801,10 +419,25 @@ let loop_alignment_ocaml (n_l : int) (n_r : int)
 \label{fig:la_ocaml}
 \end{figure}
 
-This biprogram and product program are slightly different from the product program mentioned before, but the proof was inspired by the one its authors developed; that one is available \href{https://software.imdea.org/~ckunz/rellog/rellog-examples.tgz}{here}.
-
+This biprogram and product program are slightly different from the product program presented before, but the proof was inspired by the one its authors developed; that one is available \href{https://software.imdea.org/~ckunz/rellog/rellog-examples.tgz}{here}.
 We renamed the $j$ and renamed it to $i\_r$, since it represents the same as $i\_l$.
-TODO... complete
+
+Regarding the pre-conditions, we require \emph{n\_l} to be equal or greater than 1 and both sides' $n$ value should match too.
+There are restrictions on the the arrays' lengths, which should all be equal, between left and right side and also equal to \emph{n\_l + 1}.
+Furthermore, the elements of both sides' $a$ array should be in agreement, one by one; however, this requirement does not apply to the last element.
+The last pre-condition simply requires that the value of the first element of both $b$'s to be the same.
+Finally, the post-condition establishes that both programs' memory finish in a state where the values of the elements of the $d$ array match, excluding the first and last elements from this guarantee.
+
+The program starts with an initial assignment and the unroll of the first loop iteration so we can reason about both programs in tandem during the cycle.
+Since the conditions of the loop are not exactly the same for both sides, we take advantage of \hyperref[fig:translation-biprograms-rules]{rule 7} through a pipe, which generates the first invariant automatically: \emph{invariant (!i\_l < n\_l) $\leftrightarrow$ (!i\_r < n\_r - 1)}.
+Inside the while, there are three assignments, two that are exactly the same for both sides and one that differs and represents precisely the optimization.
+Finally, since the right side program is one iteration behind its left counterpart, we make one last assignment after the loop: \emph{b\_r.(n\_r) $\leftarrow$ a\_r.(n\_r)}.
+
+Regarding the specification of the loop, we have a trivial variant that proves termination and 4 invariants.
+The first one, \emph{invariant !i\_r $\geq$ 0 \&\& !i\_l = !i\_r + 1}, states that both $i$'s are never negative and that the right side is always one iteration behind the left side, as we mentioned before.
+The second invariant, \emph{b\_l.(!i\_r) = a\_l.(!i\_r)}, could be rewritten as \emph{b\_l.(!i\_l + 1) = a\_l.(!i\_l + 1)} and simply states what happens in the first assignment of the cycle.
+Next, \emph{invariant b\_l.(!i\_r - 1) = b\_r.(!i\_r - 1)} establishes that the last iteration assigned to both sides of the $b$ array the same value, as we can see from the two first loop assignments and the pre-condition regarding the values of the elements of $a$.
+Finally, the invariant \emph{$\forall$ k. 1 $\leq$ k < !i\_l $\rightarrow$ d\_l.(k) = d\_r.(k)} means that every position of the $d$ array, on both sides, has the same value, starting at index 1 and going to the previous' iteration $i$.
 
 The proof did not require any human interaction since CVC5 discharged all VCs in approximately 1.82 seconds.
 
@@ -878,7 +511,7 @@ The proof did not require any human interaction since CVC5 discharged all VCs in
 
 
 \FloatBarrier
-\subsection{Conditionally alignmed loops}
+\subsection{Conditionally aligned loops}
 \label{subsec:rwc-cal}
 
 The third and last real world example is also not exactly a proof of equivalence, but for a different reason.
