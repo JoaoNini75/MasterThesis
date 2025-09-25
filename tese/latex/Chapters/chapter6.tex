@@ -8,33 +8,43 @@
 
 \typeout{NT FILE chapter6.tex}%
 
-\chapter{Conclusion and Future Work}
+\chapter{Conclusions}
 \label{cha:conclusion}
 
+\section{Contributions and Limitations}
+\label{sec:contributions_limitations}
+
 This thesis took the deep research done in the area of program equivalence, relational verification and product programs in order to produce a tool that helps programmers proof that two different programs are equivalent, among other relational properties.
-We created a language that can be seen simultaneously as a subset and a superset of OCaml, since it adds some symbols and constructions but does not have all of the features of OCaml.
+We created a language that can simultaneously be seen as a subset and a superset of OCaml, since it adds some symbols and constructions but does not have all of the features of OCaml.
 This happened because the focus of this work does not include pointer based programs, but all of the components of bip2ml were constructed with ease of extensability in mind. 
 Therefore, if we come to realize that it makes sense, the necessary features could be added with relative ease.
 The similarities to OCaml are important since it means that programmers that are comfortable with that language will have an easier adaptation period when writing code in BipLang.
+However, there are some restrictions imposed by the parser that make BipLang not as close to OCaml as it could be.
+These restrictions stem from technical difficulties that could not be tackled due to temporal limitations.
 
 One of the main goals of our work was to bring the translation rules of WhyRel into the world of OCaml.
 This was possible due to the tight integration with GOSPEL and Cameleer.
-It enabled the reasoning about relational verification, through all of the bip2ml and Cameleer pipeline, to reach the powerful Why3. 
+That enabled the reasoning about relational properties, through all of the bip2ml and Cameleer pipeline, to reach the powerful Why3 and all of its supported solvers and provers.
+Therefore, we were able to reduce relational verification into standard verification, which is currently a much easier path to prove program equivalence.
+
 The case studies that we presented reveal that we were able to apply those rules correctly and use our tool to verify real world examples of program equivalence.
-Not only program equivalence, but also other relational properties such as majorization (therefore minorization as well) and the equality of the programs' memories after the execution finishes.
-In the future, this tool could very likely be used to reason about other relational properties.
-It would be a matter of putting bip2ml to the test with more interesting and complex examples.
+Not only program equivalence, but also other relational properties such as majorization and therefore minorization as well.
+We were also able to establish the equivalence of two programs' memories after the execution of their product program finishes.
+Although we only showcased this for a part of the memories, we do not foresee obvious limitations to proving the equivalence of all the components of the memories.
 
-Although we are able introduce some invariants automatically (thanks to the WhyRel rules), there is still a long way to go when we discuss the automation of the proof of program equivalence.
+
+\section{Future Work}
+\label{sec:future}
+
+In the future, this tool could very likely be used to reason about even more relational properties.
+It would be a matter of putting bip2ml to the test with more interesting examples.
+Those case studies could be complex compiler optimizations, \textbf{higher-order} constructs, \textbf{programs with heap memory}, \textbf{dynamic programming} and eventually \textbf{program evolution}.
+The \textbf{higher-order} constructs, like \emph{iter} or \emph{fold}, could be reasoned in tandem with other higher-order counterparts or even proving that a program with one of those constructs is equivalent to another that performs the same instructions with a \emph{while} loop, for exameple. 
+Regarding the \textbf{programs with heap memory}, we mean pointer based programs, which are already extensively discussed in the WhyRel work and that would enable bip2ml to reason about a considerably larger set of programs.
+bip2ml could be utilized to establish relational properties between code that makes use of \textbf{dynamic programming} techniques and its functional, simpler and slower counterpart.
+Finally, when we mentioned \textbf{program evolution}, we are referring to code versioning, so that refactoring or new features do not modify the behavior of code that we previously proved correct.
+%However, this type of proof of equivalence would probably be the hardest to establish, since 
+
+Although we are able to introduce some invariants automatically (thanks to the WhyRel rules), there is still a long way to go when we discuss the automation of the proof of program equivalence.
 We wonder if we could infer trivial variants and some other invariants, adding then those to specification attached to the final generated code.
-That would be a way of reducing weight off the shoulders of the users of bip2ml.
-
-
-
-
-
-
-
-
-
-
+That would be a promising way of reducing weight off the shoulders of the users of bip2ml.
