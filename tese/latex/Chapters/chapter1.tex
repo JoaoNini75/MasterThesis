@@ -15,15 +15,15 @@
 
 The impact of errors in programs can vary greatly.
 Sometimes it can make you lose a match of a game you play to relax after a long, stressful day.
-But sometimes it can make commercial airplanes with hundreds of people catastrophically crash.
-However, there are other situations as dangerous as a plane crash: medical equipment failure, nuclear accidents, defense systems errors... the list is not short.
+But sometimes it can make commercial airplanes with hundreds of people catastrophically crash~\cite{air-india}.
+Additionally, there are other situations as dangerous as a plane crash: medical equipment failure~\cite{therac-25}, space accidents~\cite{ariane}, defense systems errors~\cite{patriot}... the list is not short.
 Clearly, the approach to ensure the correctness of some software has to be extremely thorough and methodical.
 
-Deductive verification has proven to be the most accurate way to prove that a certain program outputs what is intended given its inputs.
+Deductive verification has proven to be the most accurate way to prove that a certain program outputs what is intended given its inputs, assuming the execution of that program finishes.
 Although this is the most effective way, it is also the one that requires the most investment: professionals that can write the specifications for the programs and then help theorem solver discard verification conditions.
 As the reader can imagine, most companies prefer to resort to the cheaper, faster methods of testing.
 Therefore, there has to be a simpler way of proving, still using deductive verification, that a program is correct.
-That way is program equivalence and product programs.
+One of the most promising paths is \textbf{program equivalence} based on \textbf{product programs}~\cite{DBLP:conf/fm/BartheCK11}, a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
 
 
 \section{Problem Definition}
@@ -32,7 +32,8 @@ The question that this work focus its attention on is:
 
 \begin{quote}
     \centering
-    \emph{Can we automatically prove that two programs P$_1$ and P$_2$ are correct and equivalent?}
+    %\emph{Can we automatically prove that two programs P$_1$ and P$_2$ are correct and equivalent?}
+    \emph{Can we automatically prove that two different programs are correct and equivalent?}
 \end{quote}
 
 Despite looking like a simple question, there is no simple answer.
@@ -40,14 +41,17 @@ This is an issue that people have tried to address for decades, yet we did not f
 There are several schools of software verification~\cite{DBLP:conf/fm/BrainP24} but, as expected, all of them have advantages and disadvantages.
 However, we believe that human-assisted is the way, since it leaves many less bugs behind, compared to under-approximate methods and, at the same time, does not alert the programmer to errors that are not actually errors.
 Of course that this carries an extra human effort, in developing the specification for the programs and sometimes in discharging verification conditions.
+So, when we mean automatic proof of equivalence, we mean no human interaction after the writing of the specification, although automatic inference of loop invariants and variants would definitely make the programmer's life much simpler.
 
-In the context of human-assisted verification and programs P$_1$ and P$_2$, we need to first prove that the simpler program is correct, using already existent methods and then establish a connection between them to prove that the more complex is also correct.
-Product programs appear as a promising solution that came to light from the combination of two other methods called self-composition and cross-products.
-This solution takes the best of both worlds in order to overcome their limitations, which will be explained later, in chapter \hyperref[cha:state_of_the_art]{3}.
-Our work will, therefore, adapt product programs to be applied in the OCaml programming language, which could then be verified using Cameleer.
+In the context of human-assisted verification and considering two versions of the same program, we need to first prove that the simpler program (in terms of specification) is correct, using already existent methods.
+Then, to prove that the more complex one is also correct, we establish a connection between the two.
+Product programs appear as a promising solution that came to light from the combination of two other methods: self-composition~\cite{DBLP:conf/csfw/BartheDR04} and cross-products~\cite{DBLP:conf/fm/ZaksP08}.
+This solution takes the best of both worlds in order to overcome their limitations; the details on how that is achieved will be explained later, in chapter \hyperref[cha:state_of_the_art]{3}.
 
 
 \section{Goals and Contributions}
+
+% Our work will, therefore, adapt product programs to be applied in the OCaml programming language, which could then be verified using Cameleer.
 
 TODOOO
 This work aims to bring to OCaml the concept of \emph{product programs}, facilitating the task of proving that two different programs are behaviorally equivalent.
@@ -60,15 +64,19 @@ This is especially relevant in cases where proving a simpler program and the rel
     \setlength\itemsep{0.1em}
     \item Chapter \hyperref[cha:background]{2} contains a series of concepts, like relational Hoare logic, and tools, such as Cameleer, that are essential to understand the foundations of our work.
 
-    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will enumerate and explain the most relevant developments regarding the subject of program equivalence proof.
+    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will explain the most relevant developments regarding the subject of program equivalence proof: self-composition, cross-products, product programs and WhyRel~\cite{whyrel}.
+    The most relevant ones for this thesis are the last two.
 
-    \item Chapter \hyperref[cha:methodology]{4} describes the theory that supports our work and explains the details of the implementation of our tool.
+    \item Chapter \hyperref[cha:methodology]{4} starts by describing the way we based our tool on WhyRel's translation rules.
+    After that, we present the architecture of bip2ml and how it is integrated in the Cameleer pipeline.
+    Next, we describe our biprograms language, BipLang, and discuss some implementations details.
+    Finally, we demonstrate the application of the translation rules by our transpiler.
 
     \item In chapter \hyperref[cha:case_studies]{5}, we showcase several examples of what our transpiler is capable of. 
-    We will start with simple programs and increment progressively until we finaly demonstrate the usefulness with real world examples.
+    We start with a simple program, its translation and proof.
+    Then, we do the same but for real world examples that demonstrate the usefulness of bip2ml.
     
     \item Finally, chapter \hyperref[cha:conclusion]{6} summarizes our contributions, the limitations of our tool and possible future work.
-
 \end{itemize}
 
 
