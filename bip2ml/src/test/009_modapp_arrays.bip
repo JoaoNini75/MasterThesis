@@ -1,0 +1,49 @@
+let arrays (a) = begin
+	let a = [| 1; 2; 3 |] in
+	let b = [| |] in
+	let c = [| 7 |] in
+	assert ((Array.length (b) + 1 = Array.length (c)));
+	let last_elem_idx = Array.length (a) - 1 in
+	assert ((a.(last_elem_idx) = 3));
+	a.(last_elem_idx) <- 42;
+  assert ((a.(last_elem_idx) = 42));
+	((Array.get (a, last_elem_idx)) = a.(last_elem_idx))
+end
+(*@ ensures true *)
+
+let module_apps (a) = begin
+	let arr_len = ref (Array.length (a)) in
+	Printf.printf ("%d", !arr_len);
+	Printf.printf ("\nlast print")
+end
+(*@ ensures true *)
+
+let linear_search (a, v) = begin
+	let i = ref 0 in
+	let res = ref (-1) in
+
+	while !res < 0 && !i < Array.length (a) do
+		let t = a.(!i) in
+		if (t = v) 
+		then begin res := !i end
+		else begin () end;
+		i := !i + 1
+	done;
+
+  !res
+end
+(*@	ensures true *)
+
+let array_pattern_match (arr : int array) : unit = begin
+  let message = (
+		match arr with
+		| [| |] -> "empty array"
+		| [| x |] -> "one element"
+		| [| _; _ |] -> "two elements"
+		| [| x; y; z |] -> "three elements"
+		| [| x; _; z; w |] -> "four elements"
+		| _ -> "more than four elements"
+	) in
+	Printf.printf ("%s\n", message)
+end
+(*@ ensures true *)

@@ -12,8 +12,9 @@ contents.txt
 
 # Ignore all template files…
 template.*
-# …except template.tex
+# …except
 !template.tex
+!template.pdf
 
 ### LaTeX ###
 ## Core latex/pdflatex auxiliary files:

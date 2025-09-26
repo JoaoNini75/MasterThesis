@@ -1,0 +1,34 @@
+let nonneg (arg1) : bool = begin
+	arg1 > -1 (* this is a comment *)
+end
+(*@ ensures true *)
+
+(* another comment *)
+
+let cmp1 () : bool (*3rd comment*) = begin
+	(not true = false)
+end
+(*@ ensures true *)
+
+let cmp2 (x, y) = begin
+  not (true && false)
+end
+(*@ ensures true *)
+
+let cmp3 (b1, b2) : bool = begin
+	((b1 && b2) = (* nested: outer (* inner *) *) (b1 || b2))
+end
+(*@ ensures true *)
+
+(* let x () = begin 4 end
+this is code... or not *)
+
+let cmp4 (b1, b2) = begin
+	b1 && (b2 && b1) || b2
+end
+(*@ ensures true *)
+
+let cmp5 (b1, b2) = begin
+	(((not b1) && ((not b2) && b1) || b2) = b2)
+end
+(*@ ensures true *)

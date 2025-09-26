@@ -1,0 +1,130 @@
+type token =
+    WITH
+  | WILDCARD
+  | WHILE
+  | UNIT
+  | TYPE
+  | TO
+  | TIMES
+  | THEN
+  | STRING
+  | SPEC of string
+  | SEMICOLON
+  | RSQBR
+  | RP
+  | RFLOOR
+  | REF
+  | REC
+  | PREPEND
+  | PLUS
+  | PIPE
+  | OPEN
+  | OF
+  | NOT
+  | NONE
+  | MOD
+  | MINUS
+  | MATCH
+  | LSQBR
+  | LP
+  | LOGICOR
+  | LOGICAND
+  | LFLOOR
+  | LET
+  | INVARROW
+  | INT
+  | INCLUDE
+  | IN
+  | IF
+  | IDENT_CAP of string
+  | IDENT of string
+  | FOR
+  | EQUAL
+  | EOF
+  | END
+  | ELSE
+  | DOT
+  | DONE
+  | DO
+  | DIV
+  | DEREF
+  | CST of Ast_core.constant
+  | CONCAT_STR
+  | COMMA
+  | COLON
+  | CMP of Ast_core.binop
+  | CASE
+  | BOOL
+  | BEGIN
+  | AT_SYM
+  | ASSIGN
+  | ASSERT
+  | ARROW
+  | AND
+val menhir_begin_marker : int
+val xv_type_def_core : Ast_core.typedef
+val xv_type_def : Ast_core.typedef
+val xv_two_plus_tuple : Ast_bip.expr list
+val xv_tuple : Ast_bip.expr list
+val xv_spec : Ast_core.spec
+val xv_separated_nonempty_list_TIMES_payload_elem_ : Ast_core.payload
+val xv_separated_nonempty_list_SEMICOLON_pattern_elem_ :
+  Ast_core.pattern_elem list
+val xv_separated_nonempty_list_SEMICOLON_expr_ : Ast_bip.expr list
+val xv_separated_nonempty_list_PREPEND_pattern_elem_ :
+  Ast_core.pattern_elem list
+val xv_separated_nonempty_list_COMMA_parameter_ : Ast_core.parameter list
+val xv_separated_nonempty_list_COMMA_expr_ : Ast_bip.expr list
+val xv_separated_nonempty_list_CASE_constructor_ : Ast_core.constructor list
+val xv_separated_nonempty_list_AT_SYM_list_def_ : Ast_bip.list_def list
+val xv_separated_list_SEMICOLON_pattern_elem_ : Ast_core.pattern_elem list
+val xv_separated_list_SEMICOLON_expr_ : Ast_bip.expr list
+val xv_separated_list_COMMA_parameter_ : Ast_core.parameter list
+val xv_separated_list_COMMA_expr_ : Ast_bip.expr list
+val xv_ret_type : Ast_core.ret_type option
+val xv_prepend_seq : Ast_core.prepend_elem list
+val xv_prepend_elem : Ast_core.prepend_elem
+val xv_payload_elem : Ast_core.payload_elem
+val xv_payload : Ast_core.payload
+val xv_pattern_elem : Ast_core.pattern_elem
+val xv_pattern : Ast_bip.pattern
+val xv_parameter_core :
+  Ast_core.ident * Ast_core.any_type option * Ast_core.ident option
+val xv_parameter : Ast_core.parameter
+val xv_param_list : Ast_core.parameter list
+val xv_option_spec_ : Ast_core.spec option
+val xv_option_ident_ : Ast_core.ident option
+val xv_option_fun_ret_ : Ast_core.fun_ret
+val xv_option_and_type_def_ : Ast_core.typedef option
+val xv_loption_separated_nonempty_list_SEMICOLON_pattern_elem__ :
+  Ast_core.pattern_elem list
+val xv_loption_separated_nonempty_list_SEMICOLON_expr__ : Ast_bip.expr list
+val xv_loption_separated_nonempty_list_COMMA_parameter__ :
+  Ast_core.parameter list
+val xv_loption_separated_nonempty_list_COMMA_expr__ : Ast_bip.expr list
+val xv_list_std : Ast_bip.list_def
+val xv_list_ptrn_prepend : Ast_core.pattern_elem list
+val xv_list_ptrn_fixed_len : Ast_core.pattern_elem list
+val xv_list_def : Ast_bip.list_def
+val xv_list_concat : Ast_bip.list_def list
+val xv_list_decl_ : Ast_bip.file
+val xv_ident_cap : string
+val xv_ident : Ast_core.ident
+val xv_fun_ret : Ast_core.ret_type option * Ast_core.special_op option
+val xv_file : Ast_bip.file
+val xv_expr : Ast_bip.expr
+val xv_def_outer : Ast_bip.def
+val xv_def_inner : Ast_bip.expr
+val xv_decl : Ast_bip.decl
+val xv_constructor : Ast_core.constructor
+val xv_case_list : Ast_bip.case list
+val xv_case : Ast_bip.case
+val xv_block_core : Ast_bip.expr list
+val xv_block : Ast_bip.expr list
+val xv_bip_type : Ast_core.bip_type
+val xv_binop : Ast_core.binop
+val xv_array_ptrn : Ast_core.pattern_elem list
+val xv_app_body : Ast_bip.expr list
+val xv_any_type : Ast_core.any_type
+val xv_and_type_def : Ast_core.typedef
+val menhir_end_marker : int

@@ -1,0 +1,109 @@
+let assignment_only (|_x1 : int_|, |_y1 : int_|) : |_int_| = begin
+	let x2 = y1 * 2 <|> y2 = y1 * 2 + 1 in
+	let y2 = x2 + 1 <|> x2 = y2 - 1 in
+	|_ x2 + y2 _|
+end
+(*@ requires x1_l = x1_r && y1_l = y1_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *)
+
+let bilateral_conditional (|_c : bool _|) : |_int_| = begin
+	if |_c_| 
+	then begin |_1_| end
+	else begin |_0_| end
+end
+(*@ requires c_l <-> c_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *)
+
+let induc_var_strength_red (|_b : int_|, |_c : int_|, |_n : int_|) : |_int_| = begin
+	let i = |_ ref 0 _| in
+	let j = ref 0 <|> ref c in
+	let x = |_ ref 0 _| in
+
+	while |_ !i < n _| do
+		(*@ invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
+        invariant !j_r = !i_r * b_r + c_r
+        invariant !x_l = !x_r 
+        variant n_l - !i_l *)
+		j := !i * b + c <|> x := !x + !j;
+		x := !x + !j    <|> j := !j + b;
+		i := |_ !i + 1 _|
+	done;
+
+	|_ !x _|
+end
+(*@ requires b_l = b_r && c_l = c_r && n_l = n_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *) 
+
+
+(*@ axiom mult: forall a:int, b:int, c:int, d:int.
+   0 < a -> 0 < b -> 0 < c -> 0 < d -> a > b -> c > d -> (a * c) > (b * d) *) 
+   
+let cond_align_loops (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 <|> ref 16 in 
+	let w = |_ ref 0 _| in
+
+	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
+		(*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+
+		if (((!w mod n) = 0) <|> ((!w mod n) = 0)) then begin
+			z := (!z * !y <|> !z * 2);
+			y := |_ !y - 1 _|
+		end else begin () end;
+
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
+end
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+
+let cond_align_loops_nested (|_x : int_|, |_n : int_|) : |_int_| = begin
+	let y = |_ ref x _| in
+	let z = ref 24 <|> ref 16 in 
+	let w = |_ ref 0 _| in
+	let t = ref 0 <|> ref 1 in
+
+	while !y > 4 <|> !y > 4 . (!w mod 2 <> 0) <|> (!w mod 2 <> 0) do
+		(*@ variant   !y_l + !y_r
+				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 *)
+
+		while !t < 4 <|> !t < 4 . (!t mod 2 <> 0) <|> (!t mod 2 <> 0) do
+			(*@ variant   !t_l + !t_r 
+					invariant !t_l >= 0 && !t_r >= 1 *)
+			t := |_ !t + 1 _|
+		done;
+
+		y := |_ !y - 1 _|;
+		w := |_ !w + 1 _|
+	done; 
+
+	|_ !z _|
+end
+(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+    ensures  match result with (l_res, r_res) -> l_res > r_res *) 
+
+(*let loop_unswitching (|_ x : int _|, n : int, k : int, |_ a _|, |_ b _|, |_ c _|) : unit = begin
+	let i = |_ ref 0 _| in
+	assert (|_ !i < n _|);
+
+	if x_r < 7 then begin
+
+		while (!i_l < n_l) do
+			|_ a.(!i) <- a.(!i) + k _|
+			assert (|_  _|);
+
+
+
+		done
+
+	end else begin
+		()
+	end
+end
+(*@	requires n_l = n_r && n_l >= 0
+		ensures  a_l[i_l] = a_r[i_r]
+		ensures  b_l[i_l] = b_r[i_r]
+		ensures  c_l[i_l] = c_r[i_r] *)*)

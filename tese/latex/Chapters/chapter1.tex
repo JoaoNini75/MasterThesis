@@ -32,7 +32,7 @@ The question that this work focus its attention on is:
 
 \begin{quote}
     \centering
-    %\emph{Can we automatically prove that two programs P$_1$ and P$_2$ are correct and equivalent?}
+   %\emph{Can we automatically prove that two programs P$_1$ and P$_2$ are correct and equivalent?}
     \emph{Can we automatically prove that two different programs are correct and equivalent?}
 \end{quote}
 
@@ -45,17 +45,27 @@ So, when we mean automatic proof of equivalence, we mean no human interaction af
 
 In the context of human-assisted verification and considering two versions of the same program, we need to first prove that the simpler program (in terms of specification) is correct, using already existent methods.
 Then, to prove that the more complex one is also correct, we establish a connection between the two.
+This approach may enable an easier and faster proof that the programs are correct, constrating with the more common way of proving that the two are correct independently of each other. 
 Product programs appear as a promising solution that came to light from the combination of two other methods: self-composition~\cite{DBLP:conf/csfw/BartheDR04} and cross-products~\cite{DBLP:conf/fm/ZaksP08}.
 This solution takes the best of both worlds in order to overcome their limitations; the details on how that is achieved will be explained later, in chapter \hyperref[cha:state_of_the_art]{3}.
 
 
 \section{Goals and Contributions}
 
-% Our work will, therefore, adapt product programs to be applied in the OCaml programming language, which could then be verified using Cameleer.
+This work aims to bring to OCaml the concept of \emph{product programs}, facilitating the task of proving that two different programs are equivalent.
+Those programs are not expected to have identical structures, but since there is need to reason about them jointly, there are still some restrictions explained later.
+To achieve this, our tool will steer towards the direction of the translation rules defined in WhyRel~\cite{whyrel}, since these are more refined than the initial ones presented in the product programs' work and exhibited good practical results.
+It is also important to mention that, in order to verify the generated program, we will use GOSPEL to write the specification and Cameleer, so that the user can utilize Why3~\cite{why3} to finish the proof.
 
-TODOOO
-This work aims to bring to OCaml the concept of \emph{product programs}, facilitating the task of proving that two different programs are behaviorally equivalent.
-This is especially relevant in cases where proving a simpler program and the relation between that and a more complex version is more peaceful than proving the correctness of both versions separately.
+Since our tool is a transpiler and we aim to output OCaml code, we still need to clarify what will the input be like.
+The ideal source language would be a language whose syntax is as close as possible to OCaml's, so that programmers used to the target language do not have a steep learning curve if they need to prove equivalence of their programs. 
+WhyRel's biprograms language is a good starting point, since it guides us on what a language capable of reasoning about relational properties needs to feature.
+However, it has many differences to OCaml in relation to syntax.
+Therefore, we propose to define a new language that has enough features so that one can write functional code as done in OCaml, while disposing of mechanisms to reason about two programs in tandem.
+
+Besides program equivalence, we will also explore if our tool can reason about other relational properties, such as program inequivalence.
+We will also observe how different it is, in practice, to prove dissimilar relational properties.
+If the gap is considerable, we will analyze how we could narrow it down.
 
 
 \section{Thesis Structure}
@@ -64,7 +74,7 @@ This is especially relevant in cases where proving a simpler program and the rel
     \setlength\itemsep{0.1em}
     \item Chapter \hyperref[cha:background]{2} contains a series of concepts, like relational Hoare logic, and tools, such as Cameleer, that are essential to understand the foundations of our work.
 
-    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will explain the most relevant developments regarding the subject of program equivalence proof: self-composition, cross-products, product programs and WhyRel~\cite{whyrel}.
+    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will explain the most relevant developments regarding the subject of program equivalence proof: self-composition, cross-products, product programs and WhyRel.
     The most relevant ones for this thesis are the last two.
 
     \item Chapter \hyperref[cha:methodology]{4} starts by describing the way we based our tool on WhyRel's translation rules.
