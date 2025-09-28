@@ -18,7 +18,7 @@ This thesis took the deep research done in the area of program equivalence, rela
 We created a language that can simultaneously be seen as a subset and a superset of OCaml, since it adds some symbols and constructions but does not have all of the features of OCaml.
 This happened because the focus of this work does not include pointer based programs, but all of the components of bip2ml were constructed with ease of extensability in mind. 
 Therefore, if we come to realize that it makes sense, the necessary features could be added with relative ease.
-The similarities to OCaml are important since it means that programmers that are comfortable with that language will have an easier adaptation period when writing code in BipLang.
+The similarities to OCaml are important since it means programmers that are comfortable with that language will have an easier adaptation period when writing code in BipLang.
 However, there are some restrictions imposed by the parser that make BipLang not as close to OCaml as it could be.
 These restrictions stem from technical difficulties that could not be tackled due to temporal limitations.
 
@@ -39,7 +39,7 @@ Although we only showcased this for a part of the memories, we do not foresee ob
 In the future, this tool could very likely be used to reason about even more relational properties.
 It would be a matter of putting bip2ml to the test with more interesting examples.
 Those case studies could be complex compiler optimizations, \textbf{higher-order} constructs, \textbf{programs with heap memory}, \textbf{dynamic programming} and eventually \textbf{program evolution}.
-The \textbf{higher-order} constructs, like \emph{iter} or \emph{fold}, could be reasoned in tandem with other higher-order counterparts or even proving that a program with one of those constructs is equivalent to another that performs the same instructions with a \emph{while} loop, for exameple. 
+The \textbf{higher-order} constructs, like \emph{iter} or \emph{fold}, could be reasoned in tandem with other higher-order counterparts or even proving that a program with one of those constructs is equivalent to another that performs the same instructions with a \emph{while} loop, for example. 
 Regarding the \textbf{programs with heap memory}, we mean pointer based programs, which are already extensively discussed in the WhyRel work and that would enable bip2ml to reason about a considerably larger set of programs.
 bip2ml could be utilized to establish relational properties between code that makes use of \textbf{dynamic programming} techniques and its functional, simpler and slower counterpart.
 Finally, when we mentioned \textbf{program evolution}, we are referring to code versioning, so that refactoring or new features do not modify the behavior of code that we previously proved correct.

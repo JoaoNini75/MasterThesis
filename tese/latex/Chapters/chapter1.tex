@@ -23,7 +23,7 @@ Deductive verification has proven to be the most accurate way to prove that a ce
 Although this is the most effective way, it is also the one that requires the most investment: professionals that can write the specifications for the programs and then help theorem solver discard verification conditions.
 As the reader can imagine, most companies prefer to resort to the cheaper, faster methods of testing.
 Therefore, there has to be a simpler way of proving, still using deductive verification, that a program is correct.
-One of the most promising paths is \textbf{program equivalence} based on \textbf{product programs}~\cite{DBLP:conf/fm/BartheCK11}, a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
+One of the most promising paths is \textbf{program equivalence}, a crucial subject within the field of formal verification~\cite{DBLP:journals/fmsd/Strichman18}.
 
 
 \section{Problem Definition}
@@ -41,40 +41,39 @@ This is an issue that people have tried to address for decades, yet we did not f
 There are several schools of software verification~\cite{DBLP:conf/fm/BrainP24} but, as expected, all of them have advantages and disadvantages.
 However, we believe that human-assisted is the way, since it leaves many less bugs behind, compared to under-approximate methods and, at the same time, does not alert the programmer to errors that are not actually errors.
 Of course that this carries an extra human effort, in developing the specification for the programs and sometimes in discharging verification conditions.
-So, when we mean automatic proof of equivalence, we mean no human interaction after the writing of the specification, although automatic inference of loop invariants and variants would definitely make the programmer's life much simpler.
+So, when we mean automatic proof of equivalence, we mean no human interaction after writing the specification, although automatic inference of loop invariants and variants would definitely make the programmer's life much simpler.
 
-In the context of human-assisted verification and considering two versions of the same program, we need to first prove that the simpler program (in terms of specification) is correct, using already existent methods.
+In the context of human-assisted verification, and considering two versions of the same program, we first need to prove that the simpler program (in terms of specification) is correct, using already existent methods.
 Then, to prove that the more complex one is also correct, we establish a connection between the two.
-This approach may enable an easier and faster proof that the programs are correct, constrating with the more common way of proving that the two are correct independently of each other. 
-Product programs appear as a promising solution that came to light from the combination of two other methods: self-composition~\cite{DBLP:conf/csfw/BartheDR04} and cross-products~\cite{DBLP:conf/fm/ZaksP08}.
-This solution takes the best of both worlds in order to overcome their limitations; the details on how that is achieved will be explained later, in chapter \hyperref[cha:state_of_the_art]{3}.
-
+This approach may enable an easier and faster proof that programs are correct, constrating with the more common way of proving that the two are correct independently of each other. 
+WhyRel~\cite{whyrel} is an auto-active tool that aims to verify relational properties of pointer programs through relational region logic.
 
 \section{Goals and Contributions}
 
-This work aims to bring to OCaml the concept of \emph{product programs}, facilitating the task of proving that two different programs are equivalent.
-Those programs are not expected to have identical structures, but since there is need to reason about them jointly, there are still some restrictions explained later.
-To achieve this, our tool will steer towards the direction of the translation rules defined in WhyRel~\cite{whyrel}, since these are more refined than the initial ones presented in the product programs' work and exhibited good practical results.
-It is also important to mention that, in order to verify the generated program, we will use GOSPEL to write the specification and Cameleer, so that the user can utilize Why3~\cite{why3} to finish the proof.
+This work aims to bring to OCaml~\cite{ocaml} the concept of \emph{biprograms}, facilitating the task of proving that two different programs are equivalent.
+Those programs are not expected to have identical structures, but since there is the need to reason about them jointly, there are still some restrictions explained later.
+To achieve this, our tool will steer towards the direction of the translation rules defined in WhyRel.
+The work on product programs~\cite{DBLP:conf/fm/BartheCK11} presents a good set of rules, but WhyRel's are more refined and easier to apply in practice.
+It is also important to mention that, in order to verify the generated program, we will use GOSPEL~\cite{DBLP:conf/fm/ChargueraudFLP19} to write the specification and Cameleer~\cite{DBLP:conf/cav/PereiraR20}, so that the user can utilize Why3~\cite{why3} to finish the proof.
 
 Since our tool is a transpiler and we aim to output OCaml code, we still need to clarify what will the input be like.
-The ideal source language would be a language whose syntax is as close as possible to OCaml's, so that programmers used to the target language do not have a steep learning curve if they need to prove equivalence of their programs. 
+The ideal source language would be one whose syntax is as close as possible to OCaml's, so that programmers used to the target language do not have a steep learning curve if they need to prove equivalence of their programs. 
 WhyRel's biprograms language is a good starting point, since it guides us on what a language capable of reasoning about relational properties needs to feature.
 However, it has many differences to OCaml in relation to syntax.
 Therefore, we propose to define a new language that has enough features so that one can write functional code as done in OCaml, while disposing of mechanisms to reason about two programs in tandem.
 
-Besides program equivalence, we will also explore if our tool can reason about other relational properties, such as program inequivalence.
-We will also observe how different it is, in practice, to prove dissimilar relational properties.
-If the gap is considerable, we will analyze how we could narrow it down.
+Besides program equivalence, we explore if our tool can reason about other relational properties, such as program inequivalence or equivalence between corresponding memory segments (after the execution of the programs finish).
+To conduct a more in-depth examination, we also observe how different it is, in practice, to prove different relational properties.
+i.e., what does the user need to change in the specification or code in order to prove equivalence versus inequivalence for example.
 
 
 \section{Thesis Structure}
 
 \begin{itemize}
     \setlength\itemsep{0.1em}
-    \item Chapter \hyperref[cha:background]{2} contains a series of concepts, like relational Hoare logic, and tools, such as Cameleer, that are essential to understand the foundations of our work.
+    \item Chapter \hyperref[cha:background]{2} presents the foundational concetps and tools underlying the scientific subject of this work.
 
-    \item In chapter \hyperref[cha:state_of_the_art]{3}, we will explain the most relevant developments regarding the subject of program equivalence proof: self-composition, cross-products, product programs and WhyRel.
+    \item In chapter \hyperref[cha:state_of_the_art]{3}, we explain the most relevant developments regarding the subject of program equivalence proof: self-composition, cross-products, product programs and WhyRel.
     The most relevant ones for this thesis are the last two.
 
     \item Chapter \hyperref[cha:methodology]{4} starts by describing the way we based our tool on WhyRel's translation rules.
