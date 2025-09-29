@@ -23,7 +23,7 @@ Instead, we defined and formalized a programming language called $BipLang$.
 BipLang's main purpose is writing biprograms and was based on the biprograms language used in WhyRel's work.
 BipLang was designed to accept Gospel annotations and to be as similar as possible to OCaml in terms of syntax and semantics.
 We did that in order to allow programmers that are used to that language to verify the equivalence of their programs without needing to learn a new language or completely rewrite their code or specification.
-Then, we translate/transpile the biprograms using the rules defined by WhyRel's authors to produce Gospel-annotated OCaml code.
+Then, we transpile the biprograms using the translation rules defined by WhyRel's authors to produce Gospel-annotated OCaml code.
 
 
 \FloatBarrier
@@ -42,8 +42,8 @@ We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipel
 The users are expected to start with two programs and aim to formally verify that they are equivalent.
 There may be some exceptions to this that we will discuss later in the \hyperref[cha:case_studies]{case studies} chapter, but this is our starting point and main objective.
 The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary Gospel annotations.
-After that, the user feeds bip2ml that .bip file to bip2ml and the transpiler starts its work to output the OCaml + Gospel program.
-That file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
+After that, the user feeds bip2ml that .bip file and it starts its work to produce the OCaml + Gospel program.
+The transpiler's output file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
 
 \begin{figure}[htbp]
   \centering
@@ -75,7 +75,7 @@ These tests were automated using Dune~\cite{dune}.
 
 We also developed a VSCode extension that provides syntax highlighting for BipLang.
 Although it is dispensable, it certainly was extremely helpful during the whole development and testing of bip2ml, and it may also be a relevant aid to anyone that programs in BipLang.
-It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform}, since the syntax of OCaml and BipLang are nearly identical.
+It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform}, since the syntaxes of OCaml and BipLang are nearly identical.
 
 
 \FloatBarrier
@@ -84,7 +84,7 @@ It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform},
 
 BipLang's syntax, semantics and AST are very similar to OCaml's.
 Although BipLang implements the most common OCaml language constructions, there are definitely some missing, such as exceptions and object-oriented features.
-Taking that into consideration, it is also important to remember that, regarding the scope of this thesis, these constructions can not be seen as having a high priority or relevance.
+Taking that into consideration, it is also important to remember that, regarding the scope of this thesis, these constructions can not be seen as very relevant.
 On the other hand, our language adds 3 constructions that are not present in OCaml: the pipe, the floors and the conditionally aligned loops.
 Their semantics are the same as in WhyRel's work.
 
@@ -150,8 +150,8 @@ expr ::=
             | match id with ($\overrightarrow{case}$)
             | ($\overrightarrow{e}$)
             | idc ($\overrightarrow{e}$)
-            | fun_id ($\overrightarrow{e}$)
-            | Module_id.fun_id ($\overrightarrow{e}$)
+            | fun_name ($\overrightarrow{e}$)
+            | Module_name.fun_name ($\overrightarrow{e}$)
             | def in e
             
             $\emph{arrays}$
@@ -242,9 +242,9 @@ end
 
 Before we demonstrate how our translator and printer work by applying WhyRel's translation \hyperref[fig:translation-biprograms-rules]{rules}, there are some details about our printer that we want to make clear.
 Adding $\_l$ to the left side program and $\_r$ to the right side program was a printing choice that could be changed to anything the reader prefers when identifying to what program a given identifier belongs to.
-Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read, but only to fit .
+Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read; it was only adjusted to fit the page.
 bip2ml effectively prints OCaml code respecting general good indentation practices.
-The choice of using 2 whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
+The choice of using two whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
 
 As a way to make the Gospel specifications coherent with the generated OCaml code and make sure which variable the user refers to, we require the user to write the specification using $\_l$ when reasoning about the left side and $\_r$ for the right side.
 Additionally, as a parser design choice, we also require that each function has a Gospel specification immediately after its declaration.
@@ -262,7 +262,7 @@ end
 \subsubsection{Demonstrating translation through examples}
 \label{subsubsec:translator_printer_examples}
 
-We will present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
+We now present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
 Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
 We will omit the necessary Gospel specifications to prove these examples, since it is not our focus in this subsection.
 Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
@@ -331,12 +331,12 @@ Therefore, in the OCaml version, we get the lines \emph{let number\_l = 1 in let
 
 The next line, \emph{let message = |\_ "Hello" \_| in}, makes use of rule number 3 to translate the expression inside the floors into a pipe with two equal expressions on each side.
 This shows that every floor is a pipe, but not every pipe can be a floor.
-This happens because if we have $C_1 | C_2$ and $C_1 \neq C_2$, we cannot "transform" the pipe into a floored expression; otherwise, with $C_1 = C_2$, we would be able to establish that $C_1 | C_2$ is the same as $\lfloor C_1 \rfloor$.
+This happens because if we have $C_1 | C_2$ and $C_1 \neq C_2$, we cannot "compress" the pipe into a floored expression; otherwise, with $C_1 = C_2$, we would be able to establish that $C_1 | C_2$ is the same as $\lfloor C_1 \rfloor$.
 So, bip2ml internally translates the original line to \emph{let message = "Hello" <|> "Hello" in} and finally outputs \emph{let message\_l = "Hello" in let message\_r = "Hello" in}, as we can see in the OCaml code.
 
 The third line of $first\_bip$ is a binding to a function call: \emph{let res = invert\_bip (3) in}.
 In this case, no rule is being used since the function call is not inside floors, therefore the input and output are the same.
-However, in the next line, \emph{let triple\_res = |\_ triple\_bip (message, number) \_| in}, that is case, so rule 2 is applied here.
+However, in the next line, \emph{let triple\_res = |\_ triple\_bip (message, number) \_| in}, that is the case, so rule 2 is applied here.
 This rule interpolates the arguments of the function call so that we get the first argument for the left side, then that same argument for the right side, and all the other possible other ones, respecting the order defined in the biprogram and interpolating the left and right sides.
 So, we get the output \emph{let triple\_res = triple\_bip (message\_l) (message\_r) (number\_l) (number\_r) in}.
 
@@ -409,18 +409,19 @@ let second_ocaml (c_l : bool)
   \label{fig:trans-ex-second}
 \end{figure}
 
-Moving on to the \hyperref[fig:trans-ex-second]{second} example, attent to the use of floors in the parameters and on the type returned by the second\_bip function.
+Moving on to the \hyperref[fig:trans-ex-second]{second} example, attent to the use of floors in the parameters and on the type returned by the $second\_bip$ function.
 The first statements indicate the use of an \emph{if...then...else} block of code, which is translated by rule 6.
-Firstly, the rule introduces an assertion that makes the program fail its execution if the condition is not evaluated equally in both sides.
+Firstly, the rule introduces an assertion that makes the program fail during its execution if the condition is not evaluated equally in both sides.
 After that, we use one of the conditions, in this case, WhyRel authors chose the left side one, but we could use the right side condition, since we just established that they are equal.
 The \emph{then} and \emph{else} branches will then get recursively translated, so we get this translated code: \emph{assert ( (c\_l) = (c\_r) ); if c\_l then begin (...) end else begin (...) end}. 
+The \emph{if} branch's translation is done by using rule 3 and then rule 1, returning that constant for both programs as a binary tuple: \emph{(1, 1)}.
 Next, inside the \emph{else} there is a while loop, which is translated following rule number 7.
 Similarly to the \emph{if...then...else} block, we ignore the right side condition and use the left side one to limit the loop execution.
 However, contrary to the assertion used in rule 6, here a loop invariant is added so we guarantee that the condition on both sides is always evaluated to the same value during the whole execution of the \emph{while}.
 The body of the cycle will then get recursively translated, which gets us the following translated code (and specification): \emph{while (!i\_l < n\_l) do (*@ invariant ((!i\_l < n\_l)) <-> ((!i\_r < n\_r))*) (...) done}.
-Finally, we get to see rule 4 applied to the statements inside the while loop, translating sequential instructions in the BipLang program through the recursive transformation of individual instructions that are composed in sequence.
+Finally, we get to see rule 4 applied to the statements inside the while loop, translating sequential BipLang instructions to sequential OCaml instructions, applying the necessary transformations to those statements individually.
 The code lines we are mentioning are these: \emph{i := |\_ !i + 1 \_|; res := |\_ !res * !i \_|}.
-In practice, there is not a visual outcome of this rule, but, since we also are here applying rule 3 because of the floors, the output looks like this: \emph{i\_l := (!i\_l + 1); i\_r := (!i\_r + 1); res\_l := (!res\_l * !i\_l); res\_r := (!res\_r * !i\_r)}.
+In practice, there is not a visual outcome of this rule, but, since we are here applying rule 3 too, the output looks like this: \emph{i\_l := (!i\_l + 1); i\_r := (!i\_r + 1); res\_l := (!res\_l * !i\_l); res\_r := (!res\_r * !i\_r)}.
 
 \begin{figure}[h]
   \centering
@@ -485,9 +486,15 @@ let counting_ocaml (target_l : int) (target_r : int) (mult_of_l)
 
 Let us look now at the \hyperref[fig:trans-ex-third]{third} and last example.
 This one showcases the use of rule 8, that translates conditionally aligned loops.
-This rules takes as input a while loop with two alignment guards and outputs a while loop with a complex predictable invariant and an adapted body.
+This rules takes as input a while loop with two alignment guards and outputs a while loop with a transformed body and a rather complex invariant, $A$.
 
-The invariant's structure is defined by the rule, varying only in the values that each expression is evaluated to.
+$A$ corresponds to the logical disjunction of 4 main formulas, that are all a conjunction themselves.
+The first represents the left loop condition \emph{and} the left alignment guard.
+The second conjunction is the same but for the right side.
+The third corresponds to the conjunction of the negated loop conditions.
+The final conjunction is the same as the previous one but with the original loop conditions.
+
+The generated invariant's structure is defined by the rule, varying only in the values that each expression is evaluated to.
 Nevertheless, our transpiler allows the user to add Gospel specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
 
 The body becomes a \emph{if...then...else if...then...else} block, so there are three possible outcomes for each iteration of the cycle.

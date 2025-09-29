@@ -955,7 +955,7 @@ In an hypothetical case where a biprogram aligns two loops in lockstep, this too
       \parbox[t]{\hsize}{$\triangleq\ \beta\llbracket CC \rrbracket(\tau_l,\tau_r);\ \beta\llbracket DD \rrbracket(\tau_l,\tau_r)$} \\[6pt]
       \\
 
-      \textbf{5. } $\beta\llbracket \kw{var }x:T \mid x:T' \kw{ in } CC\rrbracket(\tau_l,\tau_r)$ &
+      \textbf{5. } $\beta\llbracket \kw{var }x:T \mid x:T' \ \kw{ in } CC\rrbracket(\tau_l,\tau_r)$ &
       \parbox[t]{\hsize}{%
         $\triangleq\ \kw{let}\ x_l=\mathrm{def}(T)\ \kw{in}\ \kw{let}\ x_r=\mathrm{def}(T')\ \kw{in}$\\[2pt]
         \hspace{2.2em}\text{  }\text{  }\text{  }\text{  } $\beta\llbracket CC \rrbracket\big([\tau_l\mid x:x_l],[\tau_r\mid x:x_r]\big)$
