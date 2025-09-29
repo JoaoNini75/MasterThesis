@@ -30,17 +30,17 @@ Remember, the rules applied by bip2ml are the same as the ones developed by WhyR
 
 As described before, the \emph{mult} biprogram combines two unary programs that multiply two non-negative integer numbers.
 On the left side, that is done through two nested while loops, incrementing the result by 1 in each iteration.
-On the right side, there is a while loop with an assignment inside, making the result increment by $m$ in each cycle iteration.
+On the right side, there is a single while loop with an assignment inside, making the result increment by $m$ in each cycle iteration.
 
 The specification of $mult\_biplang$ and $mult\_ocaml$ is the same as $mult\_whyml$, but now written in GOSPEL.
 Besides that, since OCaml does not support labels, we had to substitute it with a simple variable that is used later to get the value of the previous iteration.
 In practice, it also works, but WhyML's labels may help the readibility in terms of separating code and specification.
 
-The reader may have also noticed that, in $mult\_ocaml$, we declare and initialize the $j\_l$ variable but we never use it.
-This can be seen as a limitation of bip2ml: we cannot mix "neutral" variables with "sided" ones.
+The reader may have also noticed that, in $mult\_ocaml$, bip2ml declares and initializes the $j\_r$ variable but it is never used.
+This can be seen as a limitation of our tool: we cannot mix "neutral" variables with "sided" ones.
 We also cannot mix left side and right side variables, but that would hardly make sense in the code, although it clearly makes sense in the specification.
-In this case, since the condition of the $mult\_biplang$'s while loop has floors around it, those identifiers will be transformed into left side identifiers.
-So, even if we declared \emph{let j = ref 0 in}, we would still get \emph{while (!i\_l < n\_l) do}, and that would result in variables' names mismatching in the generated OCaml code.
+In this case, since the condition of the $mult\_biplang$'s inner while loop is at the left of a $pipe$, those identifiers will be transformed into left side identifiers.
+So, even if we declared \emph{let j = ref 0 in}, we would still get \emph{while (!j\_l < m\_l) do}, and that would result in variables' names mismatching in the generated OCaml code.
 
 Regarding the verification of $mult\_ocaml$, CVC5 was able to discharge all VCs automatically in a total of 410 milliseconds.
 
@@ -163,9 +163,9 @@ let mult_ocaml (n_l : int) (n_r : int) (m_l : int) (m_r : int) :
 
 This section illustrates the applicability of our tool through some more complex examples.
 As we did in the previous section, we present these programs written in BipLang and their corresponding translations to OCaml.
-The first and second examples correspond to the proof of two common compiler optimizations, but while the first establish the equivalence of the outputs of the source and optimized versions, the second case proves that a given part of the memory of the programs are in the same state when the execution finishes.
-The third example is not a proof of equivalence, but a proof of majorization.
-These case studies show that bip2ml can handle not only program equivalence, but other interesting properties.
+The first and second examples correspond to the proof of two common compiler optimizations; while the first establishes the equivalence of the outputs of the source and optimized versions, the second case proves that a given part of the memory of the programs are in the same state when the execution finishes.
+The third example is not about program equivalence, but a similar relational property: majorization.
+These case studies show that bip2ml is able to reason about not only program equivalence, but other interesting properties too.
 
 
 \FloatBarrier
@@ -305,7 +305,7 @@ Regarding the \hyperref[fig:ivsr-verif-res]{proof} duration, CVC5 was able to di
 \subsection{Loop alignment}
 \label{subsec:rwc-la}
 
-The second case study is about another compiler optimization, the loop alignment.
+The second case study is about another compiler optimization known as the loop alignment.
 Contrarily to the previous example, this one is not exactly a proof that the programs' output are the same for the same input.
 In this case, we prove that, after the execution, a part of the memory of both programs is equal.
 Recall the source, optimized and product \hyperref[fig:loop_alignment]{programs}, presented earlier.
@@ -506,13 +506,13 @@ The proof did not require any human interaction since CVC5 discharged all VCs in
 \subsection{Conditionally aligned loops}
 \label{subsec:rwc-cal}
 
-The third and last real world example is also not exactly a proof of equivalence, but for a different reason.
-Instead, it is a proof that the left program's output is always larger than the right side program's output, given the same inputs and some other preconditions.
+The third and last real world example is also not a proof of equivalence, but for a different reason.
+Instead, it is a proof that the left program's output is always larger than the right side program's output, assuming agreement of inputs and some other preconditions.
 \hyperref[fig:cond_align_loops_ex]{Recall} the unary programs, that compute the factorial and the exponent of \emph{x >= 4} and their biprogram.
 The \emph{cond\_align\_loops\_biplang} program below is the same as WhyRel's biprogram, but rewritten in BipLang.
 
 Our proof was inspired by the \href{https://github.com/dnaumann/RelRL/blob/main/examples/majorization}{one} developed by WhyRel's authors.
-Ours excludes the specification related to pointer based programs, since it is not our target.
+Ours excludes the specification related to pointer-based programs, since that is not our target.
 However, we include the $mult$ axiom, which we found indispensable for the proof to finish without manually invoking tactics.
 Both our and WhyRel's proofs are partial, since we do not prove termination (as indicated by the \emph{diverges} keyword).
 So, with no required human intervention, the proof was done by Z3 in approximately 0.32 seconds.

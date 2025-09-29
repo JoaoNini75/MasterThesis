@@ -630,7 +630,7 @@ And to do that, we need the linear condition \emph{j := i * B + C} to be part of
 
 WhyRel~\cite{whyrel} is a tool that aims to verify relational properties of pointer programs based on relational region logic, in an auto-active way.
 It also supports state-based encapsulation and dynamic framing. 
-This tool appears in a context where there are two existing types of tools exist but are not powerful enough to reduce the gap between them.
+This tool appears in a context where two types of tools exist but the differences between them is quite relevant.
 One of the types of tools are the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
 The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
 WhyRel is implemented in OCaml and relies on a library provided by Why3 for constructing and pretty-printing WhyML parse trees.
@@ -638,6 +638,7 @@ This tool was evaluated by its authors through several case studies that demonst
 
 WhyRel is the most important practical work for this thesis.
 Nevertheless, we will purposefully omit a considerable part of the details about WhyRel, since the verification of pointer programs is out of the scope of this thesis.
+Therefore, the focus will be directed towards functional programs.
 
 
 \subsection{Design details}
@@ -669,7 +670,7 @@ Finally, some VCs are added by WhyRel as intermediate assertions and lemmas for 
 \subsection{Patterns of program alignment}
 \label{subsec:whyrel_patterns}
 
-Choosing alignments to decompose relational verification is an important task since that choice directly impacts how simple the relational assertions and loop invariants can be to prove the program in question.
+Choosing alignments to decompose relational verification is an important task since it directly impacts how simple the relational assertions and loop invariants can be to prove the equivalence of the programs in question.
 In this subsection, we present two examples of biprograms that capture alignments that are not maximal.
 We will explain what that means below.
 
@@ -759,10 +760,10 @@ meth mult_bip (n: int, m: int | n: int, m: int) : (int | int) =
 In order to prove equivalence, we verify the biprogram presented in \hyperref[fig:mult_biprogram]{this} figure.
 To achieve that, the pre-relation (or pre-condition) should be \(n \doteq n \land m \doteq m \) and the post-relation (or post-condition) \(result \doteq result\).
 The $\doteq$ symbol means that the left side of the expression (only reasoning about the left program) is equal to the right side of the expression (this side also only reasons about the right program).
-Therefore, the specification above means that if the input variables have the same values, then the output will also be the same.
+Therefore, the specification above means that if the input variables have the same values for both programs, then the output will also be the same.
 
-The $|$ symbol means that the instructions on its left refer to the left program and the instructions at its right side refer to the right program.
-The $\lfloor$ and $\rfloor$ symbols mean that the instruction inside is to be executed in both programs.
+The $|$ symbol means that the instructions on its left refer to the left program and the instructions at its right refer to the right program.
+The $\lfloor$ and $\rfloor$ symbols mean that the instruction inside is executed by both sides.
 This means that if we have $C_1 | C_2$ and $C_1$ is exactly the same instruction as $C_2$, we can simply write $\lfloor C_1 \rfloor$.
 
 We call unary programs the source programs, in this case, \emph{mult1} and \emph{mult2} present in \hyperref[fig:mult_source_programs]{this} figure.
@@ -774,8 +775,7 @@ Observe that the notation $\lhd F \lhd$ (respectively $\rhd F \rhd$) means that 
 To prove that \emph{mult1} and \emph{mult2} are equivalent, we only need the invariant that shows equivalence on \emph{i} and \emph{result} for every iteration of the outer loop.
 Additionally, to prove this invariant, we need to state that the inner loop of the left side has the same effect as the single assignement on the right: incrementing the \emph{result} by \emph{m}.
 In this case, that reasoning comes to life through the assertion after the left inner loop and before the assigment to \emph{i}.
-Notice the \emph{old(result)} inside that assertion? 
-That represents the value that the result variable had in the previous loop iteration.
+Notice that \emph{old(result)} inside the assertion represents the value that the $result$ variable had in the previous loop iteration.
 
 
 \FloatBarrier
@@ -865,11 +865,12 @@ meth ex_bip (x: int, n: int | x: int, n: int) : (int | int) =
 
 The example presented in the previous subsubsection takes advantage of the fact that the two outer loops are executed the same number of times, which can be inferred from their conditions being the same (\emph{i < n}).
 It allows a lockstep alignment of the loops' iterations, leading to simple relational invariants.
-However, we can not exploit this lockstep reasoning on all cases, forcing us to use other patterns of loop alignment, such as those that consider conditions on data.
+However, we can not exploit this lockstep reasoning on all cases, forcing us to use other patterns of loop alignment.
 
 Considering the example in the \hyperref[fig:cond_align_loops_ex]{figure}, observe that \emph{ex1} calculates the factorial of \emph{x} and \emph{ex2} computes the result of \emph{$2^x$}, both for \emph{x $\geq$ 4}.
 In this case, we do not want to prove the equivalence of \emph{ex1} and \emph{ex2}, but that the factorial majorizes the exponent for \emph{x $\geq$ 4}.
-Therefore, we provide the following relational specification to reach that goal, keeping in mind that the post-condition, indicated by the \emph{ensures} keyword, should be interpreted as "the value of the variable \emph{result} of \emph{ex1} is strictly greater than its \emph{ex2}'s counterpart, after the execution ends".
+Therefore, we provide the \hyperref[fig:cond_align_loops_rel_spec]{following} relational specification to reach that goal.
+Keep in mind that the post-condition, indicated by the \emph{ensures} keyword, should be interpreted as "the value of the variable \emph{result} of \emph{ex1} is strictly greater than its \emph{ex2}'s counterpart, after the execution ends".
 
 \begin{figure}[h]
   \centering
@@ -889,7 +890,7 @@ This relational spec means that, if at the start of the execution: both programs
 
 \emph{ex1} and \emph{ex2} structure's are very similar and the example is simplified by setting the \emph{z} to 4! and $2^4$, respectively.
 The \emph{w} variables' goal is to introduce \emph{stuttering} steps.
-In this case, it restricts the loops from both sides to only execute the assignments to \emph{z} and \emph{y} when \emph{w} is divisible by \emph{n}.
+In this case, it restricts the loops to only execute the assignments to \emph{z} and \emph{y} when \emph{w} is divisible by \emph{n}, something that is valid for both sides.
 
 Since the only restriction on \emph{n} is that they both sould be greater than 0, we can not be sure if the number of iterations will be the same for both sides, which excludes the possibility of providing an alignment based on pure lockstep.
 Therefore, we should only align iterations in lockstep when \emph{w mod n = 0} on both sides; in other words, when the assignments to \emph{z} and \emph{y} will be performed.
@@ -902,7 +903,7 @@ These annotations are general relation formulas that express conditions that cau
 In our example, the alignment guards are \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$ | $\rhd$ w mod n $\neq$ 0 $\rhd$}.
 Looking at the left alignment guard, \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$}, we understand that \emph{ex\_bip} executes left-only iterations when, on the left side, \emph{w} is \textbf{not} divisible by \emph{n}. 
 A left-only iteration means that only the left side statements inside the loop are executed: \emph{if (w mod n = 0) then (z := z*y; y := y-1) end; w := w+1}.
-The only assignment in this case is the increment of the \emph{w} variable, since the guard makes the if condition become false.
+The only assignment in this case is the increment of the \emph{w} variable, since the alignment guard is contraditory with the $if$'s condition.
 This reasoning is similar to the right side, representing the right-only iterations.
 Finally, the lockstep iterations happen when both alignment guards are false; in this case, when \emph{w} is a multiple of \emph{n} on both sides.
 This alignment allows us to use the relational invariants in \emph{ex\_bip} to prove that the post-condition holds after the execution of the biprogram.
@@ -930,7 +931,7 @@ $\lfloor$ x := x + 1 $\rfloor$;
 \end{lstlisting}
 
 Considering the unary original programs \emph{C} and \emph{C'}, the corresponding biprogram \emph{CC} and $\equiv$ the symbol for syntactic equality, WhyRel checks $\wideleftharpoonup{CC}$ $\equiv$ \emph{C} and $\widerightharpoonup{CC}$ $\equiv$ \emph{C'}.
-The second phase consists in the introduction of annotations in the birpogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
+The second phase consists in the introduction of annotations in the biprogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
 In an hypothetical case where a biprogram aligns two loops in lockstep, this tool would add, as relational loop invariant, the equivalence of the two loop guards.
 
 \begin{figure}[ht]
@@ -1011,7 +1012,7 @@ $\lfloor C \rfloor$ is simply syntactic sugar for ($C|C$) that are translated by
 Aligning method calls that establish that the relational spec associated with the method allow procedure-modular reasoning about relational properties.
 Using the $\phi$ symbol to represent a global method context, WhyRel translates these calls to calls to the correct WhyML product program (rule 2).
 
-Rule 4 simply represents that a sequence of commands in the biprogram is translated to also a sequence of commands in the product program.
+Rule 4 represents that a sequence of commands in the biprogram is translated to also a sequence of commands in the product program.
 Control flow statements require the generation of more proof obligations: in the case of the \emph{if...then...else}, in rule 6, it appears as a runtime assertion; in a lockstep aligned loop (rule 7), it takes the form of a loop invariant stating that the guards are in agreement.
 Regarding conditionally aligned loops, described by rule 8, the pattern shown by the alignment guards $P | P'$ are captured by the generated loop body.
 This means that if the left (resp. right) guard evalutes to true and $P$ (resp. $P'$) holds, a left-only (resp. right-only) iteration is executed; if not, a lockstep iteration is performed.
@@ -1029,6 +1030,7 @@ WhyRel supports several types of elements to be in the alignment guards: the com
 
 Recall the multiplication \hyperref[fig:mult_source_programs]{unary programs} and their \hyperref[fig:mult_biprogram]{biprogram}.
 We now present its corresponding product program, after applying the translation rules described before.
+In order to demonstrate what would be the expected output of the tool when we feed it the \hyperref[fig:mult_biprogram]{biprogram}, we developed a simplified and more readable version of \href{https://github.com/dnaumann/RelRL/blob/main/examples/equiv-check/example.mlw}{this} example.
 
 \begin{figure}[h]
   \centering
@@ -1040,8 +1042,9 @@ module MultPP
   use int.Int
   use ref.Ref
 
-  let mult_whyml (n_l m_l n_r m_r : int) : (result_l: int, result_r: int)
-    requires { n_l = n_r && m_l = m_r && m_l >= 0 }
+  let mult_whyml (n_l m_l n_r m_r : int) : (result_l: int,
+    result_r: int)
+    requires { n_l = n_r && n_l >= 0 && m_l = m_r && m_l >= 0 }
     ensures  { result_l = result_r }
   =
     let i_l = ref 0 in
@@ -1078,36 +1081,36 @@ end
   \label{fig:translation_ex}
 \end{figure}
 
-It is important to note that this code and specification has been developed by us and not by WhyRel's authors, in order to demonstrate what would be the expected output of the tool when we feed it with the \hyperref[fig:mult_biprogram]{biprogram}.
-Therefore, we had to add the pre-condition \emph{m\_l >= 0}, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
-The additional pre-condition is necessary to stop $result\_r$ from eventually reaching its correct value (assuming $n\_r$ is positive) while $result\_l$'s value stays at 0 during the whole execution of the program.
-The \emph{variant \{ n\_l - !i\_l \}$ and $variant \{ m\_l - !j \}} are needed to prove termination of the outer and inner loops, respectively.
+Firstly, we had to add the pre-conditions \emph{n\_l >= 0} and \emph{m\_l >= 0}, the two variants and the invariants for the inner loop, since Why3 was not able to prove correctness without these extra pieces of specification.
+\emph{n\_l >= 0} is needed because if \emph{n\_l < 0}, the program would wrongly return \emph{0, 0} every time.
+The second additional pre-condition is necessary to stop $result\_r$ from eventually reaching its correct value (assuming $n\_r$ is positive) while $result\_l$'s value stays at 0 during the whole execution of the program.
+The \emph{variant \{ n\_l - !i\_l \} and variant \{ m\_l - !j \}} are needed to prove termination of the outer and inner loops, respectively.
 The \emph{invariant \{ 0 <= !j <= m\_l \&\& ! result\_l = ! result\_r + !j \}} is also not dispensable, since Why3 is not able to reason automatically about how $result\_l$ varies during the inner loop.
 
 Additionally, because \emph{old(result)} in WhyRel's biprogram language means the value that the $result$ variable had in the previous loop iteration, but in WhyML it represents the value in the previous function call, we had to adapt this when translating.
 The best solution we found is the use of labels to capture the state of program before the execution of the inner while loop, therefore allowing us to access the value of $result$ in the previous iteration.
-Finally, with this specification, CVC5 was able to discharge all VCs automatically and the proof took 0.08 seconds to complete.
+Finally, with this specification, Z3 was able to discharge all VCs automatically and the proof took 0.04 seconds to complete.
 
 \begin{table}[!h]
 \begin{center}
   \begin{tabular}{|l|l|l|l|c|}
-    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 
+    \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{Z3 4.14.1} \\ 
     \hline
-    \explanation{VC for mult\_pp}  & \explanation{loop invariant init} & \valid{0.01} \\ 
+    \explanation{VC for mult\_pp}  & \explanation{loop invariant init} & \valid{0.00} \\ 
     \cline{2-3}
     & \explanation{loop invariant init} & \valid{0.01} \\ 
     \cline{2-3}
-    & \explanation{loop variant decrease} & \valid{0.01} \\ 
+    & \explanation{loop variant decrease} & \valid{0.00} \\ 
     \cline{2-3}
     & \explanation{loop invariant preservation} & \valid{0.01} \\ 
     \cline{2-3}
     & \explanation{assertion} & \valid{0.01} \\ 
     \cline{2-3}
-    & \explanation{loop variant decrease} & \valid{0.01} \\ 
+    & \explanation{loop variant decrease} & \valid{0.00} \\ 
     \cline{2-3}
     & \explanation{loop invariant preservation} & \valid{0.01} \\ 
     \cline{2-3}
-    & \explanation{postcondition} & \valid{0.01} \\ 
+    & \explanation{postcondition} & \valid{0.00} \\ 
     \hline 
   \end{tabular}
   \caption{\hyperref[fig:translation_ex]{$mult\_pp$} verification results.}
