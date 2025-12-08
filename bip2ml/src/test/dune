@@ -17,7 +17,7 @@
  (action
 		(progn
 	 	(with-stdout-to 000_important.actual
-				(run ../biplang.exe 000_important.bip))
+				(run ../biplang.exe 000_important.bip 000_important.ml))
 	 	(run diff 000_important.expected 000_important.actual))))
 
 (rule
@@ -28,7 +28,7 @@
  (action
 		(progn
 	 	(with-stdout-to 001_arith_and_fun_sig.actual
-				(run ../biplang.exe 001_arith_and_fun_sig.bip))
+				(run ../biplang.exe 001_arith_and_fun_sig.bip 001_arith_and_fun_sig.ml))
 	 	(run diff 001_arith_and_fun_sig.expected 001_arith_and_fun_sig.actual))))
 
 (rule
@@ -39,7 +39,7 @@
  (action
 		(progn
 	 	(with-stdout-to 002_logic_and_comments.actual
-				(run ../biplang.exe 002_logic_and_comments.bip))
+				(run ../biplang.exe 002_logic_and_comments.bip 002_logic_and_comments.ml))
 	 	(run diff 002_logic_and_comments.expected 002_logic_and_comments.actual))))
 
 (rule
@@ -50,7 +50,7 @@
  (action
 		(progn
 	 	(with-stdout-to 003_let_and_if.actual
-				(run ../biplang.exe 003_let_and_if.bip))
+				(run ../biplang.exe 003_let_and_if.bip 003_let_and_if.ml))
 	 	(run diff 003_let_and_if.expected 003_let_and_if.actual))))
 
 (rule
@@ -61,7 +61,7 @@
  (action
 		(progn
 	 	(with-stdout-to 004_cycles_and_assert.actual
-				(run ../biplang.exe 004_cycles_and_assert.bip))
+				(run ../biplang.exe 004_cycles_and_assert.bip 004_cycles_and_assert.ml))
 	 	(run diff 004_cycles_and_assert.expected 004_cycles_and_assert.actual))))
 
 (rule
@@ -72,7 +72,7 @@
  (action
 		(progn
 	 	(with-stdout-to 005_match_and_app.actual
-				(run ../biplang.exe 005_match_and_app.bip))
+				(run ../biplang.exe 005_match_and_app.bip 005_match_and_app.ml))
 	 	(run diff 005_match_and_app.expected 005_match_and_app.actual))))
 
 (rule
@@ -83,7 +83,7 @@
  (action
 		(progn
 	 	(with-stdout-to 006_nested_funs.actual
-				(run ../biplang.exe 006_nested_funs.bip))
+				(run ../biplang.exe 006_nested_funs.bip 006_nested_funs.ml))
 	 	(run diff 006_nested_funs.expected 006_nested_funs.actual))))
 
 (rule
@@ -94,7 +94,7 @@
  (action
 		(progn
 	 	(with-stdout-to 007_pipe_and_floor.actual
-				(run ../biplang.exe 007_pipe_and_floor.bip))
+				(run ../biplang.exe 007_pipe_and_floor.bip 007_pipe_and_floor.ml))
 	 	(run diff 007_pipe_and_floor.expected 007_pipe_and_floor.actual))))
 
 (rule
@@ -105,7 +105,7 @@
  (action
 		(progn
 	 	(with-stdout-to 008_type_and.actual
-				(run ../biplang.exe 008_type_and.bip))
+				(run ../biplang.exe 008_type_and.bip 008_type_and.ml))
 	 	(run diff 008_type_and.expected 008_type_and.actual))))
 
 (rule
@@ -116,7 +116,7 @@
  (action
 		(progn
 	 	(with-stdout-to 009_modapp_arrays.actual
-				(run ../biplang.exe 009_modapp_arrays.bip))
+				(run ../biplang.exe 009_modapp_arrays.bip 009_modapp_arrays.ml))
 	 	(run diff 009_modapp_arrays.expected 009_modapp_arrays.actual))))
 
 (rule
@@ -127,5 +127,5 @@
  (action
 		(progn
 	 	(with-stdout-to 010_lists.actual
-				(run ../biplang.exe 010_lists.bip))
+				(run ../biplang.exe 010_lists.bip 010_lists.ml))
 	 	(run diff 010_lists.expected 010_lists.actual))))

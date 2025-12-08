@@ -1,8 +1,8 @@
-# dune exec -- ./biplang.exe manual_test.bip
+# dune exec -- ./biplang.exe web_server.bip web_server.ml --print-asts
 # OCAMLPARAM: unset
-# Shared cache: disabled
+# Shared cache: enabled-except-user-rules
 # Shared cache location: /home/joaonini/.cache/dune/db
-# Workspace root: /home/joaonini/tese/bipToOCamlTranspiler/src
+# Workspace root: /home/joaonini/tese/bip2ml/src
 # Auto-detected concurrency: 12
 # Dune context:
 #  { name = "default"
@@ -13,4 +13,4 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ /usr/bin/ocamlc.opt -config > /tmp/dune_72993e_output
+$ /usr/bin/ocamlc.opt -config > /tmp/dune_9ce312_output

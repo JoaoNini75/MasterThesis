@@ -59,7 +59,7 @@ type typedef =
 type pattern_elem =
   | PEid of   ident
   | PEcst of  constant
-  | PEwc
+  | PEwc (* wildcard *)
 
 type prepend_elem =
   | PPDid of    ident

@@ -6,6 +6,7 @@ open Parser
 open Ast_ml
 open Ast_bip
 open Ast_core
+open Print_asts
 
 type side = Left | Right
 
@@ -26,8 +27,8 @@ type print_format =
 
 
 let usage = "
-  manual use:
-    dune build biplang.exe && dune exec -- ./biplang.exe manual_test.bip 
+  run bip2ml:
+    dune build biplang.exe && dune exec -- ./biplang.exe <file1.bip> <file2.ml> [--print-asts]
 
   update test/dune when you add or delete test files:
     cd test
@@ -45,24 +46,38 @@ let usage = "
 
 let indent_spaces = 2
 let special_cond_align_char = '?'
-let parse_only = ref false
+
+let print_asts = ref false
 
 let spec =
   [
-    "--parse-only", Arg.Set parse_only, "  stop after parsing";
+    "--print-asts", Arg.Set print_asts, "  print ASTs during processing";
   ]
 
-let file =
-  let file = ref None in
-  let set_file s =
-    if not (Filename.check_suffix s ".bip") then
-      raise (Arg.Bad "no .bip extension");
-    file := Some s
+let files =
+  let files = ref [] in
+  let add_file s =
+    files := s :: !files
   in
-  Arg.parse spec set_file usage;
-  match !file with Some f -> f | None -> Arg.usage spec usage; exit 1
+  Arg.parse spec add_file usage;
+  match List.rev !files with
+  | [f1; f2] ->
+      if not (Filename.check_suffix f1 ".bip") then begin
+        prerr_endline "error: first file must have a .bip extension";
+        Arg.usage spec usage;
+        exit 1
+      end;
+      if not (Filename.check_suffix f2 ".ml") then begin
+        prerr_endline "error: second file must have a .ml extension";
+        Arg.usage spec usage;
+        exit 1
+      end;
+      (f1, f2)
+  | _ ->
+      Arg.usage spec usage;
+      exit 1
 
-let report (b,e) =
+let report (b, e, file) =
   let l = b.pos_lnum in
   let fc = b.pos_cnum - b.pos_bol + 1 in
   let lc = e.pos_cnum - b.pos_bol + 1 in
@@ -1242,6 +1257,7 @@ let pp_ml (ofile : Ast_ml.ofile) =
 
 
 let () =
+  let file, output_file = files in
   let c = open_in file in
   let lb = Lexing.from_channel c in
   try
@@ -1249,19 +1265,23 @@ let () =
     close_in c;
 
     let ofile = bip_to_ml_file f in
-    pp_ml ofile; (* print OCaml code to terminal *)
-    write_ml_to_file "manual_test_output.ml" ofile; (* print OCaml code to file *)
+    (*pp_ml ofile;*) (* print OCaml code to terminal *)
+    write_ml_to_file output_file ofile; (* print OCaml code to file *)
 
-    if !parse_only then exit 0
+    if !print_asts then (
+      write_bip_ast_to_file "bip_ast.json" f;
+      write_ml_ast_to_file "ml_ast.json" ofile
+    )
+
   with
-    | Lexer.Lexing_error s ->
-	report (lexeme_start_p lb, lexeme_end_p lb);
-	eprintf "lexical error: %s@." s;
-	exit 1
-    | Parser.Error ->
-	report (lexeme_start_p lb, lexeme_end_p lb);
-	eprintf "syntax error@.";
-	exit 1
-    | e ->
-	eprintf "Anomaly: %s\n@." (Printexc.to_string e);
-	exit 2
+  | Lexer.Lexing_error s ->
+    report (lexeme_start_p lb, lexeme_end_p lb, file);
+    eprintf "lexical error: %s@." s;
+    exit 1
+  | Parser.Error ->
+    report (lexeme_start_p lb, lexeme_end_p lb, file);
+    eprintf "syntax error@.";
+    exit 1
+  | e ->
+    eprintf "Anomaly: %s\n@." (Printexc.to_string e);
+    exit 2

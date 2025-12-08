@@ -1,0 +1,335 @@
+{
+      "type": "BipLang",
+
+      "name": "",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "decl",
+
+      "name": "Edef",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "def",
+
+      "name": "",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ident",
+
+      "name": "",
+
+      "value": "example",
+
+      "children": []
+},
+{
+      "type": "bool",
+
+      "name": "",
+
+      "value": "false",
+
+      "children": []
+},
+{
+      "type": "parameter_list",
+
+      "name": "",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "parameter",
+
+      "name": "Param",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ident",
+
+      "name": "",
+
+      "value": "x",
+
+      "children": []
+},
+{
+      "type": "bip_type",
+
+      "name": "",
+
+      "value": "int",
+
+      "children": []
+}
+]
+}
+]
+},
+{
+      "type": "fun_ret",
+
+      "name": "",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ret_type",
+
+      "name": "Retbt",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "bip_type",
+
+      "name": "",
+
+      "value": "bool",
+
+      "children": []
+}
+]
+}
+]
+},
+{
+      "type": "expr_list",
+
+      "name": "",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "expr",
+
+      "name": "Elet",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ident",
+
+      "name": "",
+
+      "value": "y",
+
+      "children": []
+},
+{
+      "type": "expr",
+
+      "name": "Ebinop",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "binop",
+
+      "name": "Badd",
+
+      "value": "",
+
+      "children": []
+},
+{
+      "type": "expr",
+
+      "name": "Eident",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ident",
+
+      "name": "",
+
+      "value": "x",
+
+      "children": []
+}
+]
+},
+{
+      "type": "expr",
+
+      "name": "Ecst",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "constant",
+
+      "name": "Cint",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "int",
+
+      "name": "",
+
+      "value": "3",
+
+      "children": []
+}
+]
+}
+]
+}
+]
+},
+{
+      "type": "expr",
+
+      "name": "Ebinop",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "binop",
+
+      "name": "Badd",
+
+      "value": "",
+
+      "children": []
+},
+{
+      "type": "expr",
+
+      "name": "Ebinop",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "binop",
+
+      "name": "Bmul",
+
+      "value": "",
+
+      "children": []
+},
+{
+      "type": "expr",
+
+      "name": "Eident",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "ident",
+
+      "name": "",
+
+      "value": "y",
+
+      "children": []
+}
+]
+},
+{
+      "type": "expr",
+
+      "name": "Ecst",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "constant",
+
+      "name": "Cint",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "int",
+
+      "name": "",
+
+      "value": "2",
+
+      "children": []
+}
+]
+}
+]
+}
+]
+},
+{
+      "type": "expr",
+
+      "name": "Ecst",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "constant",
+
+      "name": "Cint",
+
+      "value": "",
+
+      "children": [
+{
+      "type": "int",
+
+      "name": "",
+
+      "value": "4",
+
+      "children": []
+}
+]
+}
+]
+}
+]
+}
+]
+}
+]
+},
+{
+      "type": "spec",
+
+      "name": "",
+
+      "value": " requires x > 0\n    ensures  true ",
+
+      "children": []
+}
+]
+}
+]
+}
+]
+}

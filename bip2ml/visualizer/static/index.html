@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="icon" href="favicon.ico?v=2" type="image/x-icon">
+
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+    <script type="module" src="requests.js"></script>
+    <script type="module" src="adjustPanels.js"></script>
+    <script type="module" src="displayASTs.js"></script>
+
+    <title>bip2ml Visualizer</title>
+</head>
+
+<body>
+    <div class="grid" id="mainGrid" style="--col-left:40% ; --col-right:60% ; --row-top:50% ; --row-bottom:50%;">
+        <!-- Top Left: BipLang Code -->
+        <section class="panel" id="editorA-panel">
+            <div class="hdr">
+                <div class="title">BipLang Code</div>
+                <div class="controls">
+                    <button class="ctrl" id="run">Transpile</button>
+                    <button class="ctrl" id="copyBipLang">Copy</button>
+                </div>
+            </div>
+            <div class="editor-wrap">
+                <pre class="ln" id="lnA">1</pre>
+                <div class="code-area">
+                    <textarea id="taA" class="code" spellcheck="false">let example (x : int) : bool = begin
+  let y = x + 3 in
+  y * 2 + 4
+end
+(*@ requires x > 0
+    ensures  true *)
+</textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vertical splitter -->
+        <div class="v-splitter" id="vSplit">
+            <div class="split-handle" aria-hidden>
+                <div class="splitbar"></div>
+            </div>
+        </div>
+
+        <!-- Top Right: BipLang AST -->
+        <section class="panel" id="zoom1-panel">
+            <div class="hdr">
+                <div class="title">BipLang AST</div>
+                <div class="controls">
+                    <button class="ctrl" id="getSVGBipLang">Save SVG</button>
+                    <button class="ctrl" id="getPNGBipLang">Save PNG</button>
+                    <button class="ctrl" id="copyBipLangJSON">Save JSON</button>
+                    <button class="ctrl" data-zoom="-" data-target="zoom1">-</button>
+                    <button class="ctrl" data-zoom="reset" data-target="zoom1">⤢</button>
+                    <button class="ctrl" data-zoom="+" data-target="zoom1">+</button>
+                    <div class="muted" id="zoom1-label">100%</div>
+                </div>
+            </div>
+            <div class="zoom-scroll" id="zoom1-scroll">
+                <div class="zoom-stage" id="zoom1-stage">
+                    <svg id="svgBipLang" viewBox="0 0 0 0"></svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Horizontal splitter -->
+        <div class="h-splitter" id="hSplit">
+            <div class="split-handle" aria-hidden>
+                <div class="splitbar"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Left: OCaml Code -->
+        <section class="panel" id="editorB-panel">
+            <div class="hdr">
+                <div class="title">OCaml Code</div>
+                <div class="controls">
+                    <button class="ctrl" id="copyOCaml">Copy</button>
+                </div>
+            </div>
+            <div class="editor-wrap">
+                <pre class="ln" id="lnB">1</pre>
+                <div class="code-area">
+                    <textarea id="taB" class="code" spellcheck="false" readonly
+                        placeholder="Generated OCaml code will appear here"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Right: OCaml AST -->
+        <section class="panel" id="zoom2-panel">
+            <div class="hdr">
+                <div class="title">OCaml AST</div>
+                <div class="controls">
+                    <button class="ctrl" id="getSVGOCaml">Save SVG</button>
+                    <button class="ctrl" id="getPNGOCaml">Save PNG</button>
+                    <button class="ctrl" id="copyOCamlJSON">Save JSON</button>
+                    <button class="ctrl" data-zoom="-" data-target="zoom2">-</button>
+                    <button class="ctrl" data-zoom="reset" data-target="zoom2">⤢</button>
+                    <button class="ctrl" data-zoom="+" data-target="zoom2">+</button>
+                    <div class="muted" id="zoom2-label">100%</div>
+                </div>
+            </div>
+            <div class="zoom-scroll" id="zoom2-scroll">
+                <div class="zoom-stage" id="zoom2-stage">
+                    <svg id="svgOCaml" viewBox="0 0 0 0"></svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- center handle -->
+        <div class="center-handle" id="centerHandle">
+            <div class="center-box"></div>
+        </div>
+    </div>
+</body>
+
+</html>

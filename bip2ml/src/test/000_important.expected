@@ -28,10 +28,10 @@ let induc_var_strength_red (b_l : int) (b_r : int) (c_l : int) (c_r : int) (n_l 
 
   while (!i_l < n_l) do
     (*@ invariant ((!i_l < n_l)) <-> ((!i_r < n_r))
-        invariant !i_l >= 0 && !i_r >= 0 && !i_l = !i_r && (n_l >= 0 -> !i_l <= n_l)
-        invariant !j_r = !i_r * b_r + c_r
-        invariant !x_l = !x_r 
-        variant n_l - !i_l *)
+        variant   n_l - !i_l
+        invariant !i_l = !i_r 
+        invariant !x_l = !x_r
+        invariant !j_r = !i_r * b_r + c_r *)
     j_l := ((!i_l * b_l) + c_l);
     x_r := (!x_r + !j_r);
     x_l := (!x_l + !j_l);
@@ -56,10 +56,12 @@ let cond_align_loops (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int
   let w_r = ref (0) in
 
   while ((!y_l > 4) || (!y_r > 4)) do
-    (*@ variant   !y_l + !y_r
-				invariant !z_l > !z_r && !y_l = !y_r && !y_r >= 4 && !z_l > 0 && !z_r > 0 
-        invariant (!y_l > 4 && mod !w_l 2 <> 0) || (!y_r > 4 && mod !w_r 2 <> 0) || (not (!y_l > 4) && not (!y_r > 4)) || (!y_l > 4 && !y_r > 4) *)
-    if ((!y_l > 4) && ((!w_l mod 2) <> 0))
+    (*@ invariant !y_l = !y_r && !y_l >= 4
+        invariant !z_r > 0
+        invariant !z_l * !y_l > !z_r * 2
+				invariant !z_l > !z_r 
+        invariant (!y_l > 4 && mod !w_l n_l <> 0) || (!y_r > 4 && mod !w_r n_r <> 0) || (not (!y_l > 4) && not (!y_r > 4)) || (!y_l > 4 && !y_r > 4) *)
+    if ((!y_l > 4) && ((!w_l mod n_l) <> 0))
     then begin 
       if ((!w_l mod n_l) = 0)
       then begin 
@@ -70,7 +72,7 @@ let cond_align_loops (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int
       end;
       w_l := (!w_l + 1)
     end else begin 
-      if ((!y_r > 4) && ((!w_r mod 2) <> 0))
+      if ((!y_r > 4) && ((!w_r mod n_r) <> 0))
       then begin 
         if ((!w_r mod n_r) = 0)
         then begin 
@@ -98,7 +100,8 @@ let cond_align_loops (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int
   done;
 
   (!z_l, !z_r)
-(*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
+(*@ requires x_l = x_r && x_l >= 4 && n_l = n_r && n_l > 0
+    diverges
     ensures  match result with (l_res, r_res) -> l_res > r_res *)
 
 let cond_align_loops_nested (x_l : int) (x_r : int) (n_l : int) (n_r : int) : int * int =
@@ -193,5 +196,44 @@ let cond_align_loops_nested (x_l : int) (x_r : int) (n_l : int) (n_r : int) : in
   (!z_l, !z_r)
 (*@ requires x_l = x_r && n_l = n_r && n_r > 0 && x_l >= 4
     ensures  match result with (l_res, r_res) -> l_res > r_res *)
+
+let loop_alignment (n_l : int) (n_r : int) (a_l : int array) (a_r : int array) (b_l : int array) (b_r : int array) (d_l : int array) (d_r : int array) =
+  let i_l = ref (1) in
+  let i_r = ref (1) in
+  assert ((!i_l <= n_l));
+  b_l.(!i_l) <- a_l.(!i_l);
+  d_l.(!i_l) <- b_l.((!i_l - 1));
+  i_l := (!i_l + 1);
+  d_r.(1) <- b_r.(0);
+
+  while (!i_l < n_l) do
+    (*@ variant   n_l - !i_l
+        invariant (!i_l < n_l) <-> (!i_r < n_r - 1)
+        invariant !i_r >= 0 && !i_l = !i_r + 1
+        invariant b_l.(!i_r) = a_l.(!i_r)
+        invariant b_l.(!i_r - 1) = b_r.(!i_r - 1) 
+        invariant forall k. 1 <= k < !i_l -> d_l.(k) = d_r.(k) *)    
+    b_l.(!i_l) <- a_l.(!i_l);    
+    b_r.(!i_r) <- a_r.(!i_r);    
+    d_l.(!i_l) <- b_l.((!i_l - 1));    
+    d_r.((!i_r + 1)) <- b_r.(!i_r);
+    i_l := (!i_l + 1);
+    i_r := (!i_r + 1)
+  done;
+
+  b_r.(n_r) <- a_r.(n_r)
+(*@ requires n_l >= 1 && n_l = n_r 
+		requires Array.length a_l = n_l + 1 
+		requires Array.length b_l = n_l + 1 
+		requires Array.length d_l = n_l + 1 
+
+		requires Array.length a_l = Array.length a_r
+		requires Array.length b_l = Array.length b_r
+		requires Array.length d_l = Array.length d_r
+
+    requires forall k. 0 <= k < n_l -> a_l.(k) = a_r.(k)
+    requires b_l.(0) = b_r.(0)
+		
+    ensures  forall k. 1 <= k < n_l -> d_l.(k) = d_r.(k) *)
 
 

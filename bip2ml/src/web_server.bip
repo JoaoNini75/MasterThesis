@@ -1,0 +1,6 @@
+let example (x : int) : bool = begin
+  let y = x + 3 in
+  y * 2 + 4
+end
+(*@ requires x > 0
+    ensures  true *)

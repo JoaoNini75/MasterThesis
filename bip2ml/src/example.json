@@ -1,0 +1,190 @@
+{
+    "type": "program",
+    "name": "",
+    "value": "",
+    "children": [
+        {
+            "type": "decl",
+            "name": "Eopen",
+            "value": "",
+            "children": [
+                {
+                    "type": "ident_cap",
+                    "name": "",
+                    "value": "Module1",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "type": "decl",
+            "name": "Espec",
+            "value": "",
+            "children": [
+                {
+                    "type": "spec",
+                    "name": "",
+                    "value": "requires x > 0",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "type": "decl",
+            "name": "Etypedef",
+            "value": "",
+            "children": [
+                {
+                    "type": "typedef",
+                    "name": "TDsimple",
+                    "value": "",
+                    "children": [
+                        {
+                            "type": "ident",
+                            "name": "",
+                            "value": "typeex1",
+                            "children": []
+                        },
+                        {
+                            "type": "payload",
+                            "name": "",
+                            "value": "",
+                            "children": [
+                                {
+                                    "type": "payload_elem_list",
+                                    "name": "",
+                                    "value": "",
+                                    "children": [
+                                        {
+                                            "type": "payload_elem",
+                                            "name": "PLexisting",
+                                            "value": "",
+                                            "children": [
+                                                {
+                                                    "type": "bip_type",
+                                                    "name": "",
+                                                    "value": "INT",
+                                                    "children": []
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "type": "payload_elem",
+                                            "name": "PLnew",
+                                            "value": "",
+                                            "children": [
+                                                {
+                                                    "type": "ident",
+                                                    "name": "",
+                                                    "value": "typeex2",
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "decl",
+            "name": "Edef",
+            "value": "",
+            "children": [
+                {
+                    "type": "ident",
+                    "name": "",
+                    "value": "fun1",
+                    "children": []
+                },
+                {
+                    "type": "bool",
+                    "name": "",
+                    "value": "false",
+                    "children": []
+                },
+                {
+                    "type": "parameter_list",
+                    "name": "",
+                    "value": "",
+                    "children": [
+                        {
+                            "type": "parameter",
+                            "name": "Punit",
+                            "value": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "type": "fun_ret",
+                    "name": "",
+                    "value": "",
+                    "children": []
+                },
+                {
+                    "type": "expr_list",
+                    "name": "",
+                    "value": "",
+                    "children": [
+                        {
+                            "type": "expr",
+                            "name": "Ebinop",
+                            "value": "",
+                            "children": [
+                                {
+                                    "type": "binop",
+                                    "name": "Badd",
+                                    "value": "",
+                                    "children": []
+                                },
+                                {
+                                    "type": "expr",
+                                    "name": "Eident",
+                                    "value": "",
+                                    "children": [
+                                        {
+                                            "type": "ident",
+                                            "name": "",
+                                            "value": "x",
+                                            "children": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "expr",
+                                    "name": "Ecst",
+                                    "value": "",
+                                    "children": [
+                                        {
+                                            "type": "constant",
+                                            "name": "Cint",
+                                            "value": "",
+                                            "children": [
+                                                {
+                                                    "type": "int",
+                                                    "name": "",
+                                                    "value": "3",
+                                                    "children": []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "spec",
+                    "name": "",
+                    "value": "requires x > 0",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}

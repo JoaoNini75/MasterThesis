@@ -3,3 +3,4 @@ ast_core
 ast_ml
 lexer
 parser
+print_asts

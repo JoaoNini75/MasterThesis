@@ -50,8 +50,8 @@ and odef = ident * bool (* rec *) * parameter list * ret_type option
            * bool (* return pair *) * oexpr list * spec
 
 and odecl = 
-  | Odef of   odef
-  | Ospec of  spec
+  | Odef of     odef
+  | Ospec of    spec
   | Otypedef of typedef
   | Oopen of    ident_cap
   | Oinclude of ident_cap

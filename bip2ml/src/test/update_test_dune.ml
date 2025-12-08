@@ -15,7 +15,7 @@ let header_text = {|;; test/dune
 |}
 
 let rule_base_text : (string -> string -> string -> string -> string     
-  -> string -> string, unit, string) format = 
+  -> string -> string -> string, unit, string) format = 
 {|
 (rule
  (alias runtest)
@@ -25,7 +25,7 @@ let rule_base_text : (string -> string -> string -> string -> string
  (action
 		(progn
 	 	(with-stdout-to %s.actual
-				(run ../biplang.exe %s.bip))
+				(run ../biplang.exe %s.bip %s.ml))
 	 	(run diff %s.expected %s.actual))))
 |}
 
@@ -61,7 +61,7 @@ let () =
 		if String.equal filename "" then ()
 		else 
 			let rule_text = Printf.sprintf rule_base_text 
-				filename filename filename filename filename filename in
+				filename filename filename filename filename filename filename in
 			final_text := !final_text ^ rule_text
 	done;
 
