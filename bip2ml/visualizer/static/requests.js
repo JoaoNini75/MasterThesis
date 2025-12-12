@@ -24,7 +24,7 @@ async function transpile() {
         });
 
         let data = await res.json();
-        console.log(data);
+        //console.log(data);
         let { ocaml_code, bip_ast, ocaml_ast, error_msg } = data;
 
         if (error_msg != "") {

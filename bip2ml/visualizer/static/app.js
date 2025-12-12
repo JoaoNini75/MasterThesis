@@ -44,6 +44,7 @@ const svg_style = `
 
 const minZoom = 0.1;
 const maxZoom = 100;
+let isDarkMode = true;
 
 const svgBipLang = document.getElementById("svgBipLang");
 const getSVGBipLang = document.getElementById("getSVGBipLang");
@@ -370,3 +371,57 @@ function downloadFile(content, filename, media_type) {
     a.remove();
     URL.revokeObjectURL(url);
 }
+
+function changeStyleProp(name, color) {
+    document.documentElement.style.setProperty(name, color);
+}
+
+function getStyleProp(name) {
+    return document.documentElement.style.getPropertyValue(name);
+}
+
+function changeColorMode() {
+    isDarkMode = !isDarkMode;
+    localStorage.setItem("isDarkMode", isDarkMode);
+
+    changeStyleProp("--page-bg", isDarkMode ? "#05060a" : "#dbe9f5");
+    changeStyleProp("--panel-bg", isDarkMode ? "#081019" : "#fdfeffff");
+    changeStyleProp("--panel-edge", isDarkMode ? "#ffffff08" : "#adadadff");
+    changeStyleProp("--muted", isDarkMode ? "#9aa6b3" : "#6b7076ff");
+    changeStyleProp("--text", isDarkMode ? "#dbe9f5" : "#1d1d1dff");
+    changeStyleProp("--outline", isDarkMode ? "#c4c4c4" : "#1d1d1dff");
+
+    const textColor = getStyleProp("--text");
+
+    // update ocaml code color
+    document.getElementById("taB").style.color = textColor;
+
+    // update trees' statistics
+    const ast_info_list = document.querySelectorAll('.ast-info');
+    ast_info_list.forEach(el => {
+        el.style.fill = textColor;
+    });
+}
+
+document.addEventListener('keyup', (e) => {
+    const target = e.target;
+    const isTypingField =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target.isContentEditable;
+
+    if (isTypingField) return;
+
+    // Fire on Ctrl+Q or Command+Q
+    if ((e.ctrlKey || e.metaKey) && e.key && e.key.toLowerCase() === 'q') {
+        e.preventDefault(); // optional
+        changeColorMode();
+    }
+});
+
+function initColorMode() {
+    if (localStorage.getItem("isDarkMode") == "false")
+        changeColorMode();
+}
+
+initColorMode();

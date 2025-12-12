@@ -48,7 +48,7 @@ export function generateAST(ast, id) {
     cleanSVG(id);
     const { tree_width, tree_height, tree_node_num } = getTreeInfo(ast);
 
-    displayASTInfo(svg, tree_width, tree_height, tree_node_num);
+    displayASTInfo(svg, tree_width, tree_height, tree_node_num, id);
 
     // TODO: display node info in a balloon when hovering or selected: category, type, name, value
 
@@ -195,7 +195,7 @@ function getTreeInfo(root) {
             traverse(node.children[i], level);
     }
 
-    console.log(levels);
+    //console.log(levels);
     let node_num = 0;
     for (const value of levels.values())
         node_num += value;
@@ -214,8 +214,9 @@ function getTreeInfo(root) {
  * @param {int} tree_width - the width of the tree
  * @param {int} tree_height - the height of the tree
  * @param {int} tree_node_num - the total number of nodes in the tree
+ * @param {string} id - the id of the svg
  */
-function displayASTInfo(svg, tree_width, tree_height, tree_node_num) {
+function displayASTInfo(svg, tree_width, tree_height, tree_node_num, id) {
     const info = document.createElementNS(SVG_NS, 'text');
     const x = 10;
     const y = 10;
@@ -223,12 +224,13 @@ function displayASTInfo(svg, tree_width, tree_height, tree_node_num) {
     const fontSize = tree_width * 5;
     const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text');
 
+    info.classList.add('ast-info');
     info.setAttribute('x', x);
     info.setAttribute('y', y);
     info.setAttribute('dominant-baseline', 'hanging');
     info.setAttribute('font-size', fontSize);
-    info.setAttribute('fill', textColor);
     info.style.pointerEvents = 'none';
+    info.style.fill = textColor;
 
     const lines = [
         `Height: ${tree_height}`,
@@ -298,9 +300,10 @@ function displayEdge(svg, x1, y1, x2, y2) {
  * @param {string} color - The color of the inner part of the circle
  */
 function displayNode(svg, posX, posY, name, label, color) {
-    const is_simple = label == "";
     if (!svg || typeof svg.appendChild !== 'function')
         alert('svg must be a valid SVG element');
+
+    const is_simple = label == "";
 
     // outer group
     const g = document.createElementNS(SVG_NS, 'g');

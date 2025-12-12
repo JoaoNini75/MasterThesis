@@ -6,16 +6,17 @@
     --row-top: 1fr;
     --row-bottom: 1fr;
 
-    /* darker but not pure black */
     --page-bg: #05060a;
-    /* almost black */
+    /* darker but not pure black */
     --panel-bg: #081019;
+    /* almost black */
+    --panel-edge: #ffffff08;
     /* dark bluish black */
-    --panel-edge: rgba(255, 255, 255, 0.03);
     --muted: #9aa6b3;
     --text: #dbe9f5;
+    --node-text: #dbe9f5;
     --accent: #298dff;
-    --svg-white: #c4c4c4;
+    --outline: #c4c4c4;
 }
 
 * {
@@ -312,7 +313,7 @@ textarea.code {
 
 /* Circle */
 .ast-node .ast-circle {
-    stroke: var(--svg-white);
+    stroke: var(--outline);
     stroke-width: 2;
     transition: filter .18s, stroke-width .12s;
 }
@@ -321,7 +322,7 @@ textarea.code {
 .ast-node text.name {
     font-weight: 600;
     font-size: 14px;
-    fill: var(--text);
+    fill: var(--node-text);
     pointer-events: none;
     text-anchor: middle;
     dominant-baseline: middle;
@@ -333,7 +334,7 @@ textarea.code {
 .ast-node text.small {
     font-weight: 500;
     font-size: 12px;
-    fill: var(--text);
+    fill: var(--node-text);
     pointer-events: none;
 }
 
@@ -348,7 +349,7 @@ textarea.code {
 /* Left-aligned label text inside the rect */
 .ast-node .label-box text {
     font-size: 12px;
-    fill: var(--text);
+    fill: var(--node-text);
     pointer-events: none;
     text-anchor: start;
     dominant-baseline: middle;
@@ -362,11 +363,11 @@ textarea.code {
 .ast-node:focus .ast-circle,
 .ast-node.focused .ast-circle {
     stroke-width: 3;
-    stroke: var(--svg-white);
+    stroke: var(--outline);
     filter: drop-shadow(0 0px 20px rgba(255, 255, 255, 1));
 }
 
 line {
-    stroke: var(--svg-white);
+    stroke: var(--outline);
     stroke-width: 2
 }

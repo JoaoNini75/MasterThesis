@@ -29,12 +29,12 @@
             <div class="editor-wrap">
                 <pre class="ln" id="lnA">1</pre>
                 <div class="code-area">
-                    <textarea id="taA" class="code" spellcheck="false">let example (x : int) : bool = begin
-  let y = x + 3 in
-  y * 2 + 4
+                    <textarea id="taA" class="code" spellcheck="false">let example (|_ x : int _|) : |_ int _| = begin
+  let y = x + 2 <|> x * 2 in
+  |_ y _|
 end
-(*@ requires x > 0
-    ensures  true *)
+(*@ requires x_l = 2 && x_l = x_r
+    ensures  match result with (l_res, r_res) -> l_res = r_res *)
 </textarea>
                 </div>
             </div>
