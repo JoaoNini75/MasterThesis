@@ -31,16 +31,16 @@
 \label{sec:formal_software_verification}
 
 The quest for proving that a program does what we expect it to do is so important in computer science that it became a branch of it called formal software verification. 
-There are several approaches~\cite{DBLP:conf/fm/BrainP24} that try to solve this issue, each one with different characteristics, advantages and disadvantages. 
+There are several approaches~\cite{DBLP:conf/fm/BrainP24} that try to solve this issue, each one with different characteristics, advantages, and disadvantages. 
 In this section, we will describe the current situation of the theoretical work and tools that constitute the background.
 
 
 \subsection{Hoare Logic} 
 \label{sub:hoare_logic}
 
-Hoare logic~\cite{hoare69} is a way of reasoning about the correctness of a program, following well defined axioms and rules.
+Hoare logic~\cite{hoare69} is a way of reasoning about the correctness of a program, following well-defined axioms and rules.
 The main feature of the Hoare logic is the Hoare triple. 
-The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}) and the post-condition (\emph{Q}):
+The name comes from the 3 parts that constitute it: the pre-condition (\emph{P}), the program (\emph{S}), and the post-condition (\emph{Q}):
 \[ \{P\} \ \textbf{S} \ \{Q\} \]
 
 This means that if we execute \emph{S} in a state that satisfies a given pre-condition \emph{P}, then the execution finishes in a state that satisfies the post-condition \emph{Q}.
@@ -66,7 +66,7 @@ Otherwise, you can only guarantee \emph{partial correctness}.
 \subsection{Relational Hoare Logic} 
 \label{sub:relational_hoare_logic}
 
-\subsubsection{Evolution from Classical\protect\footnote{\ When we say Classical Hoare Logic, we mean the original Hoare logic developed by Tony Hoare.} Hoare Logic}
+\subsubsection{Evolution from Classical\protect\footnote{\ When we mention Classical Hoare Logic, we mean the original Hoare logic developed by Tony Hoare.} Hoare Logic}
 \label{sub:relational_hoare_logic_motivation}
 
 Relational Hoare Logic~\cite{naumann2022thirtysevenyearsrelationalhoare, DBLP:conf/popl/Benton04} (RHL) is a way of reasoning about some property of two different programs or two different executions of the same program.
@@ -84,9 +84,9 @@ The main reason lies in the fact that the classical version does not have a dire
 This would clearly be an obstacle to this work since we aim to prove the correctness of programs by establishing a relation between them and their already proven versions or the ones that are easier to prove.
 However, this thesis is definitely not the only one that relies on the connection between two different implementations of the same idea.
 
-One common example are compiler optimizations, since they aim to make the code more performant but still outputting the same results.
-Another example is represented by a "client" program that uses a abstract data type and does not care about which implementation the "server" provides.
-This can happen since the implementations are expected to be observationally equivalent (i.e., to the "client" they behave the same way) and is the "server" internal logic that decides which one to choose.
+One common example is compiler optimizations, since they aim to make the code more performant but still output the same results.
+Another example is represented by a "client" program that uses an abstract data type and does not care about which implementation the "server" provides.
+This can happen since the implementations are expected to be observationally equivalent (i.e., to the "client", they behave the same way) and is the "server" internal logic that decides which one to choose.
 That choice would depend on some characteristics that, for example, cause one implementation to be more performant than some other(s) in a given situation.
 
 
@@ -112,13 +112,13 @@ We can see that \emph{b} and \emph{c} do not change the final state of any of th
 \vspace{-25pt}
 \[ and \ \ \Psi \triangleq \text{$P_1$.a} = \text{$P_2$.a} \land \text{$P_1$.b} = \text{$P_2$.b} \land \text{$P_1$.c} = \text{$P_2$.c} \]
 
-This Hoare quadruple should be read as: \emph{For any executions of $P_1$ and $P_2$, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components and c-components have the same values
+This Hoare quadruple should be read as: \emph{For any executions of $P_1$ and $P_2$, if they guarantee the equality of their a-components, they both diverge from the post-condition or they both finish in states where their a-components, b-components, and c-components have the same values
 \protect\footnote{\ The values of the components of any of the programs can differ between themselves (\emph{$P_1$.a} has no relation to \emph{$P_1$.b}, for example).}.}
 
 We now introduce the concept of separability.
 If two programs \emph{$P_1$} and \emph{$P_2$} utilize disjoint sets of variables, we say that they are \emph{separable}.
-In this context, this means that these two programs have their own memory, so that the variables of \emph{$P_1$} are never accessed by \emph{$P_2$} and vice-versa.
-Also, in those cases we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
+In this context, this means that these two programs have their own memory, so that the variables of \emph{$P_1$} are never accessed by \emph{$P_2$} and vice versa.
+Also, in those cases, we do not need to specify the program that a given variable belongs to when describing the pre and post conditions.
 Below is another example to show the impact on conciseness that this creates.
 Consider two programs, \emph{$P_1$}, whose variables are \{{a, b, i, j}\} and \emph{$P_2$} whose variables are \{{a', b', i', j'}\}, meaning that they are separable:
 \begin{tabbing}
@@ -147,17 +147,17 @@ Furthermore, there is a special case of the usage of the Hoare quadruple that do
 Usually, in the context of the Hoare quadruple, we consider that the programs \emph{$P_1$} and \emph{$P_2$} are different, but what would happen if they are exactly the same?
 Well, since they are equal letter for letter, it is natural that they will always output the same results given the same inputs.
 
-Finally, consider again two equal programs \emph{$P_1$} and \emph{$P_2$}.
+Finally, consider two equal programs \emph{$P_1$} and \emph{$P_2$} again.
 The way one should look at the transformation of Hoare triples into Hoare quadruples is that if \{$\Phi$\} \emph{$P_1$} \emph{\textasciitilde} \emph{$P_2$} \{$\Psi$\} is true, then \{$\phi$\} \emph{$P_1$} \{$\psi$\} will be true as well.
 
 
 \subsubsection{Axioms and Inference Rules}
 \label{sub:relational_hoare_logic_formal_proof_rules}
 
-Consider the following grammar, that will be used in the rules in this subsubsection.
-Let \emph{n} represent any integer number \{... -1, 0, 1 ...\}, \emph{x} any integer variable of a given program and \emph{a} any array variable.
+Consider the following grammar, which will be used in the rules in this subsubsection.
+Let \emph{n} represent any integer number \{... -1, 0, 1 ...\}, \emph{x} any integer variable of a given program, and \emph{a} any array variable.
 Let \emph{e} be the set of integer expressions, \emph{b} the set of boolean expressions and \emph{c} the set of program expressions (also called commands or statements).
-The syntaxes of \emph{e}, \emph{b} and \emph{c} are given by the following extended BNF definition:\\ \\
+The syntaxes of \emph{e}, \emph{b}, and \emph{c} are given by the following extended BNF definition:\\ \\
 \noindent\hspace*{1em}
 \begin{minipage}{\dimexpr\linewidth-2em\relax}
 \[\begin{aligned} 
@@ -167,12 +167,12 @@ The syntaxes of \emph{e}, \emph{b} and \emph{c} are given by the following exten
 \end{aligned}\]
 \end{minipage}\\ \\
 
-The ellipses above mean that other forms of integer expressions could be added according need.
+The ellipses above mean that other forms of integer expressions could be added according to need.
 It is also important to note that this language does not consider indentation, so we will use that advantage to make reading easier below.
 Finally, assume, for the rules in this subsubsection, that the two given programs \emph{$C_1$} and \emph{$C_2$} are separable.
 
 To derive valid Hoare quadruples, there are axioms and inference rules that reason about the relation between two programs~\cite{DBLP:journals/jlp/BartheCK16}.
-We can divide these rules in at least three sets that increment the former set with some additional rules, meaning that there is the simplest set, the base set and the extended set.
+We can divide these rules in at least three sets that increment the former set with some additional rules, meaning that there is the simplest set, the base set, and the extended set.
 The simplest set has limitations that we will discuss after presenting them, but is the best starting point:
 
 \begin{figure}[h]
@@ -212,9 +212,9 @@ The simplest set has limitations that we will discuss after presenting them, but
   \caption{Simplest set of rules of RHL.}
 \end{figure}
   
-This set of rules has some considerable limitations however: both programs \emph{$C_1$} and \emph{$C_2$} must have the same shape and execute in lockstep.
+This set of rules has some considerable limitations, however: both programs \emph{$C_1$} and \emph{$C_2$} must have the same shape and execute in lockstep.
 This creates a situation where we can not derive a simple Hoare quadruple like \{$\Phi$\} \emph{C}; \textbf{skip} \emph{\textasciitilde} \emph{C} \{$\Psi$\}.
-To allow this and other important derivations, we present next other 4 rules that enable the separate reasoning of \emph{$C_1$} and \emph{$C_2$}.
+To allow this and other important derivations, we present now 4 rules that enable the separate reasoning of \emph{$C_1$} and \emph{$C_2$}.
 Together with the rules of the simplest set, these rules constitute the base set:
 
 \begin{figure}[h]
@@ -244,7 +244,7 @@ Together with the rules of the simplest set, these rules constitute the base set
 \end{figure}
 
 The base set of rules of RHL is incomplete, since it does not provide a way to reason about programs whose loop structures differ or, even when they do not, the pre-condition is not strong enough to prove that the loops execute in lockstep.
-This problem can be overcome when we the extend the base set with one more rule: self-composition.
+This problem can be overcome when we extend the base set with one more rule: self-composition.
 
 
 \begin{figure}[h]
@@ -277,9 +277,9 @@ Finally, it is important to mention that relative completeness of the simplest o
 \subsection{History \& Characteristics} 
 \label{sub:overview}
 
-OCaml~\cite{ocaml} is a general purpose programming language that was released in 1996 at the National Institute for Research in Digital Science and Technology (Inria).
+OCaml~\cite{ocaml} is a general-purpose programming language that was released in 1996 at the National Institute for Research in Digital Science and Technology (Inria).
 It is usually seen as an extension of Caml (a dialect of the Meta Language) that includes object-oriented features, making OCaml a very versatile language.
-Besides supporting the functional, imperative and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code.
+Besides supporting the functional, imperative, and object-oriented approaches, it is also a language that can be either interpreted or compiled, to either bytecode or native code.
 Regarding its type system, OCaml comes with a strong and static type system that also features type inference.
 
 Although the imperative programming paradigm is still more popular than its functional counterpart, the latter has been conquering space inside the universe of programming languages whose focus is on the imperative/object-oriented approach; for example, Java and Kotlin.
@@ -292,9 +292,9 @@ Kotlin, firstly released in 2016, was already designed with the functional style
 
 The relevance of OCaml and functional programming languages in general is an important question that I have asked myself several times in the past, and not only because the first contact with this paradigm was challenging.
 Although I do not question the relevance of these languages anymore because of the evidence that I will show next, I still think that it is not an unexpected concern amongst computer science students.
-I am mentioning this because the majority of jobs and businesses in the field require people for front-end development (with Javascript), back-end development (mostly with imperative languages) or, more recently, AI-related work (mostly with Python or other science-oriented languages).
-There is, although, strong evidence that OCaml is far from being an "academia only" programming language.
-OCaml is used in tech giants such as Meta and Microsoft, in Bloomberg L.P. (that even created an OCaml to Javascript compiler backend), in popular tools like Docker and in many other companies~\cite{ocaml_companies}.
+I am mentioning this because the majority of jobs and businesses in the field require people for front-end development (with JavaScript), back-end development (mostly with imperative languages), or, more recently, AI-related work (mostly with Python or other science-oriented languages).
+There is, however, strong evidence that OCaml is far from being an "academia only" programming language.
+OCaml is used in tech giants such as Meta and Microsoft, in Bloomberg L.P. (which even created an OCaml to JavaScript compiler backend), in popular tools like Docker, and in many other companies~\cite{ocaml_companies}.
 But there is more.
 
 Here are a few impressive examples of what this programming language has been used to build: 
@@ -308,7 +308,7 @@ Here are a few impressive examples of what this programming language has been us
 \label{sub:examples_ocaml}
 
 In this subsection, we will look at a simple Ocaml code example that determines the greatest common divisor of two given numbers, \emph{a} and \emph{b}.
-The first implementation represents the use of the functional paradigm while the second demonstrates how to use imperative constructs in this language.
+The first implementation represents the use of the functional paradigm, while the second demonstrates how to use imperative constructs in this language.
 
 \begin{ocamlsmall}
   let rec gcd (a: int) (b:int) : int =
@@ -328,38 +328,38 @@ The first implementation represents the use of the functional paradigm while the
       !a
 \end{ocamlsmall}
 
-Next there are some notes about the syntax and semantics in the context of these examples. 
+Next, there are some notes about the syntax and semantics in the context of these examples. 
 Since OCaml supports the functional and imperative paradigms, it distinguishes between immutable variables (actually not present in the programs shown) and memory references, therefore the different syntax for the binding of each one: 
 \[ \emph{let x = 3 (variable)} \]
 \vspace{-25pt}
 \[ \emph{let y = ref 4 (reference)} \]
 
 The \emph{rec} keyword tells the compiler/interpreter that it is fine if the function calls itself, reducing the risk of the programmer using recursion by accident.
-OCaml is also sharp enough to understand these programs correctly even if we did not specify the types of the function or its arguments.
+OCaml is also sharp enough to understand these programs correctly, even if we did not specify the types of the function or its arguments.
 Finally, the \emph{let} keyword can be used to define a function or create a binding, something rather uncommon for someone with an imperative background.
 
 
 \section{Why3}
 \label{sec:why3}
 
-Why3 is a platform whose objective is the verification of programs in a deductive way, presenting it self as a \emph{"a front-end to third-party theorem provers"}~\cite{why3}.
-These several theorem provers can be put to work together and vary greatly in nature, ranging from SMT solvers (for example, Z3 or cvc5) to TPTP provers and even interactive proof assistants (such as Coq or Isabelle).
+Why3 is a platform whose objective is the verification of programs in a deductive way, presenting itself as a \emph{"a front-end to third-party theorem provers"}~\cite{why3}.
+Those theorem provers can be put to work together and vary greatly in nature, ranging from SMT solvers (for example, Z3 or cvc5) to TPTP provers and even interactive proof assistants (such as Coq or Isabelle).
 Under the hood, Why3 is an OCaml library, implemented in the form of an API.
-It features a CLI, a GUI and a benchmark tool to compare the performance of the different provers available.
+It features a CLI, a GUI, and a benchmark tool to compare the performance of the different provers available.
 
 When we want to verify the correctness of a given program, we need to ensure that the input code is written in WhyML~\cite{DBLP:conf/esop/FilliatreP13}, since that is the language that Why3 expects.
-WhyML can be considered a ML dialect and is simultaneously a specification and a programming language that serves as an intermediary language between C, Java or Ada programs and the verification conditions (VCs) generated by Why3.
+WhyML can be considered a ML dialect and is simultaneously a specification and a programming language that serves as an intermediary language between C, Java, or Ada programs and the verification conditions (VCs) generated by Why3.
 
 The most used WhyML specification keywords are precisely the ones present in the example in the next \hyperref[subsec:why3_example]{subsection}, \emph{requires} and \emph{ensures}.
 These represent the pre-conditions and post-conditions, respectively.
 Besides those, the \emph{variant} and \emph{invariant} keywords are also very common.
-Loops in this language are annotated with invariants, through the use of the \emph{invariant} keyword.
+Loops in this language are annotated with invariants through the use of the \emph{invariant} keyword.
 While loops specifically and recursive functions benefit greatly from the \emph{variant} keyword, which represents a way of showing that the program does not run forever.
 
 \subsection{Example}
 \label{subsec:why3_example}
 
-As a way of demonstrating how Why3 works in practice, here is a preview of what is possible to do with product programs, an important concept which we will discuss in detail in the next chapter.
+As a way of demonstrating how Why3 works in practice, here is a preview of what is possible to do with product programs, an important concept that we will discuss in detail in the next chapter.
 If we want to prove that the original and the transformed programs are equivalent, we can write a third program that combines the first two, a \emph{product program}.
 
 The original program is based on only two assignment instructions: \emph{y := x + 1;} and \emph{z := y + 1;}.
@@ -455,8 +455,8 @@ There was no need for human intervention in verifying the product program, as th
 \section{GOSPEL}
 \label{sec:gospel}
 
-GOSPEL~\cite{DBLP:conf/fm/ChargueraudFLP19} (Generic Ocaml SPEcification Language) is a tool-agnostic specification language for OCaml that allows one to verify the correctness of a program (there are other purposes but this is the most interesting for this work).
-GOSPEL is based in Separation Logic and significantly improves the experience of the people that write or read the specifications, by making them much more concise.
+GOSPEL~\cite{DBLP:conf/fm/ChargueraudFLP19} (Generic Ocaml SPEcification Language) is a tool-agnostic specification language for OCaml that allows one to verify the correctness of a program (there are other purposes, but this is the most interesting for this work).
+GOSPEL is based in Separation Logic and significantly improves the experience of the people who write or read the specifications, by making them much more concise.
 Let us reconsider the code presented in this \hyperref[sub:examples_ocaml]{subsection}, but this time also show the GOSPEL specification for that program:
 
 \begin{gospel}
@@ -489,11 +489,11 @@ Let us reconsider the code presented in this \hyperref[sub:examples_ocaml]{subse
 \end{gospel}
 
 Although this is a simple program, we can already notice what a typical GOSPEL specification looks like.
-If we are dealing with a functional piece of code usually there will be a few \emph{requires} clauses (could be none as well) at the beginning of the specification, representing the pre-conditions.
+If we are dealing with a functional piece of code, usually there will be a few \emph{requires} clauses (could be none as well) at the beginning of the specification, representing the pre-conditions.
 After that, since these implementations use recursion most of the time, there will be one or more \emph{variant} clauses, indicating what variables vary each time the function is called.
-This serves as a guarantee that the recursion does not go forever.
-In this implementation, \emph{variant b} is enough but we could eventually reason about how \emph{a} varies over the execution of the program. 
-Regarding the pre-conditions, this particular example states that \emph{a} and \emph{b} need to be non negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
+This serves as a guarantee that the recursion does not go on forever.
+In this implementation, \emph{variant b} is enough, but we could eventually reason about how \emph{a} varies over the execution of the program. 
+Regarding the pre-conditions, this particular example states that \emph{a} and \emph{b} need to be non-negative integer numbers, since the greatest common divisor of any two negative numbers will always be 0.
 Finally, we have a single post-condition \emph{ensures result = gcd a0 b0} that guarantees that for any input, the two different implementations will output the same result. 
 
 
@@ -502,11 +502,11 @@ Finally, we have a single post-condition \emph{ensures result = gcd a0 b0} that 
 
 Cameleer is a tool that aids automated deductive verification of OCaml programs.
 It relies on GOSPEL for the specification of the code and on Why3 to effectively verify the program.
-The limitations of the powerful Why3 tool and the reason for the creation of Cameleer start here: Why3 does not accept code that is not written in its intermediary language: WhyML.
+The limitations of the powerful Why3 tool and the reason for the creation of Cameleer start here: Why3 does not accept code that is not written in its intermediary language, WhyML.
 Now imagine wanting to verify your codebase with years and years of contributions, with maybe more than a million lines of code.
 Why3 would force you to translate OCaml into WhyML, \emph{all by hand}. 
 And only after that you would write the specification.
-Two obvious things come to mind: no one wants to do that job and if someone had to do it, they would very quickly start wondering if there is a tool that could help them, or even better, do that repetitive work instead of them.
+Two obvious things come to mind: no one wants to do that job, and if someone had to do it, they would very quickly start wondering if there is a tool that could help them, or even better, do that repetitive work instead of them.
 So, how is Cameleer able to save those poor programmers?
 
 \begin{figure}[htbp]
@@ -519,19 +519,19 @@ So, how is Cameleer able to save those poor programmers?
 The Cameleer pipeline is constituted by 4 different steps, the last one being different depending on whether Why3 detects errors in the translated code or not.
 The first step is to parse and change the abstract syntax tree of the input OCaml program (that contains GOSPEL annotations), using \emph{ppxlib}, a library that is part of the GOSPEL ecosystem\protect\footnote{\ https://github.com/ocaml-gospel/gospel}.
 In the second step, the GOSPEL annotations are processed by a special parser/type-checker that converts the specification into nodes that become part of the previous OCaml AST.
-The third step consists in Cameleer itself translating the complete AST into a description in WhyML that is equivalent; Why3 then takes that as input.
+The third step consists of Cameleer itself translating the complete AST into a description in WhyML that is equivalent; Why3 then takes that as input.
 In step four, if the Why3 type-and-effect system is not able to validate the input generated in the previous step, the problems are shown in the context of the input OCaml code, the one that is submitted by the user. 
-Alternatively, if no errors are found, a series of verification conditions are the output of the respective VCGEN.
+Alternatively, if no errors are found, a series of verification conditions is the output of the respective VCGEN.
 Those VCs should then be unraveled by the solvers featured in Cameleer or, if they are not able to do all the work automatically, this tool also allows human intervention to discharge more complex statements.
 
 \subsection{Example}
 \label{subsec:cameleer_example}
 
-We will now demonstrate the execution of the verification of a GOSPEL annotated OCaml program, using the code presented in the previous \hyperref[sec:gospel]{section}.
+We will now demonstrate the execution of the verification of a GOSPEL-annotated OCaml program, using the code presented in the previous \hyperref[sec:gospel]{section}.
 To start the verification, assuming the code is saved in a file called \textbf{gcd.ml}, we use the following command: \textbf{cameleer gcd.ml}.
 This will feed our code to the Cameleer pipeline and, even if there are errors, a new window with the Why3 GUI will appear.
 
-Now, we can use the \textit{Split VC} strategy (\underline{Tools} -> \underline{Strategies} -> \underline{Split VC}) to separate our bigger goal into several, smaller and simpler VCs, for each implementation.
+Now, we can use the \textit{Split VC} strategy (\underline{Tools} -> \underline{Strategies} -> \underline{Split VC}) to separate our bigger goal into several smaller and simpler VCs, for each implementation.
 In this case, if we use the \textit{Auto level 0} strategy (\underline{Tools} -> \underline{Strategies} -> \underline{Auto level 0}) on the \textbf{gcd.ml} goal, our proof successfully terminates.
 
 \begin{figure}[htbp]
@@ -543,10 +543,10 @@ In this case, if we use the \textit{Auto level 0} strategy (\underline{Tools} ->
   \label{fig:gcd_why3}
 \end{figure}
 
-You can now get automatically generated Latex code that shows how much time each VC took to be proven, using the command \textit{why3 session latex -o proof\textunderscore tex test}.
+You can now get automatically generated LaTeX code that shows how much time each VC took to be proven, using the command \textit{why3 session latex -o proof\textunderscore tex test}.
 Do not forget to create the proof\textunderscore tex directory, otherwise you will get an error.
-The Latex code for this example will look like the following.
-As you can see, CVC5 was the prover used and it took double the time to discharge the imperative implementation (0.46 seconds) than its functional counterpart (0.23 seconds).
+The LaTeX code for this example will look like the following.
+As you can see, CVC5 was the prover used, and it took double the time to discharge the imperative implementation (0.46 seconds) than its functional counterpart (0.23 seconds).
 
 \begin{tabular}{|l|l|l|l|c|}
 \hline \multicolumn{2}{|c|}{Proof obligations } & \provername{CVC5 1.0.6} \\ 

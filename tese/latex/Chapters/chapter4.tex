@@ -21,9 +21,9 @@ It also provides a set of \hyperref[fig:translation-biprograms-rules]{rules} tha
 Its authors deeply explore the problems that pointer based programs bring to the table, but this is not an objetive of this thesis.
 Instead, we defined and formalized a programming language called $BipLang$.
 BipLang's main purpose is writing biprograms and was based on the biprograms language used in WhyRel's work.
-BipLang was designed to accept Gospel annotations and to be as similar as possible to OCaml in terms of syntax and semantics.
+BipLang was designed to accept GOSPEL annotations and to be as similar as possible to OCaml in terms of syntax and semantics.
 We did that in order to allow programmers that are used to that language to verify the equivalence of their programs without needing to learn a new language or completely rewrite their code or specification.
-Then, we transpile the biprograms using the translation rules defined by WhyRel's authors to produce Gospel-annotated OCaml code.
+Then, we transpile the biprograms using the translation rules defined by WhyRel's authors to produce GOSPEL-annotated OCaml code.
 
 
 \FloatBarrier
@@ -34,15 +34,15 @@ Then, we transpile the biprograms using the translation rules defined by WhyRel'
 \subsection{Overview and Architecture}
 \label{subsec:bip2ml_overview}
 
-$bip2ml$ is a transpiler that takes Gospel-annotated BipLang code and outputs Gospel-annotated OCaml code.
-This tool brings the contributions of WhyRel into the world of OCaml, Gospel and Cameleer.
+$bip2ml$ is a transpiler that takes GOSPEL-annotated BipLang code and outputs GOSPEL-annotated OCaml code.
+This tool brings the contributions of WhyRel into the world of OCaml, GOSPEL and Cameleer.
 All of the work done on this thesis is available at \url{https://github.com/JoaoNini75/MasterThesis}, which includes bip2ml's code, this thesis' LateX code and other related material.
 
 We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipeline]{integrates} with Cameleer.
 The users are expected to start with two programs and aim to formally verify that they are equivalent.
 There may be some exceptions to this that we will discuss later in the \hyperref[cha:case_studies]{case studies} chapter, but this is our starting point and main objective.
-The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary Gospel annotations.
-After that, the user feeds bip2ml that .bip file and it starts its work to produce the OCaml + Gospel program.
+The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary GOSPEL annotations.
+After that, the user feeds bip2ml that .bip file and it starts its work to produce the OCaml + GOSPEL program.
 The transpiler's output file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
 
 \begin{figure}[htbp]
@@ -60,7 +60,7 @@ If it is not, it outputs \emph{"syntax error"} to the terminal.
 To program the parser, we utilized Menhir~\cite{menhir}.
 The output of the parser is an AST, the BipLang AST, which is the input of the next phase: the translator.
 This component is the one responsible for translating the BipLang AST into the OCaml AST, according to the 8 rules defined by WhyRel; this phase does not fail.
-Finally, we named the last part of our transpiler the printer, since its function is to receive the OCaml AST from the translator and outputting to the terminal or to a file the final OCaml code with all the Gospel specifications.
+Finally, we named the last part of our transpiler the printer, since its function is to receive the OCaml AST from the translator and outputting to the terminal or to a file the final OCaml code with all the GOSPEL specifications.
 Both the translator and the printer were implemented using OCaml directly.
 
 \begin{figure}[htbp]
@@ -246,8 +246,8 @@ Additionally, it is relevant to mention that the output code you will read below
 bip2ml effectively prints OCaml code respecting general good indentation practices.
 The choice of using two whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
 
-As a way to make the Gospel specifications coherent with the generated OCaml code and make sure which variable the user refers to, we require the user to write the specification using $\_l$ when reasoning about the left side and $\_r$ for the right side.
-Additionally, as a parser design choice, we also require that each function has a Gospel specification immediately after its declaration.
+As a way to make the GOSPEL specifications coherent with the generated OCaml code and make sure which variable the user refers to, we require the user to write the specification using $\_l$ when reasoning about the left side and $\_r$ for the right side.
+Additionally, as a parser design choice, we also require that each function has a GOSPEL specification immediately after its declaration.
 If you do not want to write the specification in a given moment but want bip2ml to execute without a parsing error, you can simply do the following:
 \begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
                     emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
@@ -264,7 +264,7 @@ end
 
 We now present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
 Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
-We will omit the necessary Gospel specifications to prove these examples, since it is not our focus in this subsection.
+We will omit the necessary GOSPEL specifications to prove these examples, since it is not our focus in this subsection.
 Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
 
 \begin{figure}[h]
@@ -495,7 +495,7 @@ The third corresponds to the conjunction of the negated loop conditions.
 The final conjunction is the same as the previous one but with the original loop conditions.
 
 The generated invariant's structure is defined by the rule, varying only in the values that each expression is evaluated to.
-Nevertheless, our transpiler allows the user to add Gospel specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
+Nevertheless, our transpiler allows the user to add GOSPEL specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
 
 The body becomes a \emph{if...then...else if...then...else} block, so there are three possible outcomes for each iteration of the cycle.
 The first occurs when the loop condition for the left program and the left alignment guard are both evaluated to true, therefore executing only the instructions that refer to the left side.
