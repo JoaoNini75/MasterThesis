@@ -34,13 +34,13 @@ On the right side, there is a single while loop with an assignment inside, makin
 
 The specification of $mult\_biplang$ and $mult\_ocaml$ is the same as $mult\_whyml$, but now written in GOSPEL.
 Besides that, since OCaml does not support labels, we had to substitute it with a simple variable that is used later to get the value of the previous iteration.
-In practice, it also works, but WhyML's labels may help the readibility in terms of separating code and specification.
+In practice, it also works, but WhyML's labels may help the readability in terms of separating code and specification.
 
-The reader may have also noticed that, in $mult\_ocaml$, bip2ml declares and initializes the~$j\_r$ variable but it is never used.
+The reader may have also noticed that, in $mult\_ocaml$, bip2ml declares and initializes the~$j\_r$ variable, but it is never used.
 This can be seen as a limitation of our tool: we cannot mix "neutral" variables with "sided" ones.
-We also cannot mix left side and right side variables, but that would hardly make sense in the code, although it clearly makes sense in the specification.
+We also cannot mix left-side and right-side variables, but that would hardly make sense in the code, although it clearly makes sense in the specification.
 In this case, since the condition of the $mult\_biplang$'s inner while loop is at the left of a $pipe$, those identifiers will be transformed into left side identifiers.
-So, even if we declared \emph{let j = ref 0 in}, we would still get \emph{while (!j\_l < m\_l) do}, and that would result in variables' names mismatching in the generated OCaml code.
+So, even if we declared \emph{let j = ref 0 in}, we would still get \emph{while (!j\_l < m\_l) do}, and that would result in variable names mismatching in the generated OCaml code.
 
 Regarding the verification of \hyperref[table:mult-verif]{$mult\_ocaml$}, CVC5 was able to discharge all VCs automatically in a total of 410 milliseconds.
 
@@ -161,12 +161,13 @@ let mult_ocaml (n_l : int) (n_r : int) (m_l : int) (m_r : int) :
 
 
 \FloatBarrier
-\section{Real World Cases}
+\section{Real-World Cases}
 \label{sec:usefulness}
 
 This section illustrates the applicability of our tool through some more complex examples.
 As we did in the previous section, we present these programs written in BipLang and their corresponding translations to OCaml.
-The first and second examples correspond to the proof of two common compiler optimizations; while the first establishes the equivalence of the outputs of the source and optimized versions, the second case proves that a given part of the memory of the programs are in the same state when the execution finishes.
+The first and second examples correspond to the proofs of two common compiler optimizations.
+While the first establishes the equivalence of the outputs of the source and optimized versions, the second case proves that a given part of the memory of the programs is in the same state when the execution finishes.
 The third example is not about program equivalence, but a similar relational property: majorization.
 These case studies show that bip2ml is able to reason about not only program equivalence, but other interesting properties too.
 
@@ -176,7 +177,7 @@ These case studies show that bip2ml is able to reason about not only program equ
 \label{subsec:rwc-ivsr}
 
 The first example is a common compiler optimization, the induction variable strength reduction.
-Recall the source, optimized and product \hyperref[fig:induction_var_strength_red]{programs}, presented earlier.
+Recall the source, optimized, and product \hyperref[fig:induction_var_strength_red]{programs}, presented earlier.
 Consider now the \hyperref[fig:ivsr_biplang]{BipLang} and translated \hyperref[fig:ivsr_ocaml]{OCaml} programs.
 
 \begin{figure}
@@ -250,7 +251,7 @@ let induc_var_strength_red_ocaml
 \label{fig:ivsr_ocaml}
 \end{figure}
 
-We start by initializing the $i$, $j$ and $x$ variables.
+We start by initializing the $i$, $j$, and $x$ variables.
 We use the floors for $i$ and $x$, since both sides of the program bind to them the same value (\emph{ref 0}, for both variables).
 To initialize $j$, on the other hand, we use the pipe, since one side binds to it \emph{ref 0} and the other \emph{ref c}.
 
@@ -259,17 +260,17 @@ The condition of the cycle indicates that as long as \emph{!i < n} is true for b
 This gets translated to only the left side condition and the first invariant in the loop of the generated program, automatically introduced by our tool.
 The other invariants and the variant had to be added by us.
 Then, inside the loop, we have two assignments to different identifiers, which explains the slightly different syntax of the form \emph{id1 := value1 <|> id2 := value2}.
-The last instruction of the while is an equal assign to both sides of the program.
+The last instruction of the while is an identical assignment to both sides of the program.
 
 Finally, we return the value inside the $x$ reference, for the left and right sides equally, which gets translated to the return of a binary tuple.
 
 The pre-conditions and post-conditions are also provided by us.
-In this case, we are simply saying that agreement on the input results in agreement of the output.
-Let us look again at the loop's manually added invariants and variant. 
+In this case, we are simply saying that agreement on the input results in agreement on the output.
+Let us look again at the loop's manually added variant and invariants. 
 Since the assignments to $x$ and $i$ are the same for both sides, the invariants \emph{!i\_l = !i\_r} and \emph{!x\_l = !x\_r} are trivial, and so is the variant.
 The last invariant may be the most interesting one, but it is also not complex. 
 Looking at the right side, each iteration (which represents an increment of $i\_r$ by 1), we add $b\_r$ to the previous $j\_r$, and that corresponds to the multiplication of $i\_r$ by $b\_r$.
-The \emph{+ c\_r} comes from the fact that $j\_r$ starts at $c\_r$, contrarily to the left side.
+The \emph{+ c\_r} comes from the fact that $j\_r$ starts at $c\_r$, contrary to the left side.
 
 Regarding the \hyperref[fig:ivsr-verif-res]{proof} duration, CVC5 was able to discharge all VCs automatically in 0.3 seconds.
 
@@ -309,10 +310,10 @@ Regarding the \hyperref[fig:ivsr-verif-res]{proof} duration, CVC5 was able to di
 \subsection{Loop alignment}
 \label{subsec:rwc-la}
 
-The second case study is about another compiler optimization known as the loop alignment.
-Contrarily to the previous example, this one is not exactly a proof that the programs' output are the same for the same input.
+The second case study is about another compiler optimization known as loop alignment.
+Contrary to the previous example, this one is not exactly a proof that the programs' outputs are the same for the same input.
 In this case, we prove that, after the execution, a part of the memory of both programs is equal.
-Recall the source, optimized and product \hyperref[fig:loop_alignment]{programs}, presented earlier.
+Recall the source, optimized, and product \hyperref[fig:loop_alignment]{programs}, presented earlier.
 
 \begin{figure}
 \begin{minipage}{\linewidth}
@@ -418,13 +419,13 @@ let loop_alignment_ocaml (n_l : int) (n_r : int)
 This \hyperref[fig:la_biplang]{biprogram} and \hyperref[fig:la_ocaml]{product program} are slightly different from the product program presented before, but the proof was inspired by the one its authors developed; that one is available \href{https://software.imdea.org/~ckunz/rellog/rellog-examples.tgz}{here}.
 We renamed the $j$ and renamed it to $i\_r$, since it represents the same as $i\_l$.
 
-Regarding the pre-conditions, we require \emph{n\_l} to be equal or greater than 1 and both sides' $n$ value should match too.
-There are restrictions on the the arrays' lengths, which should all be equal, between left and right side and also equal to \emph{n\_l + 1}.
+Regarding the pre-conditions, we require \emph{n\_l} to be equal to or greater than 1, and both sides' $n$ value should match too.
+There are restrictions on the arrays' lengths, which should all be equal, between the left and right side, and also equal to \emph{n\_l + 1}.
 Furthermore, the elements of both sides' $a$ array should be in agreement, one by one; however, this requirement does not apply to the last element.
-The last pre-condition simply requires that the value of the first element of both $b$'s to be the same.
-Finally, the post-condition establishes that both programs' memory finish in a state where the values of the elements of the $d$ array match, excluding the first and last elements from this guarantee.
+The last pre-condition simply requires that the value of the first element of both $b$'s be the same.
+Finally, the post-condition establishes that both programs' memory finishes in a state where the values of the elements of the $d$ array match, excluding the first and last elements from this guarantee.
 
-The program starts with an initial assignment and the unroll of the first loop iteration so we can reason about both programs in tandem during the cycle.
+The program starts with an initial assignment and the unroll of the first loop iteration, so we can reason about both programs in tandem during the cycle.
 Since the conditions of the loop are not exactly the same for both sides, we take advantage of \hyperref[fig:translation-biprograms-rules]{rule 7} through a pipe, which generates the first invariant automatically: \emph{invariant (!i\_l < n\_l) $\leftrightarrow$ (!i\_r < n\_r - 1)}.
 Inside the while, there are three assignments, two that are exactly the same for both sides and one that differs and represents precisely the optimization.
 Finally, since the right side program is one iteration behind its left counterpart, we make one last assignment after the loop: \emph{b\_r.(n\_r) $\leftarrow$ a\_r.(n\_r)}.
@@ -432,7 +433,7 @@ Finally, since the right side program is one iteration behind its left counterpa
 Regarding the specification of the loop, we have a trivial variant that proves termination and 4 invariants.
 The first one, \emph{invariant !i\_r $\geq$ 0 \&\& !i\_l = !i\_r + 1}, states that both $i$'s are never negative and that the right side is always one iteration behind the left side, as we mentioned before.
 The second invariant, \emph{b\_l.(!i\_r) = a\_l.(!i\_r)}, could be rewritten as \emph{b\_l.(!i\_l + 1) = a\_l.(!i\_l + 1)} and simply states what happens in the first assignment of the cycle.
-Next, \emph{invariant b\_l.(!i\_r - 1) = b\_r.(!i\_r - 1)} establishes that the last iteration assigned to both sides of the $b$ array the same value, as we can see from the two first loop assignments and the pre-condition regarding the values of the elements of $a$.
+Next, \emph{invariant b\_l.(!i\_r - 1) = b\_r.(!i\_r - 1)} establishes that the last iteration assigned to both sides of the $b$ array the same value, as we can see from the first two loop assignments and the pre-condition regarding the values of the elements of $a$.
 Finally, the invariant \emph{$\forall$ k. 1 $\leq$ k < !i\_l $\rightarrow$ d\_l.(k) = d\_r.(k)} means that every position of the $d$ array, on both sides, has the same value, starting at index 1 and going to the previous' iteration $i$.
 
 The proof did not require any human interaction since CVC5 discharged all VCs in approximately 1.82 seconds.
@@ -510,9 +511,9 @@ The proof did not require any human interaction since CVC5 discharged all VCs in
 \subsection{Conditionally aligned loops}
 \label{subsec:rwc-cal}
 
-The third and last real world example is also not a proof of equivalence, but for a different reason.
+The third and last real-world example is also not a proof of equivalence, but for a different reason.
 Instead, it is a proof that the left program's output is always larger than the right side program's output, assuming agreement of inputs and some other preconditions.
-\hyperref[fig:cond_align_loops_ex]{Recall} the unary programs, that compute the factorial and the exponent of \emph{x >= 4} and their biprogram.
+\hyperref[fig:cond_align_loops_ex]{Recall} the unary programs that compute the factorial and the exponent of \emph{x >= 4} and their biprogram.
 The \hyperref[fig:cond_aligned_biplang]{\emph{cond\_align\_loops\_biplang}} program is the same as WhyRel's biprogram, but rewritten in BipLang.
 
 Our proof was inspired by the \href{https://github.com/dnaumann/RelRL/blob/main/examples/majorization}{one} developed by WhyRel's authors.
@@ -527,7 +528,7 @@ That code is unreachable since the loop condition and alignment guard, on the le
 The same logic happens for the right side program.
 That is also the reason why the \emph{invariant !y\_l = !y\_r} can be proven, since the only branch that updates these variables is the one that updates them at the same time (and with the same value).
 Nevertheless, this is simply a quirk of this specific example, that happens because the condition of the \emph{if...then...else} block inside the while loop was defined as contraditory to the alignment guard by the authors of the program.
-Therefore, looking again at \hyperref[fig:trans-ex-third]{this} other example of a conditionally aligned loop, you can see that there are no contraditory conditions that create cases of unreachable code.
+Therefore, looking again at \hyperref[fig:trans-ex-third]{this} other example of a conditionally aligned loop, you can see that there are no contradictory conditions that create cases of unreachable code.
 
 
 \begin{table}[!h]

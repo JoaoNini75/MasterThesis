@@ -16,13 +16,13 @@
 \section{From WhyRel to bip2ml}
 \label{sec:whyrel_to_bip2ml}
 
-WhyRel describes a pratical approach to the verification of program equivalence based on product programs.
+WhyRel describes a practical approach to the verification of program equivalence based on product programs.
 It also provides a set of \hyperref[fig:translation-biprograms-rules]{rules} that guides the translation, in the case of WhyRel, from the biprograms language to WhyML.
-Its authors deeply explore the problems that pointer based programs bring to the table, but this is not an objetive of this thesis.
+Its authors deeply explore the problems that pointer based programs bring to the table, but this is not an objective of this thesis.
 Instead, we defined and formalized a programming language called $BipLang$.
 BipLang's main purpose is writing biprograms and was based on the biprograms language used in WhyRel's work.
 BipLang was designed to accept GOSPEL annotations and to be as similar as possible to OCaml in terms of syntax and semantics.
-We did that in order to allow programmers that are used to that language to verify the equivalence of their programs without needing to learn a new language or completely rewrite their code or specification.
+We did that in order to allow programmers who are used to that language to verify the equivalence of their programs without needing to learn a new language or completely rewrite their code or specification.
 Then, we transpile the biprograms using the translation rules defined by WhyRel's authors to produce GOSPEL-annotated OCaml code.
 
 
@@ -35,14 +35,14 @@ Then, we transpile the biprograms using the translation rules defined by WhyRel'
 \label{subsec:bip2ml_overview}
 
 $bip2ml$ is a transpiler that takes GOSPEL-annotated BipLang code and outputs GOSPEL-annotated OCaml code.
-This tool brings the contributions of WhyRel into the world of OCaml, GOSPEL and Cameleer.
-All of the work done on this thesis is available at \url{https://github.com/JoaoNini75/MasterThesis}, which includes bip2ml's code, this thesis' LateX code and other related material.
+This tool brings the contributions of WhyRel into the world of OCaml, GOSPEL, and Cameleer.
+All of the work done on this thesis is available at \url{https://github.com/JoaoNini75/MasterThesis}, which includes bip2ml's code, this thesis's LaTeX code, and other related material.
 
 We now describe bip2ml's pipeline and how it \hyperref[fig:bip2ml_cameleer_pipeline]{integrates} with Cameleer.
 The users are expected to start with two programs and aim to formally verify that they are equivalent.
 There may be some exceptions to this that we will discuss later in the \hyperref[cha:case_studies]{case studies} chapter, but this is our starting point and main objective.
 The first step requires the user to provide the alignment of the two unary programs, writing a BipLang program with the necessary GOSPEL annotations.
-After that, the user feeds bip2ml that .bip file and it starts its work to produce the OCaml + GOSPEL program.
+After that, the user feeds bip2ml that .bip file, and it starts its work to produce the OCaml + GOSPEL program.
 The transpiler's output file can then be fed to Cameleer, which in turn will take care of the rest of the verification process, exactly as if we gave it an OCaml program that we wrote manually.
 
 \begin{figure}[htbp]
@@ -53,14 +53,14 @@ The transpiler's output file can then be fed to Cameleer, which in turn will tak
 \end{figure}
 
 The bip2ml transpiler is itself also a \hyperref[fig:bip2ml_cameleer_pipeline]{pipeline}, that takes the input through four phases / components before terminating.
-The first component is the lexer, which defines what are the keywords and tokens accepted by BipLang; if any error occurs during this phase, bip2ml outputs \emph{"lexical error"} to the terminal.
+The first component is the lexer, which defines what the keywords and tokens accepted by BipLang are; if any error occurs during this phase, bip2ml outputs \emph{"lexical error"} to the terminal.
 We used ocamllex~\cite{ocamllex} to develop our lexer.
-Representing the second part of the transpiler, we have the parser, that takes the lexer's output and, by comparing it with the rules we define that are valid BipLang constructions, determines if the source code's structure is valid or not.
+Representing the second part of the transpiler, we have the parser, which takes the lexer's output and, by comparing it with the rules we define that are valid BipLang constructions, determines if the source code's structure is valid or not.
 If it is not, it outputs \emph{"syntax error"} to the terminal.
 To program the parser, we utilized Menhir~\cite{menhir}.
 The output of the parser is an AST, the BipLang AST, which is the input of the next phase: the translator.
 This component is the one responsible for translating the BipLang AST into the OCaml AST, according to the 8 rules defined by WhyRel; this phase does not fail.
-Finally, we named the last part of our transpiler the printer, since its function is to receive the OCaml AST from the translator and outputting to the terminal or to a file the final OCaml code with all the GOSPEL specifications.
+Finally, we named the last part of our transpiler the printer, since its function is to receive the OCaml AST from the translator and output to the terminal or to a file the final OCaml code with all the GOSPEL specifications.
 Both the translator and the printer were implemented using OCaml directly.
 
 \begin{figure}[htbp]
@@ -74,7 +74,7 @@ bip2ml was tested with several examples that were separated into different files
 These tests were automated using Dune~\cite{dune}.
 
 We also developed a VSCode extension that provides syntax highlighting for BipLang.
-Although it is dispensable, it certainly was extremely helpful during the whole development and testing of bip2ml, and it may also be a relevant aid to anyone that programs in BipLang.
+Although it is dispensable, it certainly was extremely helpful during the whole development and testing of bip2ml, and it may also be a relevant aid to anyone who programs in BipLang.
 It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform}, since the syntaxes of OCaml and BipLang are nearly identical.
 
 
@@ -82,10 +82,10 @@ It was heavily based on OCaml Labs' VSCode OCaml Platform~\cite{ocaml-platform},
 \subsection{BipLang: language definition}
 \label{subsec:lang_def}
 
-BipLang's syntax, semantics and AST are very similar to OCaml's.
+BipLang's syntax, semantics, and AST are very similar to OCaml's.
 Although BipLang implements the most common OCaml language constructions, there are definitely some missing, such as exceptions and object-oriented features.
 Taking that into consideration, it is also important to remember that, regarding the scope of this thesis, these constructions can not be seen as very relevant.
-On the other hand, our language adds 3 constructions that are not present in OCaml: the pipe, the floors and the conditionally aligned loops.
+On the other hand, our language adds 3 constructions that are not present in OCaml: the pipe, the floors, and the conditionally aligned loops.
 Their semantics are the same as in WhyRel's work.
 
 We now present the grammar of our language, BipLang.
@@ -181,7 +181,7 @@ c ::=
 We simplified some things for the sake of readibility and there are some omissions in the grammar, which we will explain now.
 Firstly, we use $c$ to simply represent a constant.
 Additionally, notice that we use $id$ and $idc$.
-They both refer to identifiers but $id$ refers to an all lowercase identifier, while $idc$ stands for "capitalized id", so its first letter is capital.
+They both refer to identifiers, but $id$ refers to an all lowercase identifier, while $idc$ stands for "capitalized id", so its first letter is capitalized.
 This is important to distinguish since module calls and type constructors, for example, use capitalized names, but lowercase identifiers are the standard for the names of variables and functions, among others.
 Next, we have to show the difference between $bt$ (bip type) and $at$ (any type).
 $bt$ represents the basic types (bool, int, string, none), but $at$ extends that definition to also allow $id$.
@@ -201,8 +201,8 @@ end
 \end{lstlisting}
 
 Otherwise, we would be limited to parameters and function returns of the basic types ($bt$).
-$parameter$ is pretty straightforward: it represents a parameter, with all its possible variations, having pipe, floors or none, explicitly saying its type or not.
-$fun\_ret$ is optional and represents what the function returns, allowing explicit or implicit type definition and also pipe, floors or none of them.
+$parameter$ is pretty straightforward: it represents a parameter, with all its possible variations, having pipe, floors, or none, explicitly saying its type or not.
+$fun\_ret$ is optional and represents what the function returns, allowing explicit or implicit type definition and also pipe, floors, or none of them.
 $constructor$ represents the definition of a constructor within a type defintion and $payload$ represents a type definition that has no constructors:
 
 \begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
@@ -243,12 +243,12 @@ end
 Before we demonstrate how our translator and printer work by applying WhyRel's translation \hyperref[fig:translation-biprograms-rules]{rules}, there are some details about our printer that we want to make clear.
 Adding $\_l$ to the left side program and $\_r$ to the right side program was a printing choice that could be changed to anything the reader prefers when identifying to what program a given identifier belongs to.
 Additionally, it is relevant to mention that the output code you will read below was not formatted manually to be easier to read; it was only adjusted to fit the page.
-bip2ml effectively prints OCaml code respecting general good indentation practices.
+bip2ml effectively prints OCaml code, respecting general good indentation practices.
 The choice of using two whitespaces for the indentation is also something that can easily change by simply setting a variable in our printer to a different value.
 
 As a way to make the GOSPEL specifications coherent with the generated OCaml code and make sure which variable the user refers to, we require the user to write the specification using $\_l$ when reasoning about the left side and $\_r$ for the right side.
 Additionally, as a parser design choice, we also require that each function has a GOSPEL specification immediately after its declaration.
-If you do not want to write the specification in a given moment but want bip2ml to execute without a parsing error, you can simply do the following:
+If you do not want to write the specification at a given moment but want bip2ml to execute without a parsing error, you can simply do the following:
 \begin{lstlisting}[mathescape, basicstyle=\ttfamily, columns=flexible,
                     emph={type, and, let, rec, if, then, else, mod, in, for, while, do, done, to, begin, end, assert, match, with, of, open, include,ref},
                     emphstyle=\ttfamily\bfseries\color{myorange}]
@@ -262,7 +262,7 @@ end
 \subsubsection{Demonstrating translation through examples}
 \label{subsubsec:translator_printer_examples}
 
-We now present 3 examples: the first applies rules 1, 2, 3 and 5, the second showcases rules 4, 6 and 7 and the third demonstrates rule 8.
+We now present 3 examples: the first applies rules 1, 2, 3, and 5, the second showcases rules 4, 6, and 7, and the third demonstrates rule 8.
 Note that we use, in our transpiler, the rules exactly as the authors of WhyRel defined them. 
 We will omit the necessary GOSPEL specifications to prove these examples, since it is not our focus in this subsection.
 Notice that the names of the functions are different depending if they belong to the input or output; bip2ml does not apply this renaming, we did it to avoid confusion.
@@ -335,7 +335,7 @@ This happens because if we have $C_1 | C_2$ and $C_1 \neq C_2$, we cannot "compr
 So, bip2ml internally translates the original line to \emph{let message = "Hello" <|> "Hello" in} and finally outputs \emph{let message\_l = "Hello" in let message\_r = "Hello" in}, as we can see in the OCaml code.
 
 The third line of $first\_bip$ is a binding to a function call: \emph{let res = invert\_bip (3) in}.
-In this case, no rule is being used since the function call is not inside floors, therefore the input and output are the same.
+In this case, no rule is being used since the function call is not inside floors, therefore, the input and output are the same.
 However, in the next line, \emph{let triple\_res = |\_ triple\_bip (message, number) \_| in}, that is the case, so rule 2 is applied here.
 This rule interpolates the arguments of the function call so that we get the first argument for the left side, then that same argument for the right side, and all the other possible other ones, respecting the order defined in the biprogram and interpolating the left and right sides.
 So, we get the output \emph{let triple\_res = triple\_bip (message\_l) (message\_r) (number\_l) (number\_r) in}.
@@ -409,7 +409,7 @@ let second_ocaml (c_l : bool)
   \label{fig:trans-ex-second}
 \end{figure}
 
-Moving on to the \hyperref[fig:trans-ex-second]{second} example, attent to the use of floors in the parameters and on the type returned by the $second\_bip$ function.
+Moving on to the \hyperref[fig:trans-ex-second]{second} example, pay attention to the use of floors in the parameters and on the type returned by the $second\_bip$ function.
 The first statements indicate the use of an \emph{if...then...else} block of code, which is translated by rule 6.
 Firstly, the rule introduces an assertion that makes the program fail during its execution if the condition is not evaluated equally in both sides.
 After that, we use one of the conditions, in this case, WhyRel authors chose the left side one, but we could use the right side condition, since we just established that they are equal.
@@ -485,20 +485,19 @@ let counting_ocaml (target_l : int) (target_r : int) (mult_of_l)
 \end{figure}
 
 Let us look now at the \hyperref[fig:trans-ex-third]{third} and last example.
-This one showcases the use of rule 8, that translates conditionally aligned loops.
-This rules takes as input a while loop with two alignment guards and outputs a while loop with a transformed body and a rather complex invariant, $A$.
+This one showcases the use of rule 8, which translates conditionally aligned loops.
+This rule takes as input a while loop with two alignment guards and outputs a while loop with a transformed body and a rather complex invariant, $A$.
 
-$A$ corresponds to the logical disjunction of 4 main formulas, that are all a conjunction themselves.
+$A$ corresponds to the logical disjunction of 4 main formulas, which are all conjunctions themselves.
 The first represents the left loop condition \emph{and} the left alignment guard.
-The second conjunction is the same but for the right side.
+The second conjunction is the same, but for the right side.
 The third corresponds to the conjunction of the negated loop conditions.
-The final conjunction is the same as the previous one but with the original loop conditions.
+The final conjunction is the same as the previous one, but with the original loop conditions.
 
 The generated invariant's structure is defined by the rule, varying only in the values that each expression is evaluated to.
-Nevertheless, our transpiler allows the user to add GOSPEL specifications to the original while loop and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
+Nevertheless, our transpiler allows the user to add GOSPEL specifications to the original while loop, and those reasonings will be copied and put together with the automatically generated $A$ invariant, appearing in the output.
 
 The body becomes a \emph{if...then...else if...then...else} block, so there are three possible outcomes for each iteration of the cycle.
 The first occurs when the loop condition for the left program and the left alignment guard are both evaluated to true, therefore executing only the instructions that refer to the left side.
 The second branch works in a very similar way to the previous, but applied to the right side program.
-The third case happens when the loop condition (on the left side) is respected but none of the alignment guards are, resulting in the execution of all the instructions inside the original biprogram's cycle.
-
+The third case happens when the loop condition (on the left side) is respected, but none of the alignment guards are, resulting in the execution of all the instructions inside the original biprogram's cycle.
