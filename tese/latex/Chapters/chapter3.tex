@@ -19,11 +19,11 @@
 \label{cha:state_of_the_art}
 
 \textbf{Definition: Structural equivalence -} we say that two programs are structurally equivalent if they present the same sequence of statements/commands.
-For example, a program \emph{$P_1$} that consists in two assignments and a while loop is not equivalent to another program program \emph{$P_2$} if the latter's structure is a single for loop.
+For example, a program \emph{$P_1$} that consists in two assignments and a while loop is not equivalent to another program \emph{$P_2$} if the latter's structure is a single for loop.
 On the other hand, if \emph{$P_1$} and \emph{$P_2$} both contain, let us say, three assignments followed by a for loop (with a single assignment inside) that executes the same number of iterations, they are structurally equivalent, despite the values being assigned to the variables.
 
-Note that this definition is useful when reading about self-composition and cross-products below in this capter.
-However, we aim to allow verification of programs that would not be considered by this definition of structural equivalence and therefore be more flexible, but we still need some degree of similarity.
+Note that this definition is useful when reading about self-composition and cross-products below in this chapter.
+However, we aim to allow verification of programs that would not be considered by this definition of structural equivalence and, therefore, be more flexible, but we still need some degree of similarity.
 That is why we do not target programs that include exceptions.
 
 
@@ -36,19 +36,19 @@ That is why we do not target programs that include exceptions.
 The proposal of self-composition ~\cite{DBLP:conf/csfw/BartheDR04} is to offer an extensible and flexible way of controlling information flow.
 This is usually done by information flow type systems, but they suffer from the issues that self-composition attempted to solve.
 In the work mentioned above, the authors tried to address the static enforcement of information flow policies but focused on a specific one called non-interference.
-Non-interference separates the state of a program into a public and a secret part and, by observing its execution, determines if there was a information leak on the secret part of the state.
+Non-interference separates the state of a program into a public and a secret part and, by observing its execution, determines if there was an information leak on the secret part of the state.
 
 Despite the well-defined focus, the efforts of the work specified before apply to several programming languages and different definitions of security, even including declassification, partially.
 In the end, the authors were able to establish a general theory of self-composition to prove that programs are non-interfering.
-One of the main features of self-composition is its expressiveness and that there is no need to prove the soundness of type systems, since it is based on logic.
+One of the main features of self-composition is its expressiveness, and there is no need to prove the soundness of type systems, since it is based on logic.
 
 
 \subsection{Exploring non-interference}
 \label{subsec:exploring_non_interference}
 
-In order to give an example of self-composition in the next subsection, we present now a simple program that respects the properties of termination-insensitivity and non-interference.
+In order to give an example of self-composition in the next subsection, we now present a simple program that respects the properties of termination-insensitivity and non-interference.
 
-Consider a simple, deterministic and imperative language that allows sequential composition and the evaluation relation \(\langle P, u\rangle \Downarrow v\), where \(P\) is a program and \(u,v\) are memories.
+Consider a simple, deterministic, and imperative language that allows sequential composition and the evaluation relation \(\langle P, u\rangle \Downarrow v\), where \(P\) is a program and \(u,v\) are memories.
 Memory in this context means a map where the keys are the program variables of \(P\) and the values are the values of those program variables.
 Furthermore, consider that all variables of \(P\) need to be either public or private, let \(\overrightarrow{x}\) be the set of all public variables in \(P\) and \(\overrightarrow{y}\) the set of all of its private variables.
 For all memories \(u_1,u_2,v_1,v_2\), the properties of termination-insensitivity and non-interference for \(P\) can be described as:
@@ -58,7 +58,7 @@ For all memories \(u_1,u_2,v_1,v_2\), the properties of termination-insensitivit
 where ${=}_{L}$ is the point-wise extension of equality on values to public parts of memories.
 
 Consider [\(\overrightarrow{x'}, \overrightarrow{y'} / \overrightarrow{x}, \overrightarrow{y}\)] as being a renaming of the program variables \(\overrightarrow{x}\) and \(\overrightarrow{y}\) of \(P\) with fresh variables \(\overrightarrow{x'}\), \(\overrightarrow{y'}\) and let \(P'\) be as \(P\) but with its variables renamed: \(P\)[\(\overrightarrow{x'}, \overrightarrow{y'} / \overrightarrow{x}, \overrightarrow{y}\)].
-Also, to refer to the the disjoint union of two memories we will use the $\uplus$ symbol.
+Also, to refer to the disjoint union of two memories, we will use the $\uplus$ symbol.
 Therefore, we have \(\langle P, u\rangle \Downarrow v \, \land \, \langle P', u'\rangle \Downarrow v' \) iff \(\langle P; P, u \uplus u' \rangle \Downarrow v \uplus v'\).
 We can now rearrange non-interference, for memories \(u,u',v,v'\), as the following:
 
@@ -84,7 +84,7 @@ The program is non-interferent iff
 
 \[ \{x = x'\} \, x := y; x := 0 \, x' := y'; x' := 0 \, \{x = x'\} \]
 
-We are able to characterize information flow policies, which include some types of declassification, through the replacement of the =- relation by other (partial) equivalence relation.
+We are able to characterize information flow policies, which include some types of declassification, through the replacement of the =- relation by another (partial) equivalence relation.
 More generally, this form of characterization allows us to use existing verification tools to prove (or disprove) information flow policies for a given program.
 
 
@@ -97,22 +97,22 @@ More generally, this form of characterization allows us to use existing verifica
 
 Cross-products~\cite{DBLP:conf/fm/ZaksP08} aim to prove program equivalence, with a strong focus on verifying compiler optimizations.
 Instead of proving that the two input programs are equivalent, the analysis is done by combining them into one: the cross-product.
-With this, instead of recurring to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
+With this, instead of resorting to program analysis and proof rules developed specifically for translation validation, it became possible to use existing methods and tools to prove properties of a single program. 
 Despite handling the most common intraprocedural compiler optimizations, cross-products can not be applied to two input programs with dissimilar structures, which is a major constraint of this work.
 
 One important aspect of CoVaC, a framework developed by the authors of the aforementioned article, is that it was made to validate program equivalence in general while balancing precision and efficiency.
-The approach was to divide the analysis in two phases, a faster one first and a more precise after that.
+The approach was to divide the analysis in two phases, a faster one first and a more precise one after that.
 The first phase utilizes a fast, yet imprecise value numbering algorithm whose results are used to determine if it is necessary to apply the second phase. 
 This final part is based on assertion checking, a static program verification method which, under the hood, computes the weakest-precondition~\cite{DBLP:books/ph/Dijkstra76} using CVC3~\cite{cvc3}. 
 
-The results presented on the cited work reveal that CoVaC was able to verify a very considerable set of optimizations of LLVM~\cite{llvm}, a complex modern compiler.
+The results presented in the cited work reveal that CoVaC was able to verify a very considerable set of optimizations of LLVM~\cite{llvm}, a complex modern compiler.
 Yet, the tool does not support verification of interprocedural optimizations or information flow policies, for example, but these are limitations that the authors showed interest in addressing.
 
 
 \subsection{A practical example to simplify the theory} 
 \label{subsec:cross_products_ex}
 
-Consider the following example, composed by a source program and its optimized version:
+Consider the following example, composed of a source program and its optimized version:
 
 \begin{tabbing}
   \hspace{2cm}\= \textbf{Source Program (S)} \hspace{2cm} \= \textbf{Optimized Program (T)} \\ 
@@ -129,7 +129,7 @@ This example is small but enough to demonstrate the idea of cross-products in pr
 The transformation removes trivial arithmetic that does not change the final result and represents, actually, two optimizations: constant folding (\emph{y := x + 0; z := y * 1} becomes \emph{y := x; z := y}) followed by dead code elimination (\emph{y := x; z := y} becomes \emph{z := x}).
 
 Let us now informally model each program as a small transition graph with nodes (locations) and labeled edges.
-We mark $read$ and $write$ as observable transitions, while assigns are internal but still visible to the cross-product as assignment labels.
+We mark $read$ and $write$ as observable transitions, while assignments are internal but still visible to the cross-product as assignment labels.
 Consider the source program's ($S$) nodes: $S_0$ = entry, $S_1$ = after read, $S_2$ = after \emph{y := x + 0}, $S_3$ = after \emph{z := y * 1}, $S_4$ = exit.
 Therefore, the edges of $S$ can be described as:
 \begin{tabbing}
@@ -153,8 +153,8 @@ $T$'s edges are the following:
 The $\epsilon$ steps are inserted as needed to align executions, as one can see in the transition between $T_2$ and $T_3$.
 Next, we construct the comparison graph \emph{C = S $\boxtimes$ T}.
 The nodes of $C$ are pairs of the type $<S_i, T_j>$ that start at $<S_0, T_0>$.
-There are 3 types of edge pairing: we match reads with reads, writes with writes (and then check the written values) and assignments with assignments.
-Regarding assignments, we only match them when both sides are at corresponding cutpoints (a given node in the control-flow graph), otherwise we allow an assignment to pair with an $\epsilon$ on the other side, making it wait.
+There are 3 types of edge pairing: we match reads with reads, writes with writes (and then check the written values), and assignments with assignments.
+Regarding assignments, we only match them when both sides are at corresponding cutpoints (a given node in the control-flow graph); otherwise, we allow an assignment to pair with an $\epsilon$ on the other side, making it wait.
 Therefore, the constructed comparison graph C contains paths that execute the two programs in lockstep, allowing $\epsilon$-padding where needed.
 We will now showcase this using the example.
 
@@ -169,7 +169,7 @@ Finally, from $<S_3, T_3>$ there is a \emph{write(z)} in both programs, which me
 
 We will now discuss the invariant network.
 Consider $\varphi_n$ an assertion associated with a node $n$, an assertion network $\phi_C = \{ \varphi_n : n \in$ locations of $C \}$ and $d$ a data state.
-For a program $C$, we say that an assertion network is $invariant$ if, for every state $<n;\overrightarrow{d}>$ ocurring in a computation, $d \vDash \varphi_n$.
+For a program $C$, we say that an assertion network is $invariant$ if, for every state $<n;\overrightarrow{d}>$ occurring in a computation, $d \vDash \varphi_n$.
 This means that $d$ satisfies the corresponding assertion $\varphi_n$ on every visit of a computation of node $n$. 
 The key cutpoints are after reads and before writes.
 
@@ -190,11 +190,11 @@ In our example, at the paired write node $<S_3, T_3>$ the witness VC is ${\varph
 If the invariant network proves $z_s = z_t$ at that node, the write outputs are equal; since reads/writes are the only observable I/O, this shows stuttering-equivalent observable behavior.
 According to the main theorem in the aforementioned work, the existence of such witness comparison graph and valid witness VCs implies that the target is a correct translation of the source.
 
-Intuitively, this approach proves correctness for the three following reasons.
+Intuitively, this approach proves correctness for the following three reasons.
 Firstly, the comparison graph represents \emph{all aligned executions} of source and target, with $\epsilon$ padding to allow one side to do assignments while the other waits.
 Furthermore, the invariants guarantee that at observable points (reads, writes, and procedure boundaries) the observable variables agree.
 Finally, the witness VC at writes enforces equality of output values.
-Together, these satisfy cross-product's definition of a witness, therefore the translation is correct.
+Together, these satisfy the cross-product's definition of a witness, therefore, the translation is correct.
 
 
 \FloatBarrier
@@ -208,7 +208,7 @@ Relational Hoare Logic serves as a good starting point to compare the behavior o
 However, there are few available tools and practical reasoning logics for relational verification.
 One of the main limitations of the existing ones~\cite{DBLP:conf/popl/Benton04, DBLP:journals/tcs/Yang07} is the constraint of \emph{structural equivalence}.
 Inversely, traditional program verification has diverse and extensive tool support.
-Therefore, as a way of getting around that limitation, we can take advatange of the existing tool support if we are able to soundly reduce relational verification tasks into standard verification ones.
+Therefore, as a way of getting around that limitation, we can take advantage of the existing tool support if we are able to soundly reduce relational verification tasks into standard verification ones.
 This means we would translate Hoare quadruples (\{$\Phi$\} \emph{$P_1$} \emph{\textasciitilde} \emph{$P_2$} \{$\Psi$\}) into Hoare triples (\{$\phi$\} \emph{P} \{$\psi$\}), making sure that: if the original quadruple is valid, then the generated triple is also valid; if the if the original quadruple is not valid, the generated triple would also be invalid.
 Considering $\vDash$ the symbol for validity, the objective is finding \emph{$\phi$, P, $\psi$} that:
 \[ \vDash \{\Phi\} \, \textbf{$P_1$} \sim \textbf{$P_2$} \, \{\Psi\} \ \ \ \rightarrow \ \ \ \ \ \vDash \{\phi\} \, \textbf{P} \, \{\psi\} \]
@@ -217,13 +217,13 @@ Let us consider two imperative and \emph{separable} programs \emph{$P_1$} and \e
 This enables the capacity of the assertions to be seen as first-order formulas about the variables of \emph{$P_1$} and \emph{$P_2$}.
 Self-composition~\cite{DBLP:conf/csfw/BartheDR04} represents a way of establishing the wanted equalities mentioned above: \emph{P $\equiv$ $P_1$;$P_2$}, \emph{$\phi$ $\equiv$ $\Phi$} and \emph{$\psi$ $\equiv$ $\Psi$}.
 Despite being characterized by soundness and relative completeness~\cite{DBLP:journals/jlp/BartheCK16}, this construction is impractical for the authors of this~\cite{DBLP:conf/sas/TerauchiA05} work.
-One of the two main reasons is that the existing automatic safety analysis tools available are not powerful enough to verify most of realistic problems and, when they can, there is a lack of performance.
+One of the two main reasons is that the existing automatic safety analysis tools available are not powerful enough to verify most of the realistic problems and, when they can, there is a lack of performance.
 The other reason is that the safety analysis developed for naturally 1-safety problems is not expected to advance significantly in the foreseeable future.
 
 There is another relevant method previously discussed in this \hyperref[sec:cross_products]{this} section, the cross-products.
-These suffer from the constraint of structural equivalence, making impossible to reason about properties or program optimizations that are based on different control flows.
+These suffer from the constraint of structural equivalence, making it impossible to reason about properties or program optimizations that are based on different control flows.
 
-Product Programs~\cite{DBLP:conf/fm/BartheCK11} appear to be the best path to follow, since they represent a general notion that combines the flexibility of self-composition in executing asynchronous steps and the efficiency of cross-products when it comes to treat synchronous steps. 
+Product Programs~\cite{DBLP:conf/fm/BartheCK11} appear to be the best path to follow, since they represent a general notion that combines the flexibility of self-composition in executing asynchronous steps and the efficiency of cross-products when it comes to treating synchronous steps. 
 Product programs are a way to reduce relational verification into standard verification through the construction of a product program \emph{P} that simulates the execution statements of any two programs \emph{$P_1$} and \emph{$P_2$}.
 
 
@@ -234,7 +234,7 @@ Product programs are a way to reduce relational verification into standard verif
 \subsubsection{A first intuition} 
 \label{subsubsec:product_programs_intuition}
 
-As a way to provide a first intuition of construction of a product from structurally dissimilar programs before we dive into the definitions and rules later in this subsection, consider the simple \hyperref[fig:pp_first_intuition]{example} below (assume 0 $\leq$ N).
+As a way to provide a first intuition of the construction of a product from structurally dissimilar programs before we dive into the definitions and rules later in this subsection, consider the simple \hyperref[fig:pp_first_intuition]{example} below (assume 0 $\leq$ N).
 
 \begin{figure}[h]
   \centering
@@ -278,10 +278,10 @@ while (@i (*$\textcolor{red}{\leq}$*) N@) do
 \end{figure}
 
 The first step to build the product program is to unroll the first loop iteration of the source code before synchronizing the loop statements.
-Rather than relying plainly on self-composition, this idea maximizes synchronization and differs from a functional interpretation of the product components.
-Furthermore, this approach also reduces considerably the complexity of the invariants required to prove the product program.
+Rather than relying purely on self-composition, this idea maximizes synchronization and differs from a functional interpretation of the product components.
+Furthermore, this approach also considerably reduces the complexity of the invariants required to prove the product program.
 In the case of a sequential composition of the source and transformed programs, we would need to provide invariants of the form \emph{x = X + $\frac{i(i-1)}{2}$} and \emph{y = Y + $\frac{j(j-1)}{2}$}, respectively, assuming the pre-conditions \emph{x = X} and \emph{y = Y}.
-On the other hand, if we construct the product program, the loop invariant \emph{i = j $\land$ x = y} is enough to verify that the two first programs above satisfy the pre and post-relation \emph{x = y}.
+On the other hand, if we construct the product program, the loop invariant \emph{i = j $\land$ x = y} is enough to verify that the first two programs above satisfy the pre and post-relation \emph{x = y}.
 
 
 \FloatBarrier
@@ -294,7 +294,7 @@ The commands in our programming model will stick to the grammar defined previous
 Let \emph{e} $\in$ AExp and \emph{b} $\in$ BExp range over integer and boolean expressions.
 Their semantics are given by ${(\llbracket e \rrbracket)}_{e \in AExp}$ : S $\rightarrow$ $\mathbb{Z}$ and ${(\llbracket b \rrbracket)}_{b \in BExp}$ : S $\rightarrow$ $\mathbb{B}$, respectively.
 Execution states' representation is \emph{S = (V$_i$ $\rightharpoonup$ $\mathbb{Z}$) X (V$_a$ $\rightharpoonup$ ($\mathbb{Z}$ $\rightharpoonup$ $\mathbb{Z}$)).}
-The semantics of the commands are standard, deterministic and are based on the relation $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$ $\langle$c', $\sigma$'$\rangle$.
+The semantics of the commands are standard, deterministic, and are based on the relation $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$ $\langle$c', $\sigma$'$\rangle$.
 
 Notice that $\langle$\textbf{skip}, $\sigma$$\rangle$ marks the end of the programs, \textbf{assert}(b) blocks the execution of the program if \emph{b} is false, and we let $\langle$c, $\sigma$$\rangle$ $\Downarrow$ $\sigma$' mean $\langle$c, $\sigma$$\rangle$ $\rightsquigarrow$* $\langle$\textbf{skip}, $\sigma$'$\rangle$.
 An assertion $\phi$ is a first-order formula with variables in V.
@@ -322,7 +322,7 @@ Therefore, the definition below illustrates the formal statement of valid relati
                                 and $\langle$$c_1$, $\sigma$$_1$$\rangle$ $\Downarrow$ $\sigma$$_1$' and $\langle$$c_2$, $\sigma$$_2$$\rangle$ $\Downarrow$ $\sigma$$_2$', we have $\sigma_1$' $\uplus$ $\sigma_2$' $\in$ $\llbracket$$\psi$$\rrbracket$.}
 
 \bigskip
-Since our objective is to reduce the validity of Hoare quadruples to validity of Hoare triples, we must say that we establish our notion of valid Hoare triple as stronger than usual.
+Since our objective is to reduce the validity of Hoare quadruples to the validity of Hoare triples, we must say that we establish our notion of a valid Hoare triple as stronger than usual.
 It requires that the command allows the program to finish its execution, i.e., the command is \emph{non-stuck}.
 \bigskip
 
@@ -398,7 +398,7 @@ This achieves what we aimed for, that is, the product program can be verified wi
 In other words, if \emph{c} is the resulting product program of \emph{c1} and \emph{c2}, then we can reason about the validity of the relational judgment between \emph{c1} and \emph{c2} through the validity of the standard judgment of \emph{c}.
 
 As we mentioned before, the rules present in the previous \hyperref[fig:product_construction_equal_struct]{figure} are limited to structurally equivalent programs.
-For example, if we consider two programs each with a loop and their guards are not equivalent, the product would have to be sequentially composed.
+For example, if we consider two programs, each with a loop and their guards are not equivalent, the product would have to be sequentially composed.
 The structural translations proposed extend the construction of the already defined products in the form of a refinement relation, with a judgment of the form \emph{c} $\succcurlyeq$ \emph{c'}. 
 This means that every execution of \emph{c} is an execution of \emph{c'} except when the latter's execution does not terminate:
 \bigskip
@@ -411,7 +411,7 @@ This means that every execution of \emph{c} is an execution of \emph{c'} except 
 \end{itemize}
 
 \bigskip
-In the \hyperref[fig:product_construction_reduction]{figure} is described the set of rules that define judgments of the form $\vdash$ \emph{c} $\succcurlyeq$ \emph{c'}.
+The \hyperref[fig:product_construction_reduction]{figure} describes the set of rules that define judgments of the form $\vdash$ \emph{c} $\succcurlyeq$ \emph{c'}.
 
 \begin{figure}[h]
   \centering
@@ -482,7 +482,7 @@ We add one more rule that makes a preliminary refinement transformation over the
 \end{figure}
 
 This does not invalidate \textbf{Proposition 1}. 
-Finally, we formally reduce the problem of proving the validity of a relational judgment into the construction of the product program followed by the standard verification of that same product program.
+Finally, we formally reduce the problem of proving the validity of a relational judgment into the construction of the product program, followed by the standard verification of that same product program.
 \bigskip
 
 \textbf{Proposition 2 -}  \emph{For all statements $c_1$ and $c_2$, pre-condition $\phi$ and post-condition $\psi$, if $c_1$ $\times$ $c_2$ $\rightarrow$ c and $\vdash$ {$\phi$} c {$\psi$} then $\vDash$ {$\phi$} $c_1$ \textasciitilde $c_2$ {$\psi$}.}
@@ -499,7 +499,7 @@ Although product programs can be applied to several relational properties, such 
 \subsubsection{Loop alignment} 
 \label{subsubsec:product_programs_loop_alignment}
 
-Loop alignment is an optimization that consists in improving cache effectiveness by increasing the proximity of the memory locations accessed in each iteration of the loop.
+Loop alignment is an optimization that consists of improving cache effectiveness by increasing the proximity of the memory locations accessed in each iteration of the loop.
 \begin{figure}
   \centering
   \begin{subfigure}[b]{0.45\textwidth}
@@ -616,7 +616,7 @@ Some rather common examples of this are constant propagation and common subexpre
 \end{figure}
 
 The \hyperref[fig:induction_var_strength_red]{figure} demonstrates the effects that applying strength reduction has in a small program.
-In the example, \emph{j} is a derived induction variable defined as a linear function on the induction variable \emph{i}.
+In the example, \emph{j} is a derived induction variable defined as a linear function of the induction variable \emph{i}.
 The optimization in question substitutes the statement \emph{j := i * B + C} by the equivalent and more performant statement \emph{j' += B} (multiplication is more costly than addition to a computer), makes the assignment \emph{x' += j'} come first inside the loop and adds an initial assignment \emph{j' = C} before the start of the loop.
 To verify the correctness of the optimization, we need to guarantee that \emph{x = x'} is an invariant of the product program.
 And to do that, we need the linear condition \emph{j := i * B + C} to be part of the loop invariant.
@@ -630,11 +630,11 @@ And to do that, we need the linear condition \emph{j := i * B + C} to be part of
 
 WhyRel~\cite{whyrel} is a tool that aims to verify relational properties of pointer programs based on relational region logic, in an auto-active way.
 It also supports state-based encapsulation and dynamic framing. 
-This tool appears in a context where two types of tools exist but the differences between them is quite relevant.
-One of the types of tools are the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
+This tool appears in a context where two types of tools exist, but the differences between them are quite relevant.
+One of the types of tools is the ones that do not support well the relational verification of programs that dynamically allocate mutable state; these take much weight off users' shoulders but are only useful to a restrict range of programs.
 The other type of tools are the auto-active ones; these enable the verification of a considerably larger set of programs but require more user input.
 WhyRel is implemented in OCaml and relies on a library provided by Why3 for constructing and pretty-printing WhyML parse trees.
-This tool was evaluated by its authors through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations and relational reasoning that exploits encapsulation.
+This tool was evaluated by its authors through several case studies that demonstrate the effectiveness of relational region logic for alignment, expressing heap relations, and relational reasoning that exploits encapsulation.
 
 WhyRel is the most important practical work for this thesis.
 Nevertheless, we will purposefully omit a considerable part of the details about WhyRel, since the verification of pointer programs is out of the scope of this thesis.
@@ -644,26 +644,26 @@ Therefore, the focus will be directed towards functional programs.
 \subsection{Design details}
 \label{subsec:whyrel_deisgn}
 
-Some of the most relevant relational properties are conditional program equivalence, non-interference and sensitivity~\cite{barthe2019verifying}.
+Some of the most relevant relational properties are conditional program equivalence, non-interference, and sensitivity~\cite{barthe2019verifying}.
 WhyRel addresses tooling that enables modular verification of relational properties of heap-manipulating programs, including the ones that act on differing data representations and involve dynamically allocated pointer structures.
 It reaches modular reasoning about programs that contain pointers through local reasoning, using frame conditions and procedural and data abstraction.
 Simpler relational invariants and specs can be achieved through the alignment of intermediate execution steps, a type of compositionality.
 
 There are two approaches to relational properties verification supported by WhyRel.
 One of them corresponds to the reduction of the verification to the proof of functional properties of the two source programs, but this method suffers from two problems.
-It does not adapt well to complex programs and relational properties; it also prevents us to exploit similarities between the programs involved or reason through relational specs in a modular way.
+It does not adapt well to complex programs and relational properties; it also prevents us from exploiting similarities between the programs involved or reasoning through relational specs in a modular way.
 The second technique uses appropriate program alignments to prove the desired relational property.
-WhyRel uses biprograms to represent those alignments, that point out similarities between the two programs so that we can reason about their effects jointly.
+WhyRel uses biprograms to represent those alignments, which point out similarities between the two programs so that we can reason about their effects jointly.
 Relational properties of a given alignment entail the corresponding relation between the source programs, in case the chosen alignment is adequate, i.e., it captures all pairs of executions of the two underlying programs.
 
 WhyRel invests a lot in encapsulation, as a way to hide internal representation details from clients and to verify the modular correctness of a client independently of its internal organization.
-Since this challenging on a technical level, WhyRel specifies encapsulation as a \emph{dynamic boundary}, a kind of dynamic frame.
+Since this is challenging on a technical level, WhyRel specifies encapsulation as a \emph{dynamic boundary}, a kind of dynamic frame.
 A dynamic boundary captures the set of the module's internal locations.
 Therefore, enforcing encapsulation in practice requires making sure that clients do not modify any internal locations of a module.
 Relational logic has thorough soundness proofs~\cite{10.1145/3551497} and WhyRel, according to its authors, is an accurate implementation.
 
-This tool should be interpreted as a front-end to Why3, where users provide the code, specifications and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
-After that, WhyRel translates these inputs into WhyML code, enconding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
+This tool should be interpreted as a front-end to Why3, where users provide the code, specifications, and annotations and, additionally for relational verification, they should also provide relational specifications and alignments using a syntax for product programs.
+After that, WhyRel translates these inputs into WhyML code, encoding them in a way that accurately captures the representation of the heap model and fine-grained framing formalized in relational region logic.
 Finally, some VCs are added by WhyRel as intermediate assertions and lemmas for the user to confirm, and the verification itself is achieved mainly through the use of the Why3 IDE.
 
 
@@ -725,7 +725,7 @@ meth mult2(n: int, m: int) : int =
 
 In this~\cite{DBLP:conf/pldi/ChurchillP0A19} work, the authors developed a way to establish program equivalence through state-dependent alignments of program traces.
 They identified a challenge when trying to confirm the equivalence of two programs that multiply two non-negative integer numbers using different control flow, as shown in \hyperref[fig:mult_source_programs]{the} figure.
-The challenge arises in the context of automated approaches to relational verification specifically, because of the necessity of aligning an unbounded number \emph{m} of loop iterations on the left (\emph{mult1}) with a single iteration on the right (\emph{mult2}).
+The challenge arises in the context of automated approaches to relational verification, specifically, because of the necessity of aligning an unbounded number \emph{m} of loop iterations on the left (\emph{mult1}) with a single iteration on the right (\emph{mult2}).
 
 \begin{figure}[h]
   \centering
@@ -773,8 +773,8 @@ Nevertheless, we can still explore their similarities through the alignment of t
 
 Observe that the notation $\lhd F \lhd$ (respectively $\rhd F \rhd$) means that the unary formula \emph{F} is true for the state of the left (respectively right) program.
 To prove that \emph{mult1} and \emph{mult2} are equivalent, we only need the invariant that shows equivalence on \emph{i} and \emph{result} for every iteration of the outer loop.
-Additionally, to prove this invariant, we need to state that the inner loop of the left side has the same effect as the single assignement on the right: incrementing the \emph{result} by \emph{m}.
-In this case, that reasoning comes to life through the assertion after the left inner loop and before the assigment to \emph{i}.
+Additionally, to prove this invariant, we need to state that the inner loop of the left side has the same effect as the single assignment on the right: incrementing the \emph{result} by \emph{m}.
+In this case, that reasoning comes to life through the assertion after the left inner loop and before the assignment to \emph{i}.
 Notice that \emph{old(result)} inside the assertion represents the value that the $result$ variable had in the previous loop iteration.
 
 
@@ -888,22 +888,22 @@ meth ex_bip_spec (x: int, n: int | x: int, n: int) : (int | int) =
 
 This relational spec means that, if at the start of the execution: both programs \emph{x's} are equal; \emph{ex2's x} is greater or equal to 4; and both \emph{n's} are strictly greater than 0, then the output of the left program will be strictly greater than the output of the right side.
 
-\emph{ex1} and \emph{ex2} structure's are very similar and the example is simplified by setting the \emph{z} to 4! and $2^4$, respectively.
+\emph{ex1} and \emph{ex2} structures are very similar and the example is simplified by setting the \emph{z} to 4! and $2^4$, respectively.
 The \emph{w} variables' goal is to introduce \emph{stuttering} steps.
 In this case, it restricts the loops to only execute the assignments to \emph{z} and \emph{y} when \emph{w} is divisible by \emph{n}, something that is valid for both sides.
 
 Since the only restriction on \emph{n} is that they both sould be greater than 0, we can not be sure if the number of iterations will be the same for both sides, which excludes the possibility of providing an alignment based on pure lockstep.
 Therefore, we should only align iterations in lockstep when \emph{w mod n = 0} on both sides; in other words, when the assignments to \emph{z} and \emph{y} will be performed.
-For the other situations, when a side will not update those variables in the current iteration, the alignment of the iteration on the other side should be done with executing nothing, represented by the \emph{skip} command.
+For the other situations, when a side will not update those variables in the current iteration, the alignment of the iteration on the other side should be done by executing nothing, represented by the \emph{skip} command.
 With these two types of alignments, we are able to establish the invariant $\lhd$ z $\lhd$ > $\rhd$ z $\rhd$.
 
 This alignment is represented in terms of syntax by the \emph{ex\_bip} biprogram in \hyperref[fig:cond_align_loops_ex]{this} figure.
 Conditional alignment is captured using additional annotations, the \emph{alignment guards}.
-These annotations are general relation formulas that express conditions that cause the iterations to be either left-only, right-only or lockstep.
+These annotations are general relation formulas that express conditions that cause the iterations to be either left-only, right-only, or lockstep.
 In our example, the alignment guards are \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$ | $\rhd$ w mod n $\neq$ 0 $\rhd$}.
 Looking at the left alignment guard, \emph{$\lhd$ w mod n $\neq$ 0 $\lhd$}, we understand that \emph{ex\_bip} executes left-only iterations when, on the left side, \emph{w} is \textbf{not} divisible by \emph{n}. 
 A left-only iteration means that only the left side statements inside the loop are executed: \emph{if (w mod n = 0) then (z := z*y; y := y-1) end; w := w+1}.
-The only assignment in this case is the increment of the \emph{w} variable, since the alignment guard is contraditory with the $if$'s condition.
+The only assignment in this case is the increment of the \emph{w} variable, since the alignment guard is contradictory with the $if$'s condition.
 This reasoning is similar to the right side, representing the right-only iterations.
 Finally, the lockstep iterations happen when both alignment guards are false; in this case, when \emph{w} is a multiple of \emph{n} on both sides.
 This alignment allows us to use the relational invariants in \emph{ex\_bip} to prove that the post-condition holds after the execution of the biprogram.
@@ -920,7 +920,7 @@ At an intuition level, we can think that if the two unary programs are related i
 
 In practice, WhyRel confirms the adequacy of the biprogram in two phases, by checking if it can cover all pairs of executions of its two source programs.
 The first phase is done by checking the syntax in order to ensure that the biprogram was really constructed from its underlying programs, through projection operations.
-Consider the following notation, where \emph{CC} represents a biprogram, $\wideleftharpoonup{CC}$ its left projection (the left unary program) and $\widerightharpoonup{CC}$ its right projection (the right unary program).
+Consider the following notation, where \emph{CC} represents a biprogram, $\wideleftharpoonup{CC}$ its left projection (the left unary program), and $\widerightharpoonup{CC}$ its right projection (the right unary program).
 As a simple example, the left projection of the following program is \textbf{x := 2; x := x + 1;} and the right projection is \textbf{x := x + 1;}.
 
 \begin{lstlisting}[style=while_lang, mathescape,
@@ -931,8 +931,8 @@ $\lfloor$ x := x + 1 $\rfloor$;
 \end{lstlisting}
 
 Considering the unary original programs \emph{C} and \emph{C'}, the corresponding biprogram \emph{CC} and $\equiv$ the symbol for syntactic equality, WhyRel checks $\wideleftharpoonup{CC}$ $\equiv$ \emph{C} and $\widerightharpoonup{CC}$ $\equiv$ \emph{C'}.
-The second phase consists in the introduction of annotations in the biprogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
-In an hypothetical case where a biprogram aligns two loops in lockstep, this tool would add, as relational loop invariant, the equivalence of the two loop guards.
+The second phase consists of the introduction of annotations in the biprogram, such as assertions or loop invariants, by WhyRel, with the objective of ensuring adequacy.
+In a hypothetical case where a biprogram aligns two loops in lockstep, this tool would add, as a relational loop invariant, the equivalence of the two loop guards.
 
 \begin{figure}[ht]
   \centering
@@ -1003,26 +1003,26 @@ In an hypothetical case where a biprogram aligns two loops in lockstep, this too
 The rules of translation of biprograms into product programs are listed in \hyperref[fig:translation-biprograms-rules]{this} figure.
 $\beta$ receives a biprogram and a pair of contexts $(\tau_l,\tau_r)$ and transforms it into a WhyML program.
 Contexts map WhyRel identifiers to WhyML identifiers and store information about the state parameters that the generated WhyML will receive.
-In a similar way, $\mu$ translates unary programs into WhyML programs, $\epsilon$ map expressions into WhyML expressions and $F$ transforms a restricted set of relation formulas also into WhyML expressions.
-Unary programs are not restricted to operate on a disjoint set of variables but, if they do not, during translation, WhyRel naturally has to rename those variables' names. 
+In a similar way, $\mu$ translates unary programs into WhyML programs, $\epsilon$ maps expressions into WhyML expressions, and $F$ transforms a restricted set of relation formulas also into WhyML expressions.
+Unary programs are not restricted to operate on a disjoint set of variables, but if they do not, during translation, WhyRel naturally has to rename those variables' names. 
 Rule 5 performs this renaming, where context $\tau_l$ (and respectively $\tau_r$) is extended with the renaming of $x$ with its copy $x_l$ (and respectively $\tau_r$ is extended with the binding \emph{x : x\_r}).
 
 Rule 1 sequentially composes the unary translations of $C$ and $C'$.
-$\lfloor C \rfloor$ is simply syntactic sugar for ($C|C$) that are translated by rule 3, with the expection of method calls.
-Aligning method calls that establish that the relational spec associated with the method allow procedure-modular reasoning about relational properties.
+$\lfloor C \rfloor$ is simply syntactic sugar for ($C|C$) that are translated by rule 3, with the exception of method calls.
+Aligning method calls that establish that the relational spec associated with the method allows procedure-modular reasoning about relational properties.
 Using the $\phi$ symbol to represent a global method context, WhyRel translates these calls to calls to the correct WhyML product program (rule 2).
 
-Rule 4 represents that a sequence of commands in the biprogram is translated to also a sequence of commands in the product program.
+Rule 4 represents that a sequence of commands in the biprogram is translated to a sequence of commands in the product program as well.
 Control flow statements require the generation of more proof obligations: in the case of the \emph{if...then...else}, in rule 6, it appears as a runtime assertion; in a lockstep aligned loop (rule 7), it takes the form of a loop invariant stating that the guards are in agreement.
-Regarding conditionally aligned loops, described by rule 8, the pattern shown by the alignment guards $P | P'$ are captured by the generated loop body.
-This means that if the left (resp. right) guard evalutes to true and $P$ (resp. $P'$) holds, a left-only (resp. right-only) iteration is executed; if not, a lockstep iteration is performed.
+Regarding conditionally aligned loops, described by rule 8, the pattern shown by the alignment guards $P | P'$ is captured by the generated loop body.
+This means that if the left (resp. right) guard evaluates to true and $P$ (resp. $P'$) holds, a left-only (resp. right-only) iteration is executed; if not, a lockstep iteration is performed.
 
 The adequacy of the biprogram in this case is guaranteed by the requirement that $A$ must be an invariant.
 $A$ states that the loop can either perform a one-sided iteration or a lockstep until both sides finish.
 The alignment guards $P$ and $P'$ can be any relational formula, in the context of relational region logic.
 Nonetheless, the encoding of conditionally aligned loops regards a conditional that branches on these alignment guards.
 In Why3, $P$ and $P'$ have to be restricted for this to function correctly; they can not contain quantifiers, for example.
-WhyRel supports several types of elements to be in the alignment guards: the commonly used boolean connectives, one-sided boolean expressions, one-sided points-to-assertions and, as referred several times before, agreement formulas.
+WhyRel supports several types of elements to be in the alignment guards: the commonly used boolean connectives, one-sided boolean expressions, one-sided points-to-assertions, and, as said several times before, agreement formulas.
 
 
 \subsubsection{Translation example}
@@ -1088,7 +1088,7 @@ The \emph{variant \{ n\_l - !i\_l \} and variant \{ m\_l - !j \}} are needed to 
 The \emph{invariant \{ 0 <= !j <= m\_l \&\& ! result\_l = ! result\_r + !j \}} is also not dispensable, since Why3 is not able to reason automatically about how $result\_l$ varies during the inner loop.
 
 Additionally, because \emph{old(result)} in WhyRel's biprogram language means the value that the $result$ variable had in the previous loop iteration, but in WhyML it represents the value in the previous function call, we had to adapt this when translating.
-The best solution we found is the use of labels to capture the state of program before the execution of the inner while loop, therefore allowing us to access the value of $result$ in the previous iteration.
+The best solution we found is the use of labels to capture the state of the program before the execution of the inner while loop, therefore allowing us to access the value of $result$ in the previous iteration.
 Finally, with this specification, Z3 was able to discharge all VCs automatically and the proof took 0.04 seconds to complete.
 
 \begin{table}[!h]
